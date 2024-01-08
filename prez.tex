@@ -1,0 +1,50 @@
+% PROSZĘ KOMPILOWAĆ TEN DOKUMENT ZA POMOCĄ SILNIKA XELATEX
+% W PRZECIWNYM RAZIE NALEŻY USUNĄĆ PAKIET fontspec ORAZ USTAWIENIA FONTU
+% Z PLIKU styles/prez_wmini_pl.sty (PIERWSZE TRZY LINIJKI)
+% W PRZYPADKU BRAKU FONTU Adagio Slab NALEŻY ZGŁOSIĆ SIĘ DO BIP PW O JEGO UDOSTĘPNIENIE,
+% ZAŁADOWAĆ INNY KRÓJ CZCIONKI LUB ZAKOMENTOWAĆ/USUNĄĆ USTAWIENIA FONTU
+
+\documentclass[aspectratio=169]{beamer}
+
+\input{configuration}
+
+\title{Adaptation of inertial navigation systems in parallel manipulator}
+\subtitle{Master thesis presentation}
+\author{Wojciech Gajda}
+\date{January 23rd, 2023} % można tam wpisać datę jaką się chce lub zakomentować dla daty dzisiejszej
+
+
+
+% ------------------ Początek prezentacji ------------------
+
+\begin{document}
+\sloppy
+
+% Slajd tytułowy
+{
+\maketitleframe 
+}
+
+\begin{frame}
+\frametitle{Agenda}
+  \tableofcontents[  
+    sectionstyle=show, 
+    %hideallsubsections
+    ]
+\end{frame}
+
+\begin{frame}
+	\frametitle{Questions?}
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.7\textwidth]{questions.png}
+	\end{figure}
+\end{frame}
+
+\begin{frame}
+	  \begin{center}
+	\Huge Thank you!
+	\end{center}
+\end{frame}
+
+\end{document}

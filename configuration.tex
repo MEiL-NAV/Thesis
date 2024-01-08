@@ -1,0 +1,49 @@
+\usepackage{styles/prez_wmini_en}
+\usepackage{booktabs}
+\setbeamertemplate{section in toc}[sections numbered]
+\setbeamertemplate{subsection in toc}[subsections numbered]
+\usepackage{times}
+\usepackage{amsmath}
+\usepackage{bm}
+
+\usefonttheme[onlymath]{serif}
+
+\definecolor{quotationcolour}{HTML}{F0F0F0}
+\definecolor{quotationmarkcolour}{HTML}{1F3F81}
+
+% Double-line for start and end of epigraph.
+\newcommand{\epiline}{\hrule \vskip -.2em \hrule}
+% Massively humongous opening quotation mark.
+\newcommand{\hugequote}{%
+  \fontsize{42}{48}\selectfont \color{quotationmarkcolour} \textbf{``}
+  \vskip -.5em
+}
+
+% Beautify quotations.
+\newcommand{\epigraph}[2]{%
+  \bigskip
+  \begin{center}
+  \colorbox{quotationcolour}{%
+    \parbox{.80\textwidth}{%
+    \epiline \vskip 1em {\hugequote} \vskip -.5em
+    \parindent 2.2em
+    #1\vspace{-.25cm}\begin{flushright}\textsc{#2}\end{flushright}
+    \epiline
+    }
+  }
+  \end{center}
+  \bigskip
+}
+
+\newcommand{\boldm}[1] {\mathversion{bold}#1\mathversion{normal}}
+
+\graphicspath{ {./images/} }
+
+
+
+% ------------------ Ustawienia użytkownika ------------------
+% kolor tytułu prezentacji; zalecany white lub grafitowy.
+% Poza tym można użyć zdefiniowanych w pakiecie kolorów:
+% sloneczny, morelowy, mietowy, mokka, grafitowy, sliwkowy, szafirowy, wrzosowy
+% lub wybrać sobie kolor z pakietu xcolor
+\colorlet{title_color}{grafitowy}
