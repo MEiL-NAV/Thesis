@@ -37,6 +37,28 @@
 
 \begin{frame}
 	\frametitle{Motivation}
+	\begin{columns}
+		\begin{column}{0.5\textwidth}
+			\begin{figure}
+				\centering
+				\uncover<2->{
+					\includegraphics[height=0.75\textheight]{mbs_system.png}
+					\caption{Multi-body system with 1 DOF}
+				}
+			\end{figure}
+			\vspace{50pt}
+		\end{column}
+		\begin{column}{0.5\textwidth}
+			\begin{figure}
+				\centering
+				\uncover<3->{
+					\includegraphics[height=0.75\textheight]{render.jpg}
+					\caption{Render of MBS}
+				}
+			\end{figure}
+			\vspace{50pt}
+		\end{column}
+	\end{columns}
 \end{frame}
 
 
@@ -55,31 +77,103 @@
 
 \begin{frame}
 	\frametitle{Sensors}
-	Acceelrometers, Gyroscopse, Magnetometer, GNSS, Airspeed sensors, Rangefinders
+	\begin{itemize}
+		\item<2-> Accelerometer -- linear acceleration
+		\item<3-> Gyroscope -- angular velocity
+		\item<4-> \only<4>{Magnetometer -- magnetic field} \only<5->{\sout{Magnetometer -- magnetic field}}
+		\item<6-> \only<6>{GNSS -- position \& velocity} \only<7->{\sout{GNSS -- position \& velocity}}
+		\item<8-> \only<8>{Rangefinder} \only<9->{\sout{Rangefinder} Distance sensor}
+	\end{itemize}
 \end{frame}
 
 \begin{frame}
-	\frametitle{Sensor's error}
-	directly used vs. integrated
+	\frametitle{Sensor's error \& calibration}
+	
+	\uncover<2->{Error components:}
+	\begin{itemize}
+		\item<3-> Noise
+		\item<4-> Bias
+	\end{itemize}
+	\centering
+	\vspace{15pt}
+	\uncover<5->{Sensors have finite resolution and sampling time.}
+	\ \\
+	\vspace{15pt}
+	\uncover<6->{Bias is especially harmful, if measurements are integrated!}
 \end{frame}
 
 \begin{frame}
 	\frametitle{Data filtration and fusion}
+	% LPF HPF Smoothing filters Notch filters, adaptive filters, remove of outrunners
+	
+	
 \end{frame}
 
 \begin{frame}
 	\frametitle{Extended Kalman Filter}
-	Widely used in aerospace engineering.
+	\begin{itemize}
+		\item<2-> The Extended Kalman Filter is an extension of the Kalman Filter for nonlinear systems.
+		\item<3->  It is widely used in various fields, such as aviation, robotics, navigation, and control systems.
+	\end{itemize}
+	\vspace{10pt}
+	\begin{center}
+		\uncover<4->{
+		\begin{tikzpicture}[
+			block/.style={rectangle, draw, text width=2cm, text centered, rounded corners, minimum height=1.5cm},
+			arrow/.style={->, >=stealth, thick}
+			]
+			% Nodes
+			\node (predict) [block] {Predict};
+			\node (correct) [block, right=2cm of predict] {Correction};
+			
+			% Arrows
+			\draw[arrow] (predict.east) -- ++(1.5cm,0) |- (correct.west) node[midway, above] {};
+			\draw[arrow] (correct.west) -- ++(-1.5cm,0) |- (predict.east) node[midway, below] {};
+		\end{tikzpicture}
+		}
+	\end{center}
 \end{frame}
 
 \begin{frame}
 	\frametitle{EKF with constraint correction}
-	Widely used in aerospace engineering.
+	\begin{itemize}
+		\item<2-> Constraints based on multi-body system design
+	\end{itemize}
+	\vspace{10pt}
+	\begin{center}
+		\uncover<3->{
+		\begin{tikzpicture}[
+			block/.style={rectangle, draw, text width=2cm, text centered, rounded corners, minimum height=1.5cm},
+			arrow/.style={->, >=stealth, thick},
+			>=Stealth,
+			]
+			% Nodes
+			\node (predict) [block] {Predict};
+			\node (correct) [block, right=3cm of predict] {Correction};
+			\node (constraints) [block, below left=0.5cm and 0.33cm of correct] {Constraints};
+			
+			% Arrows
+			\draw[arrow] (predict.east)  |- (correct.west) node[midway, above] {};
+			\draw[arrow] (correct.south)  |- (constraints.east) node[midway, left] {};
+			\draw[arrow] (constraints.west) -- ++(-1.5cm,0) -| (predict.south) node[midway, below] {};
+			
+		\end{tikzpicture}
+		}
+	\end{center}
 \end{frame}
 
 \begin{frame}
 	\frametitle{Simulation}
-	Synthetic-generated data.
+	%Synthetic-generated data.
+	\begin{figure}
+		\centering
+		\includegraphics<2>[height=0.7\textheight]{no_corr.png}
+		\includegraphics<3->[height=0.7\textheight]{corr.png}
+		\caption{
+			\only<2>{EKF without constraints}
+			\only<3->{EKF with constraints}
+		}
+	\end{figure}
 \end{frame}
 
 \section{Summary}
