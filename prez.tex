@@ -8,9 +8,9 @@
 
 \input{configuration}
 
-\title{Adaptation of inertial navigation systems in parallel manipulator}
-\subtitle{Master thesis presentation}
-\author{Wojciech Gajda}
+\title{Adaptation of inertial navigation systems in robot's positioning systems}
+\subtitle{Master's diploma seminar}
+\author{Wojciech Gajda, Eng.}
 \date{January 23rd, 2023} % można tam wpisać datę jaką się chce lub zakomentować dla daty dzisiejszej
 
 
@@ -103,7 +103,24 @@
 \end{frame}
 
 \begin{frame}
-	\frametitle{Data filtration and fusion}
+	\frametitle{Data filtration and sensor fusion}
+	\uncover<2->{Data filtration:}
+	\begin{itemize}
+		\item<3-> Conventional filter: LPF, HPF, Notch filters, Smoothing filter.
+		\item<4-> Oversampling
+		\item<5-> Adaptive methods
+	\end{itemize}
+	\ \\
+	
+	\uncover<6->{Sensor fusion:}
+	\begin{itemize}
+		\item<7-> Position: numerical integration
+		\item<8-> Orientation: Complementary filter, DCM
+		\item<9-> Both: Kalman filter
+	\end{itemize}
+	
+	
+	
 	% LPF HPF Smoothing filters Notch filters, adaptive filters, remove of outrunners
 	
 	
@@ -179,7 +196,18 @@
 \section{Summary}
 
 \begin{frame}
-	\frametitle{Summary}
+	\frametitle{Summary}	
+	\uncover<2->{Expected results of thesis:}
+	\begin{itemize}
+		\item<3-> gathering theoretical knowledge of position \& orientation measurement system
+		\item<4-> design of universal device to estimate knowledge of position
+	\end{itemize}
+	\uncover<5->{
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.3\textwidth]{pixhawk.jpg}
+		\end{figure}
+	}
 \end{frame}
 
 \begin{frame}
