@@ -1,0 +1,157 @@
+\usepackage{fontspec}
+%\setsansfont{Calibri} % Tu ma być albo Adagio Slab albo Calibri
+\setsansfont{Adagio_Slab}
+%\usepackage{carlito}
+
+\usepackage{polski}
+
+
+\usepackage[utf8]{inputenc}
+        
+        \mode<presentation>
+
+
+\setbeamersize{text margin left=15mm, text margin right=15mm} % marginesy
+ 
+
+% ------------------------ OTOCZENIA ,,MATEMATYCZNE'' ------------------------
+\newtheorem{proposition}{Stwierdzenie}
+
+\uselanguage{Polish}
+\languagepath{Polish}
+\deftranslation[to=Polish]{Theorem}{Twierdzenie}
+\deftranslation[to=Polish]{Proposition}{Stwierdzenie}
+\deftranslation[to=Polish]{Lemma}{Lemat}
+\deftranslation[to=Polish]{Corollary}{Wniosek}
+\deftranslation[to=Polish]{Example}{Przykład}
+\deftranslation[to=Polish]{Definition}{Definicja}
+
+% ------------------------ KOLORY ------------------------
+\usepackage{xcolor}
+
+% ----- Wszystkie kolory dopuszczone w identyfikacji -----
+
+\definecolor{sloneczny}{RGB}{254, 213, 66}
+\definecolor{morelowy}{RGB}{234, 124, 90}
+\definecolor{mietowy}{RGB}{106, 186, 156}
+\definecolor{sliwkowy}{RGB}{150, 95, 119}
+\definecolor{szafirowy}{RGB}{120, 150, 207}
+\definecolor{wrzosowy}{RGB}{180, 160, 170}
+\definecolor{grafitowy}{RGB}{60, 60, 76}
+\definecolor{mokka}{RGB}{100, 90, 90}
+
+
+\setbeamercolor{title}{fg = title_color}        % kolor tytułu prezentacji
+\setbeamercolor{frametitle}{fg=grafitowy} % kolor tytułu slajdu
+\setbeamercolor{normal text}{fg = black}  % kolor zwykłego tekstu
+
+% ----- Ustawienia koloru dla spisu treści -----
+\setbeamercolor{section in toc}{fg = grafitowy}
+\setbeamercolor{section in toc shaded}{fg = grafitowy} 
+%
+% ----- Ustawienia koloru dla wylistowań -----
+\setbeamercolor{item}{fg = grafitowy}
+\setbeamercolor{subitem}{fg = grafitowy}
+\setbeamercolor{subsubitem}{fg = grafitowy}
+
+\setbeamercolor{description item}{fg = black}
+
+% ----- Ustawienia koloru dla podpisów figur -----
+\setbeamercolor{caption}{fg = black}
+\setbeamercolor{caption name}{fg = black}
+
+% ----- Ustawienia koloru dla bloków -----
+\setbeamercolor{block title}{fg = grafitowy}
+\setbeamercolor{block body}{bg = white}
+
+%\setbeamercolor{block title example}{fg = grafitowy}
+%\setbeamercolor{block body example}{bg = white}
+
+
+\setbeamercolor{bibliography item}{fg = grafitowy}
+\setbeamercolor{bibliography entry author}{fg = grafitowy}
+\setbeamercolor{bibliography entry title}{fg = black}
+\setbeamercolor{bibliography entry location}{fg = grafitowy}
+% ------------------------ FONTY ------------------------
+
+\usefonttheme{professionalfonts}
+
+\setbeamerfont{title}{size = \Large}       % font tytułu prezentacji
+\setbeamerfont{frametitle}{size = \Large} % font tutułu slajdu
+\setbeamerfont{subtitle}{series = \normalfont}
+\setbeamerfont{author}{size = \footnotesize, series = \normalfont}
+%\setbeamerfont{block title example}{series = \bfseries}
+%\setbeamerfont{block title}{series = \bfseries}
+%\setbeamerfont{block title alerted}{series = \bfseries}
+
+
+
+% ------------------------ WYGLĄD SLAJDU ------------------------
+
+\setbeamertemplate{frametitle}{\vspace*{7mm}\hspace{-7mm}\insertframetitle}
+
+\setbeamertemplate{navigation symbols}{} % Wyłącza symbole nawigacyjne w stopce
+\setbeamertemplate{footline}{
+    \null
+    \vspace{0.6cm}
+    \hspace{0.78cm}
+    \includegraphics[height=0.7cm]{img/Znak_podstawowy_PL}
+    \hfill
+    \normalsize
+    \insertframenumber/\inserttotalframenumber
+    \hspace{0.78cm}
+    \vspace{0.6cm}
+}
+
+
+% ------------------------ STRONA TYTUŁOWA ------------------------
+
+
+\setbeamertemplate{title page}{
+\setlength{\unitlength}{1mm}
+  \begin{picture}(0,0)
+  
+  \put(-9.93,-12){\makebox(0,0)[lb]{\includegraphics[height=1cm]{img/WMEiL-znak-RGB.png}}}
+  
+  
+  \put(106,-75){\makebox(0,0)[lb]{\includegraphics[height=7.3cm]{img/symbol-PL-mokka}}}
+  
+  
+  \put(0,-75){\makebox(0,0)[lb]{\includegraphics[height=0.8cm]{img/Znak_podstawowy_PL}}}
+
+  \end{picture}
+  
+  \vspace{7mm}
+  
+  \begin{minipage}[t][50mm]{100mm}
+  \vfill
+  \usebeamerfont{title}\usebeamercolor[fg]{title}
+  \inserttitle\par
+  \bigskip  
+  \usebeamerfont{subtitle}\insertsubtitle\par
+  \vspace{8mm}
+    \begin{minipage}[t][10mm]{100mm}
+    \usebeamerfont{author}\insertauthor\par
+    \smallskip
+    \usebeamerfont{institute}\insertinstitute\par
+    \bigskip
+    \usebeamerfont{date}\insertdate\par
+    \null
+    \end{minipage}
+  \vfill
+  \end{minipage}
+  \usebeamercolor[fg]{titlegraphic}\inserttitlegraphic
+
+}
+
+\newcommand{\maketitleframe}{
+	\setbeamertemplate{footline}{}
+	\setbeamercolor{background canvas}{bg=szafirowy}
+	\begin{frame}[t]
+		\maketitle
+	\end{frame}
+}
+
+\mode<all>
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

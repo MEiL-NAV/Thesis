@@ -1,0 +1,141 @@
+\usepackage{fontspec}
+%\setsansfont{Calibri} % Adagio Slab or Calibri
+\setsansfont{Adagio_Slab}
+
+
+\usepackage[utf8]{inputenc}
+        
+        \mode<presentation>
+\setbeamersize{text margin left=15mm, text margin right=15mm} % margins
+ 
+
+\newtheorem{proposition}{Proposition}
+
+
+
+% ----- Colors from WUT identification -----
+\usepackage{xcolor}
+
+\definecolor{sloneczny}{RGB}{254, 213, 66}  % sunny yellow
+\definecolor{morelowy}{RGB}{234, 124, 90}   % apricot
+\definecolor{mietowy}{RGB}{106, 186, 156}   % mint
+\definecolor{sliwkowy}{RGB}{150, 95, 119}   % plum
+\definecolor{szafirowy}{RGB}{120, 150, 207} % sapphire
+\definecolor{wrzosowy}{RGB}{180, 160, 170}  % moor
+\definecolor{grafitowy}{RGB}{60, 60, 76}    % graphite
+\definecolor{mokka}{RGB}{100, 90, 90}
+
+
+\setbeamercolor{title}{fg = title_color}    % color of presentation title
+\setbeamercolor{frametitle}{fg=grafitowy} % color of frame title
+\setbeamercolor{normal text}{fg = black}  % normal text color
+
+% ----- Colors of outline -----
+\setbeamercolor{section in toc}{fg = grafitowy}
+\setbeamercolor{section in toc shaded}{fg = grafitowy} 
+%
+% ----- Colors for itemize environment item symbols -----
+\setbeamercolor{item}{fg = grafitowy}
+\setbeamercolor{subitem}{fg = grafitowy}
+\setbeamercolor{subsubitem}{fg = grafitowy}
+
+\setbeamercolor{description item}{fg = black}
+
+% ----- Colors for figure captions -----
+\setbeamercolor{caption}{fg = black}
+\setbeamercolor{caption name}{fg = black}
+
+% ----- Block title colors -----
+\setbeamercolor{block title}{fg = grafitowy}
+\setbeamercolor{block body}{bg = white}
+
+%\setbeamercolor{block title example}{fg = grafitowy}
+%\setbeamercolor{block body example}{bg = white}
+
+
+\setbeamercolor{bibliography item}{fg = grafitowy}
+\setbeamercolor{bibliography entry author}{fg = grafitowy}
+\setbeamercolor{bibliography entry title}{fg = black}
+\setbeamercolor{bibliography entry location}{fg = grafitowy}
+% ------------------------ FONTY ------------------------
+
+\usefonttheme{professionalfonts}
+
+\setbeamerfont{title}{size = \LARGE}       % presentation title font
+\setbeamerfont{frametitle}{size = \Large}  % frame title font
+\setbeamerfont{subtitle}{series = \normalfont}
+\setbeamerfont{author}{size = \footnotesize, series = \normalfont}
+%\setbeamerfont{block title example}{series = \bfseries}
+%\setbeamerfont{block title}{series = \bfseries}
+%\setbeamerfont{block title alerted}{series = \bfseries}
+
+
+
+% ------------------------ Frame's layout settings ------------------------
+
+\setbeamertemplate{frametitle}{\vspace*{7mm}\hspace{-7mm}\insertframetitle}
+
+\setbeamertemplate{navigation symbols}{} % Wyłącza symbole nawigacyjne w stopce
+\setbeamertemplate{footline}{
+    \null
+    \vspace{0.6cm}
+    \hspace{0.78cm}
+    \includegraphics[height=0.7cm]{img/Znak_podstawowy_PL}
+    \hfill
+    \normalsize
+    \insertframenumber/\inserttotalframenumber
+    \hspace{0.78cm}
+    \vspace{0.6cm}
+}
+
+
+% ------------------------ Title frame ------------------------
+
+\setbeamertemplate{title page}{
+\setlength{\unitlength}{1mm}
+  \begin{picture}(0,0)
+  
+  \put(-10.4,-11){\makebox(0,0)[lb]{\includegraphics[height=1cm]{img/WMEiL-znak-ENG-RGB}}}
+  
+  
+  \put(115,-75){\makebox(0,0)[lb]{\includegraphics[height=7.4cm]{img/symbol-EN-mokka}}}
+  
+  
+  \put(0,-75){\makebox(0,0)[lb]{\includegraphics[height=0.8cm]{img/znak-podstawowy-EN}}}
+
+  \end{picture}
+  
+  \vspace{7mm}
+  
+  \begin{minipage}[t][50mm]{100mm}
+  \vfill
+  \usebeamerfont{title}\usebeamercolor[fg]{title}
+  \inserttitle\par
+  \bigskip  
+  \usebeamerfont{subtitle}\insertsubtitle\par
+  \vspace{8mm}
+    \begin{minipage}[t][10mm]{100mm}
+    \usebeamerfont{author}\insertauthor\par
+    \smallskip
+    \usebeamerfont{institute}\insertinstitute\par
+    \bigskip
+    \usebeamerfont{date}\insertdate\par
+    \null
+    \end{minipage}
+  \vfill
+  \end{minipage}
+  \usebeamercolor[fg]{titlegraphic}\inserttitlegraphic
+
+}
+
+\newcommand{\maketitleframe}{
+	\setbeamertemplate{footline}{}
+	\setbeamercolor{background canvas}{bg=szafirowy}
+	\begin{frame}[t]
+		\maketitle
+	\end{frame}
+}
+
+\mode<all>
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
