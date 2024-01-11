@@ -33,8 +33,8 @@
 \renewcommand{\maketitle}{%
 \begin{titlepage}
 \begin{center}
-\def\tkzscl{0.2}\definecolor{ZnakColor}{cmyk}{1,0,0,1}
-\input{znak.tex}\\\vfill
+\includegraphics[height=200pt]{img/wut.jpg}
+\vfill
 {\fontsize{22}{50}\fontseries{bx}\selectfont\@class}\\[10pt]
 {\fontsize{30}{40}\selectfont\sc\@title}\\[10pt]\vfill
 {\fontsize{22}{40}\selectfont\@author\fontseries{n}\selectfont}\\\vfill
