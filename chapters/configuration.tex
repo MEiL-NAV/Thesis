@@ -1,0 +1,168 @@
+\graphicspath{{images/}}
+
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{polski}
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+\usepackage{blindtext}
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{enumitem}
+\usepackage{xfrac}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{booktabs}
+\usepackage{wasysym}
+\usepackage{xcolor}
+\usepackage{pdfpages}
+\usepackage{fontspec}
+\usepackage{comment}
+\usepackage{tocloft}
+\usepackage{listings}
+\usepackage{times}
+\usepackage{amsmath}
+\usepackage{bm}
+\lstset{basicstyle=\ttfamily, columns=fullflexible}
+
+\usepackage{caption, copyrightbox}
+\captionsetup{justification=centering, labelfont=sc, labelsep=endash}
+
+\usepackage{regexpatch}
+\usepackage[os=mac]{menukeys}
+\renewmenumacro{\keys}[+]{shadowedroundedkeys}
+\renewmenumacro{\menu}[>]{angularmenus}
+\xpatchcmd*{\SPACE}{2em}{1em}{}{}
+
+\definecolor{quotationcolour}{HTML}{F0F0F0}
+\definecolor{quotationmarkcolour}{HTML}{1F3F81}
+
+% Double-line for start and end of epigraph.
+\newcommand{\epiline}{\hrule \vskip -.2em \hrule}
+% Massively humongous opening quotation mark.
+\newcommand{\hugequote}{%
+  \fontsize{42}{48}\selectfont \color{quotationmarkcolour} \textbf{``}
+  \vskip -.5em
+}
+
+% Beautify quotations.
+\newcommand{\epigraph}[2]{%
+  \bigskip
+  \begin{center}
+  \colorbox{quotationcolour}{%
+    \parbox{.80\textwidth}{%
+    \epiline \vskip 1em {\hugequote} \vskip -.5em
+    \parindent 2.2em
+    #1\vspace{-.25cm}\begin{flushright}\textsc{#2}\end{flushright}
+    \epiline
+    }
+  }
+  \end{center}
+  \bigskip
+}
+
+\setmainfont{Verdana}
+
+\addtolength{\cftsecnumwidth}{5pt}
+\addtolength{\cftsubsecnumwidth}{5pt}
+\addtolength{\cftsubsubsecnumwidth}{5pt}
+	
+\usepackage{color, colortbl}
+\definecolor{Gray}{gray}{0.9}
+
+\definecolor{mGreen}{rgb}{0,0.6,0}
+\definecolor{mGray}{rgb}{0.5,0.5,0.5}
+\definecolor{mPurple}{rgb}{0.58,0,0.82}
+\definecolor{backgroundColour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{CStyle}{
+    backgroundcolor=\color{backgroundColour},   
+    commentstyle=\color{mGreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{mGray},
+    stringstyle=\color{mPurple},
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+    language=C
+}
+
+\usepackage[
+backend=biber
+,style=ieee
+,sorting=none
+]{biblatex}
+\addbibresource{bibliografia.bib}
+\DeclareNameAlias{author}{last-first}
+
+\DeclareCiteCommand{\supercite}[\mkbibsuperscript]
+  {\iffieldundef{prenote}
+     {}
+     {\BibliographyWarning{Ignoring prenote argument}}%
+   \iffieldundef{postnote}
+     {}
+     {\BibliographyWarning{Ignoring postnote argument}}}
+  {\usebibmacro{citeindex}%
+   \bibopenbracket\usebibmacro{cite}\bibclosebracket}
+  {\supercitedelim}
+  {}
+  
+  \DeclareLabelalphaTemplate{
+  \labelelement{
+    \field[final]{shorthand}
+    \field{label}
+    \field[strwidth=3,strside=left,ifnames=1]{labelname}
+    \field[strwidth=1,strside=left,final]{labelname}
+    \field{labeltitle}
+  }
+  \labelelement{
+    \field[strwidth=2,strside=right]{year}
+  }
+}
+
+\renewcommand*{\figurename}{Rys.}
+
+\usepackage{titlesec}
+\titlelabel{\thetitle.\quad}
+
+\usepackage{tikz}
+
+
+\usetikzlibrary{matrix, ,backgrounds}
+\usepackage{array}
+
+\makeatletter
+\tikzset{SWOT/.style={matrix of nodes,inner sep=0pt,row sep=0pt,column sep=0pt,
+cells={nodes={anchor=center,inner sep=2pt}},
+column 1/.style={nodes={rotate=90,minimum height=8mm}},
+ampersand replacement=\&,
+execute at end matrix={\begin{scope}[on background layer]
+ \fill[black!10] (\tikz@fig@name.west|-\tikz@fig@name-2-2.north) rectangle 
+  (\tikz@fig@name-\the\pgfmatrixcurrentrow-2.south west);
+\end{scope}
+\draw (\tikz@fig@name.west|-\tikz@fig@name-2-2.north) rectangle 
+(\tikz@fig@name-\the\pgfmatrixcurrentrow-\the\pgfmatrixcurrentcolumn.south east)
+ (\tikz@fig@name-1-2.north west) rectangle 
+(\tikz@fig@name-\the\pgfmatrixcurrentrow-\the\pgfmatrixcurrentcolumn.south east)
+(\tikz@fig@name-2-2.center|-\tikz@fig@name.north) --
+ (\tikz@fig@name-2-2.center|-\tikz@fig@name.south)
+foreach \XX in {2,...,\the\numexpr\pgfmatrixcurrentrow-1}
+{(\tikz@fig@name-\XX-2.south-|\tikz@fig@name.west) --
+(\tikz@fig@name-\XX-2.south-|\tikz@fig@name.east) };
+}}}
+\makeatother
+
+\usepackage{tocloft}
+\renewcommand\cftfigfont{\small}
+
+\setlength{\parindent}{0pt}
