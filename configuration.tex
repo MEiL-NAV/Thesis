@@ -1,10 +1,14 @@
-\graphicspath{{images/}}
+%\graphicspath{{images/}}
 
 \usepackage{amssymb}
 \usepackage{amsmath}
 %\usepackage{polski}
 \usepackage[utf8]{inputenc}
-\usepackage{hyperref}
+%\usepackage[MeX]{polski}
+\usepackage[english, polish]{babel}
+\usepackage{amsmath, amsfonts, amsthm, latexsym}
+\usepackage[T1]{fontenc}
+%\usepackage{hyperref}
 \usepackage{blindtext}
 \usepackage{multicol}
 \usepackage{multirow}
@@ -17,8 +21,8 @@
 \usepackage{booktabs}
 \usepackage{wasysym}
 \usepackage{xcolor}
-\usepackage{pdfpages}
-\usepackage{fontspec}
+%\usepackage{pdfpages}
+%\usepackage{fontspec}
 \usepackage{comment}
 \usepackage{tocloft}
 \usepackage{listings}
@@ -26,6 +30,10 @@
 \usepackage{amsmath}
 \usepackage{bm}
 \lstset{basicstyle=\ttfamily, columns=fullflexible}
+
+\usepackage[final]{pdfpages}
+\usepackage{commath}
+\usepackage[hidelinks]{hyperref}
 
 \usepackage{caption, copyrightbox}
 \captionsetup{justification=centering, labelfont=sc, labelsep=endash}
@@ -63,7 +71,7 @@
   \bigskip
 }
 
-\setmainfont{Verdana}
+%\setmainfont{Verdana}
 
 \addtolength{\cftsecnumwidth}{5pt}
 \addtolength{\cftsubsecnumwidth}{5pt}
@@ -166,3 +174,105 @@ foreach \XX in {2,...,\the\numexpr\pgfmatrixcurrentrow-1}
 \renewcommand\cftfigfont{\small}
 
 \setlength{\parindent}{0pt}
+
+% ---------------- MARGINS, INDENTATION, LINESPREAD ------------------
+\usepackage[inner=20mm, outer=20mm, bindingoffset=10mm, top=25mm, bottom=25mm]{geometry} % MARGINS
+\linespread{1.5}
+\allowdisplaybreaks         % ALLOWS BREAKING PAGE IN MATH MODE
+\usepackage{indentfirst}    % IT MAKES THE FIRST PARAGRAPH INDENTED; NOT NEEDED
+\setlength{\parindent}{5mm} % WIDTH OF AN INDENTATION
+%---------------- RUNNING HEAD - CHAPTER NAMES, PAGE NUMBERS ETC. -------------------
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[LE,RO]{\thepage} 
+\fancyhead[LO]{\sc \nouppercase{\rightmark}}
+\fancyhead[RE]{\sc \leftmark}
+
+\renewcommand{\chaptermark}[1]{\markboth{\thechapter.\ #1}{}}
+\renewcommand{\headrulewidth}{0 pt} % 0 MEANS NO RULE, 0.5 MEANS FINE RULE, THE BIGGER VALUE THE THICKER RULE
+
+\fancypagestyle{plain}{
+	\fancyhf{}
+	\fancyfoot[LE,RO]{\thepage}
+	
+	\renewcommand{\headrulewidth}{0pt}
+	\renewcommand{\footrulewidth}{0.0pt}
+}
+
+% --------------------------- CHAPTER HEADERS ---------------------
+\usepackage{titlesec}
+\titleformat{\chapter}
+{\normalfont\Large \bfseries}
+{\thechapter.}{1ex}{\Large}
+\titleformat{\section}
+{\normalfont\large\bfseries}
+{\thesection.}{1ex}{}
+\titlespacing{\section}{0pt}{30pt}{20pt} 
+\titleformat{\subsection}
+{\normalfont \bfseries}
+{\thesubsection.}{1ex}{}
+
+% ----------------------- TABLE OF CONTENTS SETUP ---------------------------
+
+\def\cleardoublepage{\clearpage\if@twoside
+	\ifodd\c@page\else\hbox{}\thispagestyle{empty}\newpage
+	\if@twocolumn\hbox{}\newpage\fi\fi\fi}
+
+% THIS MAKES DOTS IN TOC FOR CHAPTERS
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd{\l@chapter}
+{\hfil}
+{\leaders\hbox{\normalfont$\m@th\mkern \@dotsep mu\hbox{.}\mkern \@dotsep mu$}\hfill}
+{}{}
+\makeatother
+
+\usepackage{titletoc}
+\makeatletter
+\titlecontents{chapter}% <section-type>
+[0pt]% <left>
+{}% <above-code>
+{\bfseries \thecontentslabel.\quad}% <numbered-entry-format>
+{\bfseries}% <numberless-entry-format>
+{\bfseries\leaders\hbox{\normalfont$\m@th\mkern \@dotsep mu\hbox{.}\mkern \@dotsep mu$}\hfill\contentspage}% <filler-page-format>
+
+\titlecontents{section}
+[1em]
+{}
+{\thecontentslabel.\quad}
+{}
+{\leaders\hbox{\normalfont$\m@th\mkern \@dotsep mu\hbox{.}\mkern \@dotsep mu$}\hfill\contentspage}
+
+\titlecontents{subsection}
+[2em]
+{}
+{\thecontentslabel.\quad}
+{}
+{\leaders\hbox{\normalfont$\m@th\mkern \@dotsep mu\hbox{.}\mkern \@dotsep mu$}\hfill\contentspage}
+\makeatother
+% ---------------------- TABLES AD FIGURES NUMBERING ----------------------
+\renewcommand*{\thetable}{\arabic{chapter}.\arabic{table}}
+\renewcommand*{\thefigure}{\arabic{chapter}.\arabic{figure}}
+% ------------- DEFINING ENVIRONMENTS FOR THEOREMS, DEFINITIONS ETC. ---------------
+\makeatletter
+\newtheoremstyle{definition}
+{3ex}%                           % Space above
+{3ex}%                           % Space below
+{\upshape}%                      % Body font
+{}%                              % Indent amount
+{\bfseries}%                     % Theorem head font
+{.}%                             % Punctuation after theorem head
+{.5em}%                          % Space after theorem head, ' ', or \newline
+{\thmname{#1}\thmnumber{ #2}\thmnote{ (#3)}}
+\makeatother
+
+\theoremstyle{definition}
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+% --------------------- END OF PREAMBLE PART (MOSTLY) --------------------------

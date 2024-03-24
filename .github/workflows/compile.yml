@@ -21,12 +21,12 @@ jobs:
         with:
           # The root LaTeX file to be compiled
           root_file: main.tex
-          latexmk_use_lualatex: true
-          extra_fonts: |
-            ./fonts/verdana.ttf
-            ./fonts/verdanab.ttf
-            ./fonts/verdanai.ttf
-            ./fonts/verdanaz.ttf
+          # latexmk_use_lualatex: true
+          # extra_fonts: |
+          #   ./fonts/verdana.ttf
+          #   ./fonts/verdanab.ttf
+          #   ./fonts/verdanai.ttf
+          #   ./fonts/verdanaz.ttf
       - name: Upload PDF file
         uses: actions/upload-artifact@v3
         with:

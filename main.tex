@@ -1,27 +1,42 @@
-\documentclass[15pt]{sprawozdanie}
-\usepackage{soul}
+\documentclass[a4paper,11pt,twoside]{report}
+\input{configuration}
 
-\class{Master diploma seminar}
-\title{Adaptation of inertial navigation systems in robot’s positioning systems}
-\author{\textbf{Wojciech Gajda, Eng.} 304494}
-\instructor{Marek Wojtyra, D.Sc., Ph.D., M.Eng.}
-%\deadline{\today}
+% -------------------------- USER SETTINGS ---------------------------
 
-\input{chapters/configuration}
+\newcommand{\tytul}{Zastosowanie nawigacji intercjalnej w systemach pozycjonowania robotów}
+\renewcommand{\title}{Adaptation of inertial navigation systems in robot's positioning systems}
+\newcommand{\type}{Master} % Master OR Engineer
+\newcommand{\supervisor}{Marek Wojtyra, D.Sc., Ph.D., M.Eng.} % TITLE AND NAME OF THE SUPERVISOR
 
 \begin{document}
-%\includepdf[pages=-]{first_page.pdf}
-\maketitle
-\tableofcontents
+\sloppy
+\selectlanguage{english}
+
+\includepdf[pages=-]{titlepage}
+\null\thispagestyle{empty}\newpage
+
+\include{chapters/abstracts}
+
+\include{chapters/toc}
+
+
+
+% -------------------- THE BODY OF THE THESIS --------------------------------
+
+\null\thispagestyle{empty}\newpage
+\pagestyle{fancy}
+\pagenumbering{arabic}
+\setcounter{page}{11}
 
 \include{chapters/aim}
 
 \include{chapters/review}
 
-\include{chapters/work_system}
+\include{chapters/content}
 
 \include{chapters/summary}
 
 \include{chapters/extras}
+
 
 \end{document}
