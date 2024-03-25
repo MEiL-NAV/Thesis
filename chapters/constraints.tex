@@ -4,18 +4,33 @@
 	What are constraints, design constraints in robotics
 }
 
-\section{Selected design constrains}
+\section{Selected constrains}
 
-\todo[inline, color=green]{
-	Constraints, its derivative, why I dont use velocity constraints. Equations
-}
+This section presents selected constraints that usually appear in robotics. Every constraint is briefly described and formulated as a function of system's state $\bm{c}(\bm{x})$ (constraint is satisfied when the function is equal to a vector of zeros). In view of its later use a derivative of constraint function by state $\frac{\partial \bm{c}(\bm{x})}{\partial \bm{x}}$ is also given.
 
-\subsection{Position constraint}
+\subsection{Quaternion norm constraint}
 
-\subsection{Orientation constraint}
+A quaternion is defined as four real numbers, and every coefficient is independent. However, when the quaternion is used as a description of orientation, its norm must be equal 1. Due to computer's precision repetitive quaternion rotating applied in EKF leads to error accumulation and to shrinking or stretching this norm. Moreover, the formula used in EKF is designed to keep constant quaternion norm only if the initial quaternion's norm was equal to 1.\\
+
+In mechanical simulation this problem is solved by adding an extra pure-synthetic term to differential equation describing system \cite{quaternion}. Unfortunately, this method can not be easily adapted in case of Kalman Filter. The solution is to treat the quaternion norm equal to 1 as a constraint imposed on the system. Equation (\ref{quat_constraint_fun}) defines the constraint function and equation (\ref{quat_constraint_fun_der}) defines its derivative. Naturally, the constraint function and its derivative is quaternion's depend only and it is scalar function.
+
+\begin{equation}
+	c \left( \bm{q} \right) = \bm{q}^T \bm{q} - 1
+\label{quat_constraint_fun}
+\end{equation}
+
+\begin{equation}
+	\frac{\partial c}{\partial \bm{q}}  \left( \bm{q} \right) = 2\bm{q}^T
+	\label{quat_constraint_fun_der}
+\end{equation}
+
+\subsection{Position and orientation constraints}
 
 \subsection{Distance constraint}
 
+\todo[inline, color=green]{
+	why I dont use velocity constraints. Equations
+}
 
 \section{Inclusion of constraints in estimation}
 
