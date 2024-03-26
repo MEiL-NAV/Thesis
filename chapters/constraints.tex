@@ -1,8 +1,8 @@
 \chapter{Constraints}
 
-\todo[inline, color=green]{
-	What are constraints, design constraints in robotics
-}
+Constraints are the limitation placed on system's state. They define an allowed setup, that the system can reach. Due to the origin, many types of constraints are distinguished. They can result from system's structure, known trajectory or be directly linked with limitation of mathematical instrument used in system description.
+
+A wide group of constraints is made of design constraints, i.e. the constraints that stem directly from mechanism's structure. They determine the directions in which the mechanism can move so as not to breach the constraints imposed by the existence of bonds.
 
 \section{Selected constrains}
 
@@ -12,7 +12,7 @@ This section presents selected constraints that usually appear in robotics. Ever
 
 A quaternion is defined as four real numbers, and every coefficient is independent. However, when the quaternion is used as a description of orientation, its norm must be equal 1. Due to computer's precision repetitive quaternion rotating applied in EKF leads to error accumulation and to shrinking or stretching this norm. Moreover, the formula used in EKF is designed to keep constant quaternion norm only if the initial quaternion's norm was equal to 1.\\
 
-In mechanical simulation this problem is solved by adding an extra pure-synthetic term to differential equation describing system \cite{quaternion}. Unfortunately, this method can not be easily adapted in case of Kalman Filter. The solution is to treat the quaternion norm equal to 1 as a constraint imposed on the system. Equation (\ref{quat_constraint_fun}) defines the constraint function and equation (\ref{quat_constraint_fun_der}) defines its derivative. Naturally, the constraint function and its derivative is quaternion's depend only and it is scalar function.
+In mechanical simulation this problem is solved by adding an extra pure-synthetic term to differential equation describing system \cite{quaternion}. Unfortunately, this method can not be easily adapted in case of Kalman Filter. The solution is to treat the quaternion norm equal to 1 as a constraint imposed on the system. Equation (\ref{quat_constraint_fun}) defines the constraint function and equation (\ref{quat_constraint_fun_der}) defines its derivative. Naturally, the constraint function and its derivative is quaternion's dependent only, and it is scalar function.
 
 \begin{equation}
 	c \left( \bm{q} \right) = \bm{q}^T \bm{q} - 1
@@ -26,6 +26,40 @@ In mechanical simulation this problem is solved by adding an extra pure-syntheti
 
 \subsection{Position and orientation constraints}
 
+Position and orientation constraints are the constraints that are known before the system moves. They may affect only selected state variable and apply only at certain times. For example, the position of a robot may be precisely identified as long as the robot is close to sensor. The general formula that describes this is given by equation (\ref{constraint_fun}). The derivative of this function is a mostly-zero matrix with one only on position correlated with limited state variable.
+
+\begin{equation}
+	c \left( \bm{x} \right) = \begin{bmatrix}
+		x_i - f\left(t\right) \\
+		x_j - g\left(t\right)\\
+		\vdots
+		\end{bmatrix}
+	\label{constraint_fun}
+\end{equation} 
+
+The constraints which are given by an entangled function of multiple state variables are usually harder to formulate and require an individual analysis. Example of this type is given in next section.\\
+
+Another example is a fixation of same parameter that can be calculated form system's state. Assume that the designed mechanism should keep a yaw angle of orientation equal to zero. If the state of system contains orientation given by quaternion, a yaw angle can be calculated from the following formula:
+
+\begin{equation}
+	\psi = {\mbox{atan2}}\left(2(q_{0}q_{z}+q_{x}q_{y}),1-2(q_{y}^{2}+q_{z}^{2})\right)
+\end{equation}
+
+However, the value of atan2 function is equal to zero then and only then the first argument is equal to zero. With that being said, the simple form of yaw constraint is given by equation (\ref{yaw_constraint_fun}). Equation (\ref{yaw_constraint_fun_der}) defines its derivative. The disadvantage of this approach is that the yaw angle equals to $\pi$ also fulfills the constraint.
+
+\begin{equation}
+	c \left( \bm{q} \right) = q_{0}q_{z}+q_{x}q_{y}
+	\label{yaw_constraint_fun}
+\end{equation}
+
+\begin{equation}
+	\frac{\partial c}{\partial \bm{q}}  \left( \bm{q} \right) =
+	\begin{bmatrix}
+	 q_{z} &  q_{y} &  q_{x} &  q_{0}
+	\end{bmatrix}
+	\label{yaw_constraint_fun_der}
+\end{equation}
+
 \subsection{Distance constraint}
 
 \todo[inline, color=green]{
@@ -34,9 +68,8 @@ In mechanical simulation this problem is solved by adding an extra pure-syntheti
 
 \section{Inclusion of constraints in estimation}
 
-\todo[inline, color=green]{
-	Train example
-}
+Assume that a novel system for locating metro wagons is planned to be developed. The first idea that comes to mind is to use a satellite navigation system, as is usually the case in location-based tasks. However, this solution suffers from a significant flaw: these systems perform much worse underground. The question is whether the quality of the position estimate can be easily improved, and the short answer is yes. A simple assumption that can be made is that metro wagons can only be on the rails. Using the well-known track, it is possible to stick the calculated location to the nearest rails thus improving its accuracy.
+This illustrative example implicitly demonstrates the principle of constraint's correction.\\
 
 \todo[inline, color=green]{
 Constraint correction method: similar to NR, add scaler, add repeats, maybe some sophisticated methods.
