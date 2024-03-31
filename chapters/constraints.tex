@@ -62,15 +62,171 @@ However, the value of atan2 function is equal to zero then and only then the fir
 
 \subsection{Distance constraint}
 
+A distance constraint is defined as constraint that keeps a constant distance between a fixed point in space and a featured point on the moving element. Equation (\ref{distance_constraint_prim}) formalize the so defined constraint.
+
+\begin{equation}
+	\left| \bm{r}^{(0)} + R(\bm{q})\bm{s}^{(1)} - \bm{r}_p^{(0)} \right| - d = 0
+	\label{distance_constraint_prim}
+\end{equation}
+
+where:
+\begin{itemize}
+	\item $\bm{r}^{(0)}$ -- position of moving element, given in global coordinates frame,
+	\item $R(\bm{q})$ -- rotation matrix between world frame and element frame,
+	\item $\bm{s}^{(1)}$ -- position of featured point on the moving element, given in element's coordinate system,
+	\item $\bm{r}_p^{(0)}$ -- position of fixed point, given in global coordinates frame,
+	\item d -- distance between constraint's points.
+\end{itemize}
+
+However, a norm of vector requires calculation of squared root that value and derivative are more difficult to calculate. Without any loss of generality, constraint can be transformed to equation (\ref{distance_constraint_fun}).
+
+\begin{equation}
+	c(\bm{r}, \bm{q}) = \left( \bm{r}^{(0)} + R(\bm{q})\bm{s}^{(1)} - \bm{r}_p^{(0)} \right)^T \left( \bm{r}^{(0)} + R(\bm{q})\bm{s}^{(1)} - \bm{r}_p^{(0)} \right) - d^2
+	\label{distance_constraint_fun}
+\end{equation}
+
+In order to calculate derivative of distance constraint MATLAB Symbolic Toolbox was used \mbox{(\textit{distance\_constraint\_derivative.m})}. Equation (\ref{distance_constraint_der1} -- \ref{distance_constraint_der2}) presents calculated partial derivatives with respect to $\bm{r}$ and $\bm{q}$ elements.
+
 \todo[inline, color=green]{
-	why I dont use velocity constraints. Equations
+	To fill up
 }
+
+\begin{equation}
+	\frac{\partial c(\bm{r}, \bm{q})}{r_x} = 
+	\label{distance_constraint_der1}
+\end{equation}
+
+\begin{equation}
+	\frac{\partial c(\bm{r}, \bm{q})}{r_y} = 
+\end{equation}
+
+\begin{equation}
+	\frac{\partial c(\bm{r}, \bm{q})}{r_z} = 
+\end{equation}
+
+\begin{equation}
+	\frac{\partial c(\bm{r}, \bm{q})}{q_0} = 
+\end{equation}
+
+\begin{equation}
+	\frac{\partial c(\bm{r}, \bm{q})}{q_x} = 
+\end{equation}
+
+\begin{equation}
+	\frac{\partial c(\bm{r}, \bm{q})}{q_y} = 
+\end{equation}
+
+\begin{equation}
+	\frac{\partial c(\bm{r}, \bm{q})}{q_z} =
+	\label{distance_constraint_der2}
+\end{equation}
+
+
+It is worth to mention that, if velocities are known, the equation function (\ref{distance_constraint_fun}) can be differentiated with respect to time to get extra constraint $c(\bm{r}, \bm{q}, \frac{d\bm{r}}{dt}, \frac{d\bm{q}}{dt})$. Nevertheless the position and velocity are strictly connected in EKF state function. In result the correction of position leads to correction of velocity.
+
+
 
 \section{Inclusion of constraints in estimation}
 
 Assume that a novel system for locating metro wagons is planned to be developed. The first idea that comes to mind is to use a satellite navigation system, as is usually the case in location-based tasks. However, this solution suffers from a significant flaw: these systems perform much worse underground. The question is whether the quality of the position estimate can be easily improved, and the short answer is yes. A simple assumption that can be made is that metro wagons can only be on the rails. Using the well-known track, it is possible to stick the calculated location to the nearest rails thus improving its accuracy.
 This illustrative example implicitly demonstrates the principle of constraint's correction.\\
 
-\todo[inline, color=green]{
-Constraint correction method: similar to NR, add scaler, add repeats, maybe some sophisticated methods.
-}
+The inclusion of constraint in state estimation is not a popular solution. Usually transform to other state variables that fulfill constraints is suggested. However, it provokes the redesign of the state estimator every time, when constraints change. The unique approach is by Dan Simon in articles \cite{simon}, \cite{simon2010kalman} and \cite{simon2006kalman}. It is proposed to add the third phase to conventional Extended Kalman Filter, as it is shown on figure (\ref{ekf_three_phases}).
+
+\begin{figure}[!h]
+	\begin{center}
+		\begin{tikzpicture}[
+			block/.style={rectangle, draw, text width=2cm, text centered, rounded corners, minimum height=1.5cm},
+			arrow/.style={->, >=stealth, thick},
+			>=Stealth,
+			]
+			% Nodes
+			\node (predict) [block] {Predict};
+			\node (correct) [block, right=3cm of predict] {Correction};
+			\node (constraints) [block, below left=0.5cm and 0.33cm of correct] {Constraints};
+			
+			% Arrows
+			\draw[arrow] (predict.east)  |- (correct.west) node[midway, above] {};
+			\draw[arrow] (correct.south)  |- (constraints.east) node[midway, left] {};
+			\draw[arrow] (constraints.west) -- ++(-1.5cm,0) -| (predict.south) node[midway, below] {};
+			
+		\end{tikzpicture}
+	\end{center}
+	\caption{Extended Kalman Filter with constraint correction}
+	\label{ekf_three_phases}
+\end{figure}
+
+In constraints correction phase only state of filter changes and covariance matrix remains unchanged. For linear constraints $\left( \bm{D} \bm{x} = \bm{d}  \right)$ equation (\ref{constraint_corr}) presents constraints correction phase.
+
+\begin{equation}
+	\bm{\tilde{x}} = \bm{\hat{x}} - \bm{W}^{-1} \bm{D}^T \left( \bm{D} \bm{W}^{-1} \bm{D}^T \right)^{-1} \left( \bm{D} \bm{\hat{x}} - \bm{d}  \right)
+	\label{constraint_corr}
+\end{equation}
+
+where:
+\begin{itemize}
+	\item $\bm{D}$, $\bm{d}$ -- matrix and vector defining linear constraints,
+	\item $\bm{W}$ -- square weight matrix,
+	\item $\bm{\hat{x}}$ -- filter state before correction,
+	\item $\bm{\tilde{x}}$ -- filter state after correction.
+\end{itemize}
+
+It is proposed to use inverse of covariance matrix as weight matrix  $\bm{W} = \bm{P}^{-1}$. In case of linear constraints it leads to the maximum probability
+estimate of the state subject to state constraints.\\
+
+Proof of correctness of this method is well known in literature. So as not to duplicate this another proof will be shown, by showing the similarity to Newton-Raphson nonlinear equation's solving method. Assume that $\bm{D}$ is squared matrix with full rank. In order to find solution of constraint equation, iterative method is used to solve equation (\ref{Dxd}). Newton-Rapshon method requires Jacobi matrix, that in this case is given in equation (\ref{D})
+
+\begin{equation}
+	\bm{f} \left( \bm{x} \right) = \left( \bm{D} \bm{x} - \bm{d}  \right)
+	\label{Dxd}
+\end{equation}
+
+\begin{equation}
+	\frac{\partial \bm{f} \left( \bm{x} \right)}{\partial \bm{x}} = \bm{D}
+	\label{D}
+\end{equation}
+
+According to method every algorithm iteration is given in equation (\ref{NR})
+\begin{equation}
+	\bm{\tilde{x}} = \bm{\hat{x}} - \left( \frac{\partial \bm{f} \left( \bm{x} \right)}{\partial \bm{x}} \right) ^{-1} \bm{f} \left( \bm{x} \right) = \bm{\hat{x}} - \bm{D}^{-1} \left( \bm{D} \bm{\hat{x}} - \bm{d}  \right)
+	\label{NR}
+\end{equation}
+
+In general $\bm{D}$ matrix is not full rank or is not squared, so it can not be inverse. To address this problem right pseudo-inverse can be used (equation (\ref{pseudoinverse})).
+\begin{equation}
+	\bm{D}^{\#} = \bm{D}^T \left( \bm{D} \bm{D}^T \right) ^ {-1}
+	\label{pseudoinverse}
+\end{equation}
+
+Furthermore, if the equation is underdeterminated, pseudo-inverse form a space of propel inverses, scaled by weight matrix $\bm{W}$ (equation (\ref{wieight_pseudo})).
+
+\begin{equation}
+	\bm{D}^{\#} = \bm{W}^{-1} \bm{D}^T \left( \bm{D} \bm{W}^{-1} \bm{D}^T \right) ^ {-1}
+	\label{wieight_pseudo}
+\end{equation}
+
+Inserting equation (\ref{wieight_pseudo}) to (\ref{NR}) leads to constraint correction equation (\ref{constraint_corr}).
+
+The reasoning so far is based on the assumption that constraints are linear. 
+However, constraints in mechanic are mostly nonlinear. This problem is addressed by local linearization method. Equations \mbox{(\ref{linearization1} -- \ref{linearization2})} define substitution resulting from linearization.
+
+\begin{equation}
+	\bm{D} = \frac{\partial \bm{c}}{\partial \bm{x}}(\bm{\hat{x}})
+	\label{linearization1}
+\end{equation}
+
+\begin{equation}
+	\bm{d} =  - \bm{c} (\bm{\hat{x}}) +  \frac{\partial \bm{c}}{\partial \bm{x}}(\bm{\hat{x}}) \bm{\hat{x}}
+	\label{linearization2}
+\end{equation}
+
+In result, constraint correction method can be used for nonlinear equation.\\ 
+
+As a part of this thesis, constraint correction method was developed. Based on its similarity to Newton-Raphson method it is proposed to use additional coefficient that scale correction, and multiple repeats in one phase. The final correction is given in equation (\ref{constraint_final}).
+
+\begin{equation}
+	\bm{\hat{x}}_{i+1} = \bm{\hat{x}}_{i} - \alpha \bm{P} \bm{D}^T \left( \bm{D} \bm{P} \bm{D}^T \right)^{-1} \left( \bm{D} \bm{\hat{x}} - \bm{d}  \right) \hspace{10pt} \text{for i = 1,2,..,k}
+	\label{constraint_final}
+\end{equation}
+
+ Parameters selection is part of tuning.  
