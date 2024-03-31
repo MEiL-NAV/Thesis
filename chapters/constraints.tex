@@ -222,7 +222,7 @@ However, constraints in mechanic are mostly nonlinear. This problem is addressed
 
 In result, constraint correction method can be used for nonlinear equation.\\ 
 
-As a part of this thesis, constraint correction method was developed. Based on its similarity to Newton-Raphson method it is proposed to use additional coefficient that scale correction, and multiple repeats in one phase. The final correction is given in equation (\ref{constraint_final}).
+As a part of this thesis, constraint correction method was developed. Based on its similarity to Newton-Raphson method it is proposed to use additional coefficient that scale correction $\alpha$, and k-times repeats in one phase. The final correction is given in equation (\ref{constraint_final}).
 
 \begin{equation}
 	\bm{\hat{x}}_{i+1} = \bm{\hat{x}}_{i} - \alpha \bm{P} \bm{D}^T \left( \bm{D} \bm{P} \bm{D}^T \right)^{-1} \left( \bm{D} \bm{\hat{x}} - \bm{d}  \right) \hspace{10pt} \text{for i = 1,2,..,k}
