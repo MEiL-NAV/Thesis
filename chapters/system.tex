@@ -16,12 +16,16 @@
 }
 
 \section{Plugins}
-\todo[inline, color=green]{
-	Force logger plugin
-}
+
+The developed software creates an advanced multitask system. During its preparation there was a lot of attention paid to make software flexible and easily updated. This allows you to enrich the system with features needed for specific applications. Those addons, that are not strictly connected with system's main task are called plugin.\\
+
+An example of plugin, that was added to system is force logger. The main task of this plugin is collecting data from tension transducer. For this purpose force logger utilizes already implemented timestamp system and save logs in project's specific format. Stored data are also synchronized with other estimations.
 
 \section{Tuning}
-\todo[inline, color=green]{
-	config file, parameters are easy to change
-}
+
+Tuning is a process selection of a set of parameters provides the best results in terms of the chosen criterion. For the solution being developed, the greatest number of unknowns are the parameters of sensor filtration and fusion. Based on similar projects and applications, the initial value of parameters can be selected, but the tuning is an unmissable step on the way to precise estimation.\\
+
+In measurement systems, the final result is affected by almost every element of the system: sensor errors, installation errors, delays and more. Due to that, there is no universal method of tuning. The process largely depends on the operator's experience and ability to recognize system responses. Nevertheless, it is prolific to plan the experiments that highlight certain regions of interest and, as a result, lead to shorter tuning times.\\
+
+The project took care to include all the parameters in a configuration file that is freely editable. Parameters were divided into categories and a few of them can be modified on-line, when the system runs. The source code is devoid of modifiable numerical constants (so-called \textit{magic numbers}). Additionally, the configuration file contains software variables that define network topology, addressing and other parameters that are configured during deployment.
 

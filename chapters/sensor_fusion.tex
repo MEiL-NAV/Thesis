@@ -19,7 +19,7 @@ Sensor's data flow to the server from multiple sensor's instance with various de
 The time of reading is also not a trivial term, especially in decentralized system. There are many time determination method known, which differ conditions (\cite{time_sync} \cite{time_sync2}). Consider the case that assume precise clock in server and low-precision clock in every sensor node. An example method of solving the synchronization problem presents itself as follows. Every fixed period server broadcasts time synchronize message that contains only unique sequence number. Sending time $T_1$ (according to server's clock) is stored. Every node that receives synchronize message replies immediately with sequence number and node's clock time $T_n$. Received message is saved with timestamp $T_2$. Based on this reply server calculates transmission delay and clocks' offset. First transmission delay (commonly called \textit{ping}) is calculated as a half of a period between broadcasting message and receiving reply (equation (\ref{ping}))). Next, node's clock offset in respect to server's clock is calculated and stored in array (equation (\ref{offset}))). Nodes send readings signed with timestamp, that is based on node's clock. Finally, true timestamp $T_r$ in respect to server's clock is calculated by adding relevant offset (equation (\ref{timestamp}))).
 
 \begin{equation}
-	ping = frac{T_2 - T_1}{2}
+	ping = \frac{T_2 - T_1}{2}
 	\label{ping}
 \end{equation}
 
