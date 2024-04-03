@@ -2,24 +2,146 @@
 
 \section{Specification}
 
-\todo[inline, color=green]{
-	use cases
-}
+Based on the knowledge gathered, the functional requirements for the system were formulated and described using use case methodology, where system is an actor.
+
+System:
+\begin{itemize}
+	\item uses inerial sensor the measure accelerations and angular velocities,
+	\item retrieves data from external sensor and data providers,
+	\item filters raw data,
+	\item conduct sensor fusion to estimate position and orientation,
+	\item store readings and estimations in files,
+	\item displays system's state for operator.
+\end{itemize}
+
+Beside above requirement, also non-functional requirements were formed. Table (\ref{furps}) presents requirements using FURPS metodology.
 
 \section{System architecture}
 
+The system is organized into modules. The individual modules perform the following tasks:\\
+
+\noindent\textbf{server} -- central module processing and storing data. Performs raw data filtration, sensor fusion and saving logs. Communicate with sensors and provides system's time. Issues the API used by the front-end application.\\
+
+\noindent\textbf{node\_udp} -- sensor node's source code. Performs raw data collecting and efficient forwarding to server. Due to abstraction layer software is highly independent of  node's hardware.\\
+
+\noindent\textbf{client} -- front-end application to visualize system's status and control it. Ultimately constitutes the main human-machine interface.\\
+
+\noindent\textbf{constraints} -- library providing constraints' equations. Separates mechanical structure from server source code.\\
+
+\noindent\textbf{bridge} -- sensor node's mock, intended as rapid prototyping tool. Connects to server via same protocol as node\_udp.\\
+
+\noindent\textbf{docker} -- Docker container's configuration. Container wraps the server and makes it independent of host machine. Prepared image can be run on every Docker-compatible machine.\\
+
+Figure (\ref{architecture}) shows system architecture's diagram with communication paths between modules.
+
+\renewcommand{\arraystretch}{1.2}
+\begin{table}[!h]
+	\centering
+	\begin{tabular}{|m{0.03\textwidth}|m{0.13\textwidth}|m{0.025\textwidth}|m{0.68\textwidth}|} 
+		\hline
+		\rowcolor{Gray}		\multicolumn{2}{|c|}{Requirement} & No. & Description \\
+		\hline
+		\centering \multirow{2.0}{*}{\rotatebox[origin=c]{90}{Usability}}
+		&\multirow{1}{*}{Usability} 
+		& 1 & Server runs natively on UNIX or in Docker containter. Front-end application is multi-platform. \\
+		\cline{2-4}
+		& \multirow{1}{*}{Ergonomy} 
+		& 2 & User interface should be transparent and intuitive.  \\
+		\cline{3-4}
+		\hline
+		\centering \multirow{2.0}{*}{\rotatebox[origin=c]{90}{Reliability}}
+		& \multirow{1}{*}{Precision} 
+		& 3 & System should maximize estimation precision for collected readings. \\
+		\cline{2-4}
+		& \multirow{1}{*}{Verifiability} 
+		& 4 & Estimation results should match predictions and be verifiable. \\
+		\hline
+		\centering \multirow{1}{*}{\rotatebox[origin=c]{90}{Perf.}}
+		& \multirow{1}{*}{Performance} 
+		& 5 & System performance should scale relative to number of sensors. \\
+		\hline
+		\centering \multirow{5.5}{*}{\rotatebox[origin=c]{90}{Supportability}}
+		& \multirow{2}{*}{Maintenance} 
+		& 6 & System implementation should be transparent and easy to develop.  \\
+		\cline{3-4}
+		& & 7 & System should be divided into modules, that can be modified separately.\\
+		\cline{2-4}
+		& \multirow{1}{*}{Installability} 
+		& 8 & Installation process should be easy. It is recommanded for front-end software not to be installed. \\
+		\cline{2-4}
+		& \multirow{1}{*}{Configuration} 
+		& 9 & Software should be magic-number-free and all parameters should be configurable. \\
+		\hline
+	\end{tabular}
+	\caption{Non-functional requirements -- FURPS}
+	\label{furps}
+\end{table}
+
+\begin{figure}[!h]
+	\begin{center}
+		\begin{tikzpicture}[
+			block/.style={rectangle, draw, text width=2cm, text centered, rounded corners, minimum height=1.5cm},
+			arrow/.style={<->, >=stealth, thick},>=Stealth,
+			]
+			% Nodes
+			\node (server) [block, minimum width = 5cm, minimum height = 5cm] {Server};
+			\node (node) [block, above left=0.6cm and 5cm of predict] {Node UDP};
+			\node (bridge) [block, above left=-1.2cm and 5cm of predict] {Bridge};
+			\node (client) [block, right=5cm of predict] {Client};
+			\node (constraints) [block, below right=-1.8cm and -2.5cm of server] {Constraints};
+			\node (docker) [block, minimum width = 6cm, minimum height = 7cm] {};
+			\node [below right] at (docker.north west) {Docker};
+			\node (ext) [block, below left=0.6cm and 5cm of predict] {External sources};
+			
+			% Arrows
+			\draw[arrow] (server.east)  -- (client.west) node[midway, above] {ZeroMQ (TCP)};
+			\draw[arrow] (server.west|-node.east)  -- (node.east) node[midway, above] {UDP};
+			\draw[arrow] (server.west|-bridge.east)  -- (bridge.east) node[midway, above] {UDP};
+			\draw[arrow] (server.west|-ext.east)  -- (ext.east) node[midway, above] {TCP/UDP};
+			
+		\end{tikzpicture}
+	\end{center}
+	\caption{System architecture's diagram}
+	\label{architecture}
+\end{figure}
+
 \section{Technologies}
 
+The implementation of the project used various software technologies and libraries. The following summary explains the choice of specific technologies.\\
+
+\noindent\textbf{server, constraints} -- due to the large computational effort required to run online calculations, the C++ language was chosen. Because of its performance and flexibility, it is a natural choice for efficient computer simulations. In addition, the following libraries were used:
+\begin{itemize}[noitemsep,nolistsep]
+	\item Eigen3 -- a library containing elements of linear algebra: matrices, vectors and related algorithms. Eigen3 prioritizes efficiency by using SIMD and maintains a clear syntax.
+	\item ZeroMQ -- libzmq library binding for C++. Libzmq is a base implementation of ZeroMQ queues written in C,
+	\item yaml-cpp -- a library providing YAML serializer and deserializer,
+	\item Boost -- multi-purpose C++ library, in case of this project Boost provides asynchronous TCP and UDP client. 
+	\item libmodbus -- a library providing support for MODBUS protocol
+\end{itemize}
+\  \\
+\textbf{node\_udp} -- embedded source code is also written in C++, due to the fact that microcontroller's producers usually provides a base chip's API using C or C++. C++ is currently the first choice language for Atmega, STM and ESP chips.\\
+
+\noindent\textbf{client} -- having in mind the provision of cross-platform, the Qt library was used to implement the front-end application. Further, to avoid multiple compilation Python Qt library was used. \\
+
+\noindent\textbf{bridge} -- the implementation also uses Python, but due to its other features. Bridge is supposed to be rapid developed, and its code should be understood for as many developers as possible,\\
+
+\noindent\textbf{docker} -- as the name suggests, Docker was used to containerize system.   
+	
 \section{Prototype}
-\todo[inline, color=green]{
-	uC, sensors, power source
-}
+Project realization includes the preparation of software and hardware. The hardware part is the sensor node, that perform low-lever sensor data collecting and transferring data to server. The selected hardware should provide adequate performance and support network communication. For this purpose, microcontrollers work well. Wemos D1 mini Pro development board was selected. The ESP8266EX chip used on it provides high performance and native support for network functions including Wi-Fi. Board is connected to two shields: power supply shield and custom shield with IMU. Power supply shield enables chip powering from Li-ion battery. Custom shield has installed Pololu MinIMU-9 that contains LSM303 accelerometer and L3GD20 gyroscope. Thus created device is very compact and together with battery fits into a 50x40x35mm 3D-printed enclosure (figure (\ref{prototype})).
+
+\begin{figure}
+	\begin{center}
+		\includegraphics[width = 0.8\textwidth]{prototype.jpg}
+	\end{center}
+	\caption{Sensor node}
+	\label{prototype}
+\end{figure}
 
 \section{Plugins}
 
 The developed software creates an advanced multitask system. During its preparation there was a lot of attention paid to make software flexible and easily updated. This allows you to enrich the system with features needed for specific applications. Those addons, that are not strictly connected with system's main task are called plugin.\\
 
-An example of plugin, that was added to system is force logger. The main task of this plugin is collecting data from tension transducer. For this purpose force logger utilizes already implemented timestamp system and save logs in project's specific format. Stored data are also synchronized with other estimations.
+An example of plugin, that was added to system is force logger. The main task of this plugin is collecting data from tension transducer connected via MODBUS TCP. For this purpose force logger utilizes already implemented timestamp system and save logs in project's specific format. Stored data are also synchronized with other estimations.
 
 \section{Tuning}
 
