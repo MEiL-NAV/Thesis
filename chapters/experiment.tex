@@ -1,12 +1,26 @@
 \chapter{Experiments}
 
+The aim of experiments is a validation of system's functionality. According to plan, the system is firstly calibrated and tuned. Sensors' calibration is conducted before mounting on a flat surface. Next fusion's parameters are tuned when sensor mounted on  moves along previously prepared trajectories. Finally, the system is examined under the default operating conditions. Sensor is mounted on plate that starts circular movement with different frequency and direction in different settings, based on:
+\begin{itemize}
+	\item inertial sensors only (case A),
+	\item inertial sensors with constraints' correction (case B),
+	\item provided tip's position only (case C),
+	\item provided tip's position with constraints' correction (case D),
+	\item inertial sensors + provided tip's position (case E),
+	\item inertial sensors + provided tip's position with constraints' correction (case F).
+\end{itemize}
+
+During experiments it is assumed that orientation does not change.
+
 \todo[inline, color=green]{
-	Experiments: circular motion with different velocity in two direction, as in case study
+	photos from conducted experiments
 }
 
 \section{Results}
 
+The gathered logs were post-processed and compared using MATLAB scripts. Figures (\ref{res1} - (\ref{res3})) present the X, Y, Z coordinates compared with planned trajectory. Figure (\ref{res4}) presents the estimated XY trajectory of platform compared.
+Figure (\ref{res5}) presents a distance between estimated position and planned trajectory as functions of time. Figure (\ref{res6}) presents an orientation change (angle from angle-axis rotation) as functions of time. Figure (\ref{res7}) presents the constraints' function norm as functions of time.
+
 \todo[inline, color=green]{
-	Comparation between:
-	Position only, IMU only, IMU + constrainted, Position + constraints, Full working solution.
+	result plots
 }
