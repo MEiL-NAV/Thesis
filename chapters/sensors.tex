@@ -41,10 +41,9 @@ where:
 	\item $\bm{\epsilon}^W$ -- moving frame's angular acceleration given in world frame,
 	\item $\bm{r}^W$ -- sensor position in moving frame given in world frame,
 	\item $\bm{v}^W$ -- moving frame's linear velocity given in world frame,
-	\item $\bm{g}$ -- gravitation acceleration in world frame $\left(\begin{bmatrix}
+	\item $\bm{g}$ -- gravitation acceleration in world frame $\left( \bm{g} = \begin{bmatrix}
 		0 &  0 &  g
 	\end{bmatrix}^T \right)$.
-	
 \end{itemize}
 
 The second part of model is an inclusion of error. Accelerometers' readings are subject to scale error, bias, assembly's inaccuracies and noise.
@@ -52,26 +51,57 @@ The scale error means that the readings are linearly dependent of acceleration, 
 
 
 \begin{equation}
-	\bm{\hat{a}}_{res}^B = \bm{R}_M \bm{S} \left( \bm{a}_{res}^B + \bm{b} \right) + \bm{n}
+	\bm{\hat{a}}_{res}^B = \bm{R}_M \bm{S} \left( \bm{a}_{res}^B + \bm{b}_0 \right) + \bm{n}
 	\label{acc_model2}
 \end{equation}
 
 where:
 \begin{itemize}
-	\item $\bm{\hat{a}}_{res}^B$ -- sensor output,
+	\item $\bm{\hat{a}}_{res}^B$ -- accelerometer's output,
 	\item $\bm{R}_M$ -- rotation matrix due to assembly inaccuracy,
 	\item $\bm{S}$ -- diagonal scale matrix,
-	\item $\bm{b}$ -- sensor constant bias,
+	\item $\bm{b}_0$ -- sensor constant bias,
 	\item $\bm{n}$ -- random noise.	
 \end{itemize}
 
 
 
 \subsection{Gyroscope}
+A gyroscope is a sensor designed to measure angular velocities. In a non-inertial frame, angular velocity remains constant at every point, making gyroscope readings independent of its position within the moving reference frame.\\
 
-\subsection{External position provider}
+The primary advantage of a gyroscope lies in its ability to measure raw angular velocities. However, it's important to note that this measurement is not direct; for example, in MEMS sensors, the displacement of mass is measured to infer angular velocity.\\
+
+Despite its advantages, a gyroscope's measurements are susceptible to various errors. Two significant sources of error are bias and drift. Bias refers to a constant offset in the measured values, which is inherent to the sensor and remains relatively stable over time. Drift, on the other hand, is the gradual change in bias over time, leading to a continuous deviation from the true value. In addition to bias and drift, gyroscopes are also affected by high-frequency noise, which can obscure the true signal. Equation (\ref{gyro_model}) presents a mathematical model of gyroscope.
+
+\begin{equation}
+	\bm{\hat{\omega}}^B = \bm{\omega}^B + \bm{b}(t) + \bm{b}_0 + \bm{h}
+	\label{gyro_model}
+\end{equation}
+
+where:
+\begin{itemize}
+	\item $\bm{\hat{\omega}}^B$ -- gyroscope's output,
+	\item $\bm{\omega}^B$ -- moving frame angular velocity given in moving reference frame,
+	\item $\bm{b}(t)$ -- bias that change over time,
+	\item $\bm{h}$ -- high-frequency random noise.
+\end{itemize}
+
+While bias presence is inevitable in gyroscopes, it is crucial to monitor and account for drift, as it can significantly affect the accuracy of long-term measurements. Understanding and mitigating these errors are essential for ensuring the reliable performance of gyroscopes in various applications.\\
+
+Finally, it is worth mentioning why the assembly inaccuracy are not included in sensor's model. Obviously, a gyroscope can be mounted improperly, but the effects of this flaw can be included in bias. What will transpire later, the gyroscope is not used in absolute orientation estimation, and its error is compensated.
+
+\subsection{External position and orientation provider}
+
+External provides supply additional data that can appear to be useful in the further estimation. There are many sources providing various measurements. Some of them deliver only partial information, while the other can estimate full description of the system. However, the measurements may be low-precise or too slowly updated to be used alone as an estimation.\\
+
+An example considered as part of this project is the use of the robot's tip position calculated by its control system. The industrial robot acquires tip position by calculating forward kinematics based on encoder readings and know robot's structure. The orientation of tip is also calculated and can be used in estimation if the connection between robot's arm and mechanism is rigid.\\
+
+The model of external providers as a sensor is not as straightforward as model presented so far. Many factors are involved in it, including, position and type of connection between tip and mechanism, relative positions of them, and the accuracy of robot's calculation. Moreover, the accuracy is not always directly specified, due to the fact that for industrial robots repeatability is much important that it's precision \cite{shiakolas2002accuracy}.
+It is always reasonable to assume that reading include additional noise.
 
 \section{Sensor's calibration and filtration}
+
+
 
 \subsection{Accelerometer}
 
@@ -81,13 +111,30 @@ where:
 
 \subsection{Gyroscope}
 
-\todo[inline, color=green]{
-	Bias
-}
+The gyroscope's readings contain bias and high-frequancy noise. The constant component of bias can be calculated and removed in calibration. After sensor's start, gyroscope's readings are collected for specified period and create a statistic. Next, mean and standard variance is calculated. If standard variance is small enough it is assumed that the sensor is not broken, and it was not moved during the calibration. In the opposite case, the calibration is repeated. The mean is a calculated bias that will be subjected from reading.
+Unfortunately, there is no method that can remove the drift, before the system run. However, the drift tracking and correction can be a part of sensor fusion that will be presented further.\\
 
-\subsection{External position provider}
+Moving on, the noise is removed by passing reading through filters. In order to remove high-frequancy noise, low pass filters are used. They are characterized by a cutoff frequency and an order. The cutoff frequency is the limit beyond which the higher frequency signal is dampened. The filter's order defines the slope factor of this dampening. First order low-pass filter is given by equations (\ref{lpf_alpha} - \ref{lpf}). If readings are collected with a constant sampling rate, $\alpha$ coefficient is calculated only once.
 
-\todo[inline, color=green]{
-	Unknown, dependent, only promises
-}
+\begin{equation}
+	 \alpha = e^{\left( - \omega_{cf} \Delta t \right)}
+	\label{lpf_alpha}
+\end{equation}
+
+\begin{equation}
+	\bm{\tilde{\omega}}^B(t) = \alpha  \bm{\hat{\omega}}^B(t) + \left( 1 - \alpha \right) \bm{\hat{\omega}}^B(t - \Delta t)
+	\label{lpf}
+\end{equation}
+
+where:
+\begin{itemize}
+	\item $\bm{\tilde{\omega}}^B$ -- filtered angular velocity,
+	\item $\omega_{cf}$ -- cut-off frequency,
+	\item $\Delta t$ -- sampling interval.
+\end{itemize}
+
+Proper frequency selection requires involving multiple factors. If noise bandwidth was not specified by sensor's producer, the frequency can be selected by analyzing logs. Assume that gyroscope was collecting data (without filtration) when the mechanism was moving along the determined trajectory, and for this trajectory the exprected velocities are known. Next, spectral transform is conducted for registered data and expectation. Noise spectrum can be obtained by subtraction spectrums from last step. Ultimately, cut-off frequency should be placed above the highest frequency in expectation's spectrum and below the lowest frequency in noise spectrum.\\
+
+It should be mentioned, that in same case, it is rewarding to use a bandpass filters instead low-pass filter. The advantage of this approach is that the bandpass filter removes high-frequency noise, as well as bias. However, the measured signal often overlap the bias bandwidth and using such a filter leads to insensitivity to low velocities. Summarize this solution should be implemented only if an active drift correction is not possible or only high velocities are important for researches.
+
 
