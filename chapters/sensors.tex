@@ -105,9 +105,104 @@ It is always reasonable to assume that reading include additional noise.
 
 \subsection{Accelerometer}
 
-\todo[inline, color=green]{
-	Mounting rotation, translation. Scaling
-}
+The purpose of accelerometer's calibration is to remove bias and compensate effects of assembly inaccuracy and scale error. The accelerometer's noise compensation is usually moved to sensor fusion. In order to propose calibration method, model given in equation (\ref{acc_model2}) can be transformed to equation (\ref{acc_calib}). The noise is ignored, while $\bm{R}_M$ $\bm{S}$ forms new $\bm{\Phi}^{-1}$ coefficient matrix. The proof that the product of these matrices is the inverse of another 3 x 3 matrix is that the rotation matrix is an orthogonal matrix, and the scale matrix is a diagonal matrix. Both of these matrices are non-singular and so their product can also be inverted.
+
+\begin{equation}
+	\bm{\hat{a}}_{res}^B \approx \bm{\Phi}^{-1} \left( \bm{a}_{res}^B + \bm{b}_0 \right)
+	\label{acc_calib}
+\end{equation}
+
+That being said, calibration model is proposed in equation (\ref{acc_calib2}).
+
+\begin{equation}
+	\bm{\tilde{a}}_{res}^B = \bm{\Phi} \bm{\hat{a}}_{res}^B - \bm{b}_0 = \bm{\Phi} \bm{\hat{a}}_{res}^B + \bm{\Gamma}
+	\label{acc_calib2}
+\end{equation}
+
+where:
+\begin{itemize}
+	\item $\bm{\hat{a}}_{res}^B$ -- calibrated accelerometer's output,
+	\item $\bm{\Phi}$ -- 3 x 3 calibration's coefficient matrix,
+	\item $\bm{\Gamma}$ -- 3 x 1 calibration's coefficient vector.
+\end{itemize}
+
+In result, accelerometer's calibration comes down to finding values of $3 \cdot 3 + 3 = 12$ coefficients. To get that done, readings are collected when the sensor is in position, that expected readings are known. Accelerometer, even if not moving, measures gravitational acceleration. Assume, that sensor is closed in box, that edges are parallel to its coordinates system. When the box rest on each of its face on flat table the accelerometer is exprected to measure $\begin{bmatrix}\pm g & 0 & 0\end{bmatrix}^T$, $\begin{bmatrix}0 & \pm g & 0\end{bmatrix}^T$ or $\begin{bmatrix} 0 & 0 \pm g\end{bmatrix}^T$. Therefore, collecting measures from every face results in $6 \cdot 3 = 18$ equation that can be used to determinate values of calibration's coefficient. As there is more equations that unknowns, linear regression method is used. In the case of this work, it was decided to utilize Ordinal least squares method (OLS). In order to use this, all the equations have to be transformed to linear form given in equation (\ref{ols}).
+\begin{equation}
+	\bm{X} \bm{\Theta} = \bm{Y}
+	\label{ols}
+\end{equation}
+where:
+\begin{itemize}
+	\item $\bm{X}$ -- n x m known matrix,
+	\item $\bm{\Theta}$ -- m x 1 vector, that value is estimated,
+	\item $\bm{Y}$ -- n x 1 known matrix.
+\end{itemize}
+ 
+Transformation is given in equations (\ref{ols_theta} - \ref{ols_x})
+\setcounter{MaxMatrixCols}{25}
+
+\begin{equation}
+	\bm{\Theta} = \begin{bmatrix} \Phi_{11} & \Phi_{12} & \Phi_{13} & \Gamma_1 & \Phi_{21} & \Phi_{22} & \Phi_{23} & \Gamma_2 & \Phi_{31} & \Phi_{32} & \Phi_{33} & \Gamma_3 \\
+	\end{bmatrix}^T
+	\label{ols_theta}
+\end{equation}
+
+
+\begin{equation}
+	\bm{Y} = \begin{bmatrix} 0 & 0 & g & \vdots & 0 & 0 & -g & \vdots & g & 0 & 0 & \vdots & -g & 0 & 0  & \vdots& 0 & g & 0 & \vdots & 0 & -g & 0 \\
+	\end{bmatrix}^T
+	\label{ols_y}
+\end{equation}
+
+\begin{equation}
+	\bm{X} = 
+	\begin{bmatrix}
+	\bm{a}^T_T & 1 & \bm{0}_{3x1} & 0 & \bm{0}_{3x1} & 0\\
+	\bm{0}_{3x1} & 0 & \bm{a}^T_T & 1 & \bm{0}_{3x1} & 0\\
+	\bm{0}_{3x1} & 0 & \bm{0}_{3x1} & 0 & \bm{a}^T_T & 1\\
+	
+	\bm{a}^T_D & 1 & \bm{0}_{3x1} & 0 & \bm{0}_{3x1} & 0\\
+	\bm{0}_{3x1} & 0 & \bm{a}^T_D & 1 & \bm{0}_{3x1} & 0\\
+	\bm{0}_{3x1} & 0 & \bm{0}_{3x1} & 0 & \bm{a}^T_D & 1\\
+	
+	\bm{a}^T_F & 1 & \bm{0}_{3x1} & 0 & \bm{0}_{3x1} & 0\\
+	\bm{0}_{3x1} & 0 & \bm{a}^T_F & 1 & \bm{0}_{3x1} & 0\\
+	\bm{0}_{3x1} & 0 & \bm{0}_{3x1} & 0 & \bm{a}^T_F & 1\\
+	
+	\bm{a}^T_B & 1 & \bm{0}_{3x1} & 0 & \bm{0}_{3x1} & 0\\
+	\bm{0}_{3x1} & 0 & \bm{a}^T_B & 1 & \bm{0}_{3x1} & 0\\
+	\bm{0}_{3x1} & 0 & \bm{0}_{3x1} & 0 & \bm{a}^T_B & 1\\
+	
+	\bm{a}^T_R & 1 & \bm{0}_{3x1} & 0 & \bm{0}_{3x1} & 0\\
+	\bm{0}_{3x1} & 0 & \bm{a}^T_R & 1 & \bm{0}_{3x1} & 0\\
+	\bm{0}_{3x1} & 0 & \bm{0}_{3x1} & 0 & \bm{a}^T_R & 1\\
+	
+	\bm{a}^T_L & 1 & \bm{0}_{3x1} & 0 & \bm{0}_{3x1} & 0\\
+	\bm{0}_{3x1} & 0 & \bm{a}^T_L & 1 & \bm{0}_{3x1} & 0\\
+	\bm{0}_{3x1} & 0 & \bm{0}_{3x1} & 0 & \bm{a}^T_L & 1\\
+	\end{bmatrix} 
+	\label{ols_x}
+\end{equation}
+where:
+\begin{itemize}
+	\item $\bm{a}_T$ -- measurement when box is top face up,
+	\item $\bm{a}_D$ -- measurement when box is down face up,
+	\item $\bm{a}_F$ -- measurement when box is front face up,
+	\item $\bm{a}_B$ -- measurement when box is back face up,
+	\item $\bm{a}_R$ -- measurement when box is right face up,
+	\item $\bm{a}_L$ -- measurement when box is left face up.
+\end{itemize}
+
+According to OLS method, estimation $\bm{\hat{\Theta}}$ is given in equation (\ref{ols_est}). Ultimately, the result is decomposed into $\bm{\Phi}$ and $\bm{\Gamma}$
+
+\begin{equation}
+	\bm{\hat{\Theta}} = \left( \bm{X}^T \bm{X} \right)^{-1} \bm{X}^T \bm{Y}
+	\label{ols_est}
+\end{equation}
+
+Additionally, an intuitive procedure of collecting calibration measures is also part of the system. Usually accelerometer's calibration involves placing sensor on calibration table and approving measure (for example, by clicking). Moreover, in certain system, an order of sides that being measured is predetermined. This approach has a fundamental advantage, because it recognizes sensors mounted in any orientation. Nevertheless, if the sensor is roughly set properly (axes are directed in accordance, but not perfectly aligned), the calibration's process can be improved, by recognizing on what face sensor was plated. In this purpose sensor measurements are collected into statistics that calculates mean value and standard variance. If standard variance is below predefined threshold, it means that sensor is not moving. Next mean value is normalized and compared with every of 6 axes' unit vectors. If angle between normalized mean and unit vector is less that specified (that can be quickly checked using dot product), the face correlated with unit vector is recognized.
+
+
 
 \subsection{Gyroscope}
 
@@ -117,7 +212,7 @@ Unfortunately, there is no method that can remove the drift, before the system r
 Moving on, the noise is removed by passing reading through filters. In order to remove high-frequancy noise, low pass filters are used. They are characterized by a cutoff frequency and an order. The cutoff frequency is the limit beyond which the higher frequency signal is dampened. The filter's order defines the slope factor of this dampening. First order low-pass filter is given by equations (\ref{lpf_alpha} - \ref{lpf}). If readings are collected with a constant sampling rate, $\alpha$ coefficient is calculated only once.
 
 \begin{equation}
-	 \alpha = e^{\left( - \omega_{cf} \Delta t \right)}
+	 \alpha = e^{ - \omega_{cf} \Delta t}
 	\label{lpf_alpha}
 \end{equation}
 
@@ -135,6 +230,6 @@ where:
 
 Proper frequency selection requires involving multiple factors. If noise bandwidth was not specified by sensor's producer, the frequency can be selected by analyzing logs. Assume that gyroscope was collecting data (without filtration) when the mechanism was moving along the determined trajectory, and for this trajectory the exprected velocities are known. Next, spectral transform is conducted for registered data and expectation. Noise spectrum can be obtained by subtraction spectrums from last step. Ultimately, cut-off frequency should be placed above the highest frequency in expectation's spectrum and below the lowest frequency in noise spectrum.\\
 
-It should be mentioned, that in same case, it is rewarding to use a bandpass filters instead low-pass filter. The advantage of this approach is that the bandpass filter removes high-frequency noise, as well as bias. However, the measured signal often overlap the bias bandwidth and using such a filter leads to insensitivity to low velocities. Summarize this solution should be implemented only if an active drift correction is not possible or only high velocities are important for researches.
+It should be mentioned, that it is rewarding to use a bandpass filters instead low-pass filter in specific cases. The advantage of this approach is that the bandpass filter removes high-frequency noise, as well as bias. However, the measured signal often overlap the bias bandwidth and using such a filter leads to insensitivity to low velocities. Summarize this solution should be implemented only if an active drift correction is not possible or only high velocities are important for researches.
 
 
