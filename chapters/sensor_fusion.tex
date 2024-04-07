@@ -1,16 +1,120 @@
 \chapter{Sensor fusion}
 
-\todo[inline, color=green]{
-	What is sensor fusion
-}
+A sensor fusion is a method of blending multiple sensors' reading to obtain a desired estimation. The methods involve merging information from a variety of sensors, cross-checking as well as tracking and removing floating error. They utilize partial and redundant information to estimate complete estimation.\\
+
+There are many methods of sensor fusion in the application of determining position and orientation \cite{uav}. The classic orientation's estimation methods, that are based on gyroscope, accelerometer, are Complementary filter method \cite{complementary}, Direction Cosine Matrix method \cite{dcm} and Madgwick filter method \cite{madgwick}. \\
+
+Complementary filter method involves estimating orientation two ways: incrementally and absolutely. An incremental estimation means integrating gyroscope readings to rotate from a previous moment. The disadvantage of incremental estimation is that bias is also integrated. Besides, accelerometer and magnetometer readings are used to estimate an absolute orientation, assuming that accelerometer reading vector points to down and gyroscope reading vector points to north. It is not perfect assumption as the accelerometer measures all other accelerations too. Also, the magnetometer readings require declination and inclination correction. In result, the absolute estimation is very noisy. The main idea of the method is to filter the incremental esimation with high pass filter that remove bias, and filter the absolute estimation with low pass filter that remove noise. The filter are selected to be complementary, so the sum of estimations covers the full bandwidth.\\
+
+Direction Cosine Matrix (DCM) method is also based on incremental model with drift correction.
+To correct drift DCM involves using PI controller. The method is strongly linked with rotation matrix's properties. Moreover, if velocity source is present, the method can explicitly compensate acceleration that is not gravitational. \\
+
+Madgwick filter method is an algorithm developed by Sebastian Madgwick. The method uses a quaternion representation and structural definition, easy to implement in low-level languages. Unlike traditional methods like the Kalman filter, the Madgwick filter is highly efficient computationally, making it suitable for real-time applications even on resource-constrained platforms. However, it has closed structure, that makes it less readable. Quoting the description of the Python filter implementation \cite{madgwick2}: \textit{The filter employs a quaternion representation of orientation to describe the nature of orientations in three-dimensions and is not subject to the singularities associated with an Euler angle representation, allowing accelerometer and magnetometer data to be used in an analytically derived and optimised gradient-descent algorithm to compute the direction of the gyroscope measurement error as a quaternion derivative.}\\
+
+All of presented method so far enable orientation estimation only and are hardly modifiable. This results in the need to find more sophisticated methods. For many years the most popular and universal method has been the use of the Kalman filter \cite{ekf_poor}.
+
+\section{An Kalman Filter}
 
 \todo[inline, color=green]{
-Sensor fusion: different AHRS, Why EKF is best of all.
+	This section is directly taken and translated from my bachelor thesis. Should it be marked somehow?
 }
 
-\section{Kalman Filter}
+The Kalman filter is a mathematical estimation method for efficiently tracking the dynamic state of a system and filtering out measurement data. It is based on modeling the system with state equations and measurement equations. The equations of state describe the evolution of the system state over time, while the measurement equations represent the relationship between the system state and the measurement data. Mathematically, this can be represented by equations (\ref{kf1} - \ref{kf2}).
 
-\section{Extended Kalman Filter}
+\begin{equation}
+	x_k = A \cdot x_{k-1} + B \cdot u_k + w_k
+	\label{kf1}
+\end{equation}
+
+\begin{equation}
+	z_k = H \cdot x_k + v_k
+	\label{kf1}
+\end{equation}
+
+where:
+\begin{itemize}[noitemsep]
+	\item $x_k$ -- state vector at the time of k, 
+	\item $A$ -- state matrix, 
+	\item $B$  -- input matrix, 
+	\item $u_k$  -- control input vector, 
+	\item $w_k$ -- process noise vector, 
+	\item $z_k$  -- measurement vector at the time of k, 
+	\item $H$ -- measurement matrix,
+	\item $v_k$ -- measurement noise vector.
+\end{itemize}
+
+The equations presented above are similar to the equation of state of a system with white noise added. The idea of the filter is based on finding the state, which from a statistical point of view is the most probable, for the recorded measurements. The disadvantage of the above notation is the requirement of linear state equation. Fortunately, the solution to this problem is provided by the use of Extended Kalman Filter (EKF), which state is presented in equations (\ref{ekf1} - \ref{ekf2}).
+
+\begin{equation}
+	x_k =  f \left( x_{k-1},  u_k \right) + w_k
+	\label{ekf1}
+\end{equation}
+
+\begin{equation}
+	z_k = h \left(x_k \right) + v_k
+	\label{ekf2}
+\end{equation}
+
+
+where:
+\begin{itemize}
+	\item $ f \left( x_{k-1},  u_k \right)$ -- state function, 
+	\item $h \left(x_k \right)$ -- measurement function.
+\end{itemize}
+
+The Kalman filter performs two main steps: prediction and correction (figure \ref{kf_diagram}). In the prediction step, the new state of the system and its covariance is predicted. In the correction step, based on the new measurements, an adjustment is made to the prediction, taking into account measurement errors and improving the estimation of the system state. The filter, especially in its extended version, is a major tool in the field of control and state's estimation, enabling systems to maintain the precision of measurements in dynamic conditions and improve the quality of system parameter estimation.\\
+
+
+\begin{figure}[!h]
+	\centering
+	\begin{tikzpicture}[
+		block/.style={rectangle, draw, text width=2cm, text centered, rounded corners, minimum height=1.5cm},
+		arrow/.style={->, >=stealth, thick}
+		]
+		% Nodes
+		\node (predict) [block] {Predict};
+		\node (correct) [block, right=2cm of predict] {Correction};
+		
+		% Arrows
+		\draw[arrow] (predict.east) -- ++(1.5cm,0) |- (correct.west) node[midway, above] {};
+		\draw[arrow] (correct.west) -- ++(-1.5cm,0) |- (predict.east) node[midway, below] {};
+	\end{tikzpicture}
+	\caption{An Extended Kalman Filter}
+	\label{kf_diagram}
+\end{figure}
+
+Prediction phase:
+\[
+\begin{aligned}
+	\hat{x}_k^- & = f(\hat{x}_{k-1}, u_k) \quad \text{(predicted state)}, \\
+	P_k^- & = A_k P_{k-1} A_k^T + Q_k \quad \text{(predicted covariance)},
+\end{aligned}
+\]
+
+where: $A_k = \frac{\partial f}{\partial x}\Bigr|_{\hat{x}_{k-1}, u_k}$, and $Q_k$ is process noise's coveriance matrix.\\
+
+Correction phase:
+\[
+\begin{aligned}
+	&K_k = P_k^- H_k^T (H_k P_k^- H_k^T + R_k)^{-1} \quad \text{(Kalman's gain)}, \\
+	&\hat{x}_k = \hat{x}_k^- + K_k(z_k - h(\hat{x}_k^-)) \quad \text{(corrected state)}, \\
+	&P_k = (I - K_k H_k) P_k^- \quad \text{(corrected covariance)},
+\end{aligned}
+\]
+
+where: $H_k = \frac{\partial h}{\partial x}\Bigr|_{\hat{x}_k^-}$, and $R_k$ is measurement noise's covariance matrix.
+
+
+
+\section{An Extended Kalman Filter as position and orientation estimator}
+
+Zastosowanie EKF do nawigacji BSP wymaga określenia składowych wektora stanu i określenia wpływu poszczególnych pomiarów na stan filtra. W fazie predykcji wykorzystane powinny zostać czujniki o dużej częstotliwości próbkowania i te, których pomiary wymagają całkowania. Faza korekcji, która może być wykonywana rzadziej, powinna wykorzystywać czujniki nieposiadające tendencji do kumulowania błędu. W dalszej części rozdziału przedstawiony zostanie zarys zastosowania EKF do określenia pozycji, prędkości i orientacji BSP.\\
+
+Stanem filtru pozwalającego na określenie orientacji BSP w najprostszej wersji może być sam kwaternion orientacji. Filtr startuje z początkową orientacją uzyskaną w~dowolnie inny sposób, np. z~metody DCM. Wektorem sterowania filtra jest pomiar z żyroskopu, tj. pomiary prędkości kątowych. W trakcie swojej pracy filtr całkuje kolejne pomiary w celu ustalenia aktualnej orientacji. Faza korekty oparta jest natomiast o akcelerometr i magnetometr. Akcelerometr oprócz właściwego przyśpieszanie BSP rejestruje również wektor przyśpieszenia grawitacyjnego. W czasie, gdy BSP nie wykonuje gwałtownych manewrów, składowa ta dominuje i pozwala skorygować filtr informacją, gdzie znajduje się Ziemia. Analogiczne pomiar z magnetometru, po uwzględnieniu kąta inklinacji i deklinacji pozwala określić kierunek północny.\\
+
+W celu zastosowania filtra do określenia położenia i prędkości minimalnym stanem jest wektor złożony z 3 składowych położenia i 3 składowych prędkości. W fazie predykcji wykorzystywane są dane z przyśpieszeniomierza, które należy wstępnie obrócić do układu globalnego i pozbawić składowej związanej z przyśpieszeniem grawitacyjnym. Całkując jednokrotnie przyśpieszenia, uzyskujemy prędkości, a dwukrotnie położenie. W fazie korekcji wykorzystuje się pomiary z nawigacji satelitarnej i~barometru. Nawigacja satelitarna ma relatywnie małą częstotliwość próbkowania, ale pozwala w sposób bezwzględny określić pozycję BSP. Wiele systemów nawigacji satelitarnej wykorzystuje również efekt Dopplera do określenia prędkości odbiornika. Barometr natomiast pozwala na oszacowanie wysokości, porównując zmierzoną wartość do wartości referencyjnej. Wysokość określana na podstawie wskazań barometru, nazywana wysokością barometryczną, do dziś znajduje zastosowanie w~lotnictwie.\\
+
+Zarys przedstawiony powyżej stanowi jedynie podstawowy wariant wykorzystywany EKF w nawigacji. W rzeczywistych zastosowaniach stan filtra jest znacznie rozszerzony, uwzględniając w sobie m.in. biasy czujników oraz estymatę warunków atmosferycznych, jak np. prędkość i kierunek wiatru, a pomiary z czujników są wstępnie filtrowane.
 
 \section{Time synchronization problem}
 
