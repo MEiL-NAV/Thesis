@@ -2,13 +2,13 @@
 
 Sensors are the fundamental components of any measurement system, enabling it to perceive the world. There is a vast array of sensor types, each designed to measure specific physical quantities. Even within a one type of measured value, sensors can vary significantly in terms of precision and cost. \\
 
-Sensors can generally be classified into two main categories: those that operate independently and those that depend on external infrastructure. Independent sensors operate based on the principles of physics. For example, at its simplest, a temperature sensor exploits the fact that electrical resistance changes with temperature variations. On the other hand, dependent sensors require external resources to function. A GNSS receiver, which estimates its position only when a sufficient number of satellites are visible, is an example of such a sensor.\\
+Sensors can generally be classified into two main categories: those that operate independently and those that depend on external infrastructure. Independent sensors operate based on the principles of physics. For example, at its simplest, a temperature sensor exploits the fact that electrical resistance changes with temperature variations. On the other hand, dependent sensors require external resources to function. An example of such a sensor is a GNSS receiver, which estimates its position only when a sufficient number of satellites are visible.\\
 
 Accurately estimating position and orientation typically involves a combination of sensors that measure not only position, velocity, and acceleration but also have an indirect relationship with the state being estimated. The most precise results are achievable when every aspect of the state is directly measured, which is often impractical. The absence of distance sensors and encoders means that state estimation must rely on alternative methods. This thesis will explore dead reckoning, a method that estimates position and orientation by integrating measurements from inertial sensors. At a minimum, this method requires two types of inertial sensors: an accelerometer to measure acceleration and a gyroscope to measure angular velocity. However, results from this minimal setup tend to be suboptimal. In real-world applications, systems are enhanced through redundancy and the incorporation of partial information sources.
 
 \section{Sensor's types}
 
-Sensors measuring a specific type of value, even within the same family, can differ significantly in the methodologies they employ to obtain that value. The development of new sensor types is a constant effort, primarily aimed at enhancing accuracy. However, this pursuit of higher accuracy often results in increased sensor costs. It is worthwhile to briefly outline how these methods have evolved over time.\\
+Sensors that measuring a specific type of value, even within the same family, can differ significantly in the methodologies they employ to obtain that a value. The development of new sensor types is a constant effort, primarily aimed at enhancing accuracy. However, this pursuit of higher accuracy often results in increased sensor costs. It is worthwhile to briefly outline how these methods have evolved over time.\\
 
 For inertial sensors, this evolution can be traced from mechanical sensors to Micro-Electro-Mechanical Systems (MEMS) sensors, and onto today’s laboratory-grade sensors. Each step on this path not only represents a leap in the technology used but also reflects a balance between achieving greater precision and managing production and operational costs. Mechanical sensors, which were among the first to be developed, rely on mechanical components and physical principles for their operation. Many moving parts often cause that mechanical sensor were unreliable. MEMS sensors, a significant advancement, integrate mechanical components and electronics into a single system, offering improved accuracy, smaller size, and lower power consumption. Today's laboratory-grade sensors, which represent the peak of current technology, provide unparalleled accuracy but at a significantly higher cost. This progression underscores the relentless pursuit of precision in the field of sensor technology, driven by the demands of increasingly sophisticated applications.\\
 
@@ -16,7 +16,7 @@ However, when considering the balance between quality and cost, MEMS sensors are
 
 \section{Sensor's model}
 
-The description of sensors so far has mainly concerned their features and types. However, to use them in estimation, this description should be enriched with a formalized mathematical model. Sensor's model defines the relation between physical quantities and sensor output, but also includes an error. A well-prepared model allows the development of better filtration methods and ultimately leads to better results.
+The description of sensors so far has mainly concerned their features and types. However, to use them in an estimation, this description should be enriched with a formalized mathematical model. The sensor's model defines the relation between physical quantities and sensor output, but also includes an error. A well-prepared model allows the development of better filtration methods and ultimately leads to better results.
 
 \subsection{Accelerometer}
 
@@ -69,9 +69,9 @@ where:
 \subsection{Gyroscope}
 A gyroscope is a sensor designed to measure angular velocities. In a non-inertial frame, angular velocity remains constant at every point, making gyroscope readings independent of its position within the moving reference frame.\\
 
-The primary advantage of a gyroscope lies in its ability to measure raw angular velocities. However, it's important to note that this measurement is not direct; for example, in MEMS sensors, the displacement of mass is measured to infer angular velocity.\\
+The primary advantage of a gyroscope lies in its ability to measure raw angular velocities. However, it's important to note that this measurement is not direct; for example, in MEMS sensors, the measurement is based on the transfer of energy between two vibration modes caused by the acceleration of Coriolis \cite{passaro2017gyroscope}.\\
 
-Despite its advantages, a gyroscope's measurements are susceptible to various errors. Two significant sources of error are bias and drift. Bias refers to a constant offset in the measured values, which is inherent to the sensor and remains relatively stable over time. Drift, on the other hand, is the gradual change in bias over time, leading to a continuous deviation from the true value. In addition to bias and drift, gyroscopes are also affected by high-frequency noise, which can obscure the true signal. Equation (\ref{gyro_model}) presents a mathematical model of gyroscope.
+Despite its advantages, a gyroscope's measurements are susceptible to various errors. Two significant sources of error are bias and drift. Bias refers to a constant offset in the measured values, which is inherent to the sensor and remains relatively stable over time. Drift, on the other hand, is the gradual change in bias over time, leading to a continuous deviation from the true value. In addition to bias and drift, gyroscopes are also affected by high-frequency noise, which can obscure the true signal. An equation (\ref{gyro_model}) presents a mathematical model of gyroscope.
 
 \begin{equation}
 	\bm{\hat{\omega}}^B = \bm{\omega}^B + \bm{b}(t) + \bm{b}_0 + \bm{h}
@@ -92,12 +92,41 @@ Finally, it is worth mentioning why the assembly inaccuracy are not included in 
 
 \subsection{External position and orientation provider}
 
-External provides supply additional data that can appear to be useful in the further estimation. There are many sources providing various measurements. Some of them deliver only partial information, while the other can estimate full description of the system. However, the measurements may be low-precise or too slowly updated to be used alone as an estimation.\\
+External provides supply additional data that can appear to be useful in the further estimation. There are many sources providing various measurements. Some of them deliver only partial information, while the other can estimate a full description of the system. However, the measurements may be low-precise or too slowly updated to be used alone as an estimation.\\
 
-An example considered as part of this project is the use of the robot's tip position calculated by its control system. The industrial robot acquires tip position by calculating forward kinematics based on encoder readings and know robot's structure. The orientation of tip is also calculated and can be used in estimation if the connection between robot's arm and mechanism is rigid.\\
+An example considered in this project is the use of the robot's tip position calculated by its control system. The industrial robot acquires tip position by calculating forward kinematics based on encoder readings and knowledge about robot's structure. The orientation of tip is also calculated and can be used in estimation if the connection between robot's arm and mechanism is rigid.\\
 
 The model of external providers as a sensor is not as straightforward as model presented so far. Many factors are involved in it, including, position and type of connection between tip and mechanism, relative positions of them, and the accuracy of robot's calculation. Moreover, the accuracy is not always directly specified, due to the fact that for industrial robots repeatability is much important that it's precision \cite{shiakolas2002accuracy}.
-It is always reasonable to assume that reading include additional noise.
+It is always reasonable to assume that reading include additional noise.\\
+
+Assume that the tip of the robot is connected with the origin of moving coordinate frame with a rigid drawbar. The drawbar is double-ended with spherical joints so the orientation of the tip does not affect system. In this case the position provided by the robot's control system is a composition of the origin's position and translation inserted by the drawbar. An equation (\ref{drawbar_model}) presents the relation between an origin's position and a tip's position when the length and orientation of the drawbar are known.
+
+\begin{equation}
+	\begin{bmatrix}
+		x_t \\ y_t \\ z_t 
+	\end{bmatrix}
+	=
+	\begin{bmatrix}
+		x \\ y \\ z 
+	\end{bmatrix}
+	+
+	\bm{R}_z \left( az \right)
+	\bm{R}_y \left( el \right)
+	\begin{bmatrix}
+		d \\ 0 \\ 0 
+	\end{bmatrix}
+	\label{drawbar_model}
+\end{equation}
+
+where:
+\begin{itemize}
+	\item $x_t$, $y_t$, $z_t$ -- 3 components of the tip's position,
+	\item $x$, $y$, $z$ -- 3 components of the origin's position,
+	\item $d$ -- a length of the drawbar,
+	\item $az$, $el$ -- a description of the drawbar's orientation. The $el$ is an elevation, the angle between the drawbar's translation vector and OXY world plane. The $az$ is an azimuth, the angle between the drawbar's translation vector's projection on OXY plane and OX axis.
+\end{itemize}
+
+
 
 \section{Sensor's calibration and filtration}
 
@@ -105,7 +134,7 @@ It is always reasonable to assume that reading include additional noise.
 
 \subsection{Accelerometer}
 
-The purpose of accelerometer's calibration is to remove bias and compensate effects of assembly inaccuracy and scale error. The accelerometer's noise compensation is usually moved to sensor fusion. In order to propose calibration method, model given in equation (\ref{acc_model2}) can be transformed to equation (\ref{acc_calib}). The noise is ignored, while $\bm{R}_M$ $\bm{S}$ forms new $\bm{\Phi}^{-1}$ coefficient matrix. The proof that the product of these matrices is the inverse of another 3 x 3 matrix is that the rotation matrix is an orthogonal matrix, and the scale matrix is a diagonal matrix. Both of these matrices are non-singular and so their product can also be inverted.
+The purpose of accelerometer's calibration is to remove a bias and compensate effects of an assembly inaccuracy and a scale error. The accelerometer's noise compensation is usually moved to sensor fusion. In order to propose calibration method, model given in equation (\ref{acc_model2}) can be transformed to equation (\ref{acc_calib}). The noise is ignored, while $\bm{R}_M$ $\bm{S}$ forms new $\bm{\Phi}^{-1}$ coefficient matrix. The proof that the product of these matrices is the inverse of another 3 x 3 matrix is that the rotation matrix is an orthogonal matrix, and the scale matrix is a diagonal matrix. Both of these matrices are non-singular and so their product can also be inverted.
 
 \begin{equation}
 	\bm{\hat{a}}_{res}^B \approx \bm{\Phi}^{-1} \left( \bm{a}_{res}^B + \bm{b}_0 \right)
