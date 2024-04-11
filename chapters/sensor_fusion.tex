@@ -22,44 +22,44 @@ All of presented method so far enable orientation estimation only and are hardly
 The Kalman filter is a mathematical estimation method for efficiently tracking the dynamic state of a system and filtering out measurement data. It is based on modeling the system with state equations and measurement equations. The equations of state describe the evolution of the system state over time, while the measurement equations represent the relationship between the system state and the measurement data. Mathematically, this can be represented by equations (\ref{kf1} - \ref{kf2}).
 
 \begin{equation}
-	x_k = A \cdot x_{k-1} + B \cdot u_k + w_k
+	\bm{x}_k = A \cdot \bm{x}_{k-1} + B \cdot \bm{u}_k + \bm{w}_k
 	\label{kf1}
 \end{equation}
 
 \begin{equation}
-	z_k = H \cdot x_k + v_k
-	\label{kf1}
+	\bm{z}_k = H \cdot \bm{x}_k + \bm{v}_k
+	\label{kf2}
 \end{equation}
 
 where:
 \begin{itemize}[noitemsep]
-	\item $x_k$ -- state vector at the time of k, 
+	\item $\bm{x}_k$ -- state vector at the time of k, 
 	\item $A$ -- state matrix, 
 	\item $B$  -- input matrix, 
-	\item $u_k$  -- control input vector, 
-	\item $w_k$ -- process noise vector, 
-	\item $z_k$  -- measurement vector at the time of k, 
+	\item $\bm{u}_k$  -- control input vector, 
+	\item $\bm{w}_k$ -- process noise vector, 
+	\item $\bm{z}_k$  -- measurement vector at the time of k, 
 	\item $H$ -- measurement matrix,
-	\item $v_k$ -- measurement noise vector.
+	\item $\bm{v}_k$ -- measurement noise vector.
 \end{itemize}
 
 The equations presented above are similar to the equation of state of a system with white noise added. The idea of the filter is based on finding the state, which from a statistical point of view is the most probable, for the recorded measurements. The disadvantage of the above notation is the requirement of linear state equation. Fortunately, the solution to this problem is provided by the use of Extended Kalman Filter (EKF), which state is presented in equations (\ref{ekf1} - \ref{ekf2}).
 
 \begin{equation}
-	x_k =  f \left( x_{k-1},  u_k \right) + w_k
+	\bm{x}_k =  f \left( \bm{x}_{k-1},  \bm{u}_k \right) + \bm{w}_k
 	\label{ekf1}
 \end{equation}
 
 \begin{equation}
-	z_k = h \left(x_k \right) + v_k
+	\bm{z}_k = h \left(\bm{x}_k \right) + \bm{v}_k
 	\label{ekf2}
 \end{equation}
 
 
 where:
 \begin{itemize}
-	\item $ f \left( x_{k-1},  u_k \right)$ -- state function, 
-	\item $h \left(x_k \right)$ -- measurement function.
+	\item $ f \left( \bm{x}_{k-1},  \bm{u}_k \right)$ -- state function, 
+	\item $h \left(\bm{x}_k \right)$ -- measurement function.
 \end{itemize}
 
 The Kalman filter performs two main steps: prediction and correction (figure \ref{kf_diagram}). In the prediction step, the new state of the system and its covariance is predicted. In the correction step, based on the new measurements, an adjustment is made to the prediction, taking into account measurement errors and improving the estimation of the system state. The filter, especially in its extended version, is a major tool in the field of control and state's estimation, enabling systems to maintain the precision of measurements in dynamic conditions and improve the quality of system parameter estimation.\\
@@ -86,18 +86,18 @@ The Kalman filter performs two main steps: prediction and correction (figure \re
 Prediction phase:
 \[
 \begin{aligned}
-	\hat{x}_k^- & = f(\hat{x}_{k-1}, u_k) \quad \text{(predicted state)}, \\
+	\hat{x}_k^- & = f(\hat{x}_{k-1}, \bm{u}_k) \quad \text{(predicted state)}, \\
 	P_k^- & = A_k P_{k-1} A_k^T + Q_k \quad \text{(predicted covariance)},
 \end{aligned}
 \]
 
-where: $A_k = \frac{\partial f}{\partial x}\Bigr|_{\hat{x}_{k-1}, u_k}$, and $Q_k$ is process noise's coveriance matrix.\\
+where: $A_k = \frac{\partial f}{\partial x}\Bigr|_{\hat{x}_{k-1}, \bm{u}_k}$, and $Q_k$ is process noise's coveriance matrix.\\
 
 Correction phase:
 \[
 \begin{aligned}
 	&K_k = P_k^- H_k^T (H_k P_k^- H_k^T + R_k)^{-1} \quad \text{(Kalman's gain)}, \\
-	&\hat{x}_k = \hat{x}_k^- + K_k(z_k - h(\hat{x}_k^-)) \quad \text{(corrected state)}, \\
+	&\hat{x}_k = \hat{x}_k^- + K_k(\bm{z}_k - h(\hat{x}_k^-)) \quad \text{(corrected state)}, \\
 	&P_k = (I - K_k H_k) P_k^- \quad \text{(corrected covariance)},
 \end{aligned}
 \]
@@ -108,13 +108,237 @@ where: $H_k = \frac{\partial h}{\partial x}\Bigr|_{\hat{x}_k^-}$, and $R_k$ is m
 
 \section{An Extended Kalman Filter as position and orientation estimator}
 
-Zastosowanie EKF do nawigacji BSP wymaga określenia składowych wektora stanu i określenia wpływu poszczególnych pomiarów na stan filtra. W fazie predykcji wykorzystane powinny zostać czujniki o dużej częstotliwości próbkowania i te, których pomiary wymagają całkowania. Faza korekcji, która może być wykonywana rzadziej, powinna wykorzystywać czujniki nieposiadające tendencji do kumulowania błędu. W dalszej części rozdziału przedstawiony zostanie zarys zastosowania EKF do określenia pozycji, prędkości i orientacji BSP.\\
+Application an Extended Kalman Filter to estimate position and orientation involves determination of state vector and state equation, specification measurement sources and their linkage with state. In prediction phase high sample rate sensors and sensor that measurements must be integrated should be used, like inertial sensor. The correction phase that can be processed rarely should include rest of sensors. In this section the filter's model will be presented.\\
 
-Stanem filtru pozwalającego na określenie orientacji BSP w najprostszej wersji może być sam kwaternion orientacji. Filtr startuje z początkową orientacją uzyskaną w~dowolnie inny sposób, np. z~metody DCM. Wektorem sterowania filtra jest pomiar z żyroskopu, tj. pomiary prędkości kątowych. W trakcie swojej pracy filtr całkuje kolejne pomiary w celu ustalenia aktualnej orientacji. Faza korekty oparta jest natomiast o akcelerometr i magnetometr. Akcelerometr oprócz właściwego przyśpieszanie BSP rejestruje również wektor przyśpieszenia grawitacyjnego. W czasie, gdy BSP nie wykonuje gwałtownych manewrów, składowa ta dominuje i pozwala skorygować filtr informacją, gdzie znajduje się Ziemia. Analogiczne pomiar z magnetometru, po uwzględnieniu kąta inklinacji i deklinacji pozwala określić kierunek północny.\\
+In preparation, available sensors assigned into particular phase. The accelerometer and gyroscope's readings are used in prediction phase, as the reading are integrated. In correction phase external position source is used to correct position and accelerometer's readings are used to correct orientation.  Thus, the equation (\ref{u_vec}) presents the proposed control input vector and equation (\ref{h_vec}) presents measurement vector. Next state vector is set. The proposed state vector is presented in equation (\ref{state_vec}).
 
-W celu zastosowania filtra do określenia położenia i prędkości minimalnym stanem jest wektor złożony z 3 składowych położenia i 3 składowych prędkości. W fazie predykcji wykorzystywane są dane z przyśpieszeniomierza, które należy wstępnie obrócić do układu globalnego i pozbawić składowej związanej z przyśpieszeniem grawitacyjnym. Całkując jednokrotnie przyśpieszenia, uzyskujemy prędkości, a dwukrotnie położenie. W fazie korekcji wykorzystuje się pomiary z nawigacji satelitarnej i~barometru. Nawigacja satelitarna ma relatywnie małą częstotliwość próbkowania, ale pozwala w sposób bezwzględny określić pozycję BSP. Wiele systemów nawigacji satelitarnej wykorzystuje również efekt Dopplera do określenia prędkości odbiornika. Barometr natomiast pozwala na oszacowanie wysokości, porównując zmierzoną wartość do wartości referencyjnej. Wysokość określana na podstawie wskazań barometru, nazywana wysokością barometryczną, do dziś znajduje zastosowanie w~lotnictwie.\\
+\begin{equation}
+	\bm{u} = \begin{bmatrix}
+		g_x & g_y & g_z & a_x & a_y & a_z
+	\end{bmatrix}^T
+	\label{u_vec}
+\end{equation}
 
-Zarys przedstawiony powyżej stanowi jedynie podstawowy wariant wykorzystywany EKF w nawigacji. W rzeczywistych zastosowaniach stan filtra jest znacznie rozszerzony, uwzględniając w sobie m.in. biasy czujników oraz estymatę warunków atmosferycznych, jak np. prędkość i kierunek wiatru, a pomiary z czujników są wstępnie filtrowane.
+\begin{equation}
+	\bm{z} = \begin{bmatrix}
+		a_x & a_y & a_z & p_x & p_y & p_z
+	\end{bmatrix}^T
+	\label{h_vec}
+\end{equation}
+
+where:
+\begin{itemize}
+	\item $g_x$, $g_y$, $g_z$ -- 3 components of gyroscope's reading,
+	\item $v_x$, $v_y$, $v_z$ -- 3 components of accelerometer's reading,
+	\item $p_x$, $p_y$, $p_z$ -- 3 components of position from external provider.
+\end{itemize}
+
+\begin{equation}
+	\bm{x} = \begin{bmatrix}
+	x & y & z & v_x & v_y & v_z & q_0 & q_x & q_y & q_z & b_x & b_y & b_z & az & el
+	\end{bmatrix}^T
+	\label{state_vec}
+\end{equation}
+
+where:
+\begin{itemize}
+	\item $x$, $y$, $z$ -- 3 components of position,
+	\item $v_x$, $v_y$, $v_z$ -- 3 components of velocity,
+	\item $q_0$, $q_x$, $q_y$, $q_z$ -- quaternion of orientation,
+	\item $b_x$, $b_y$, $b_z$ -- 3 components of gyroscope's bias,
+	\item $az$ and $el$ -- azimuth and elevation of drawbar.
+\end{itemize}
+
+The bias and orientation of draw bar require an additional comment. The gyroscope's bias in state vector enable drift tracking and its compensation. Thanks to an Kalman Filter's properties the value of actual bias will be almost automatically calculated when the filter runs. The azimuth and elevation of drawbar enables utilizing external position sources even if they are not directly connected to system. In this implementation the position is given for point that is connected to system via link with fixed length. To simplify it is assumed that drawbar is connected by spherical joint to origin of moving coordinates system.\\
+
+For the vectors so selected, the equation of state was determined. To increase readability, the state equation was split into equations (\ref{state_begin} - \ref{state_end}). The Jacobi matrix of the state function is calculated in equations (\ref{state_jacobi_begin} - \ref{state_jacobi_end}).
+
+
+
+
+\begin{align}
+	\bm{DCM} \left( \bm{q}_k \right) &=  \begin{bmatrix}
+		q_0^2 + q_x^2 - q_y^2 - q_z^2 & 2(q_x q_y - q_0 q_z) & 2(q_x q_z + q_0 q_y) \\
+		2(q_x q_y + q_0 q_z) & q_0^2 - q_x^2 + q_y^2 - q_z^2 & 2(q_y q_z - q_0 q_x) \\
+		2(q_x q_z - q_0 q_y) & 2(q_y q_z + q_0 q_x) & q_0^2 - q_x^2 - q_y^2 + q_z^2 \\
+	\end{bmatrix}
+	\label{state_begin}
+	\\
+	\bm{S} \left( \bm{q}_k \right)  &= \begin{bmatrix}
+		-q_x & -q_y & -q_z \\
+		q_0 & -q_z & q_y \\
+		q_z & q_0 & -q_x \\
+		-q_y & q_x & q_0 \\
+	\end{bmatrix}
+	\\
+	\bm{a}^W &= \bm{DCM} \left( \bm{q}_k \right) \begin{bmatrix}
+		a_x \\ a_y \\ a_z 
+	\end{bmatrix} - \begin{bmatrix}
+		0 \\ 0 \\ g 
+	\end{bmatrix}
+\end{align}
+
+\begin{align}
+	\begin{bmatrix}
+		x \\ y \\ z 
+	\end{bmatrix}_{k+1}
+	&= 
+	\begin{bmatrix}
+		x \\ y \\ z 
+	\end{bmatrix}_{k}
+	+ \Delta t
+	\begin{bmatrix}
+	v_x \\ v_y \\ v_z 
+	\end{bmatrix}_{k}
+	+ \frac{1}{2} (\Delta t)^2 \bm{a}^W
+	\\
+	\begin{bmatrix}
+		v_x \\ v_y \\ v_z 
+	\end{bmatrix}_{k+1}
+	&= 
+	\begin{bmatrix}
+		v_x \\ v_y \\ v_z 
+	\end{bmatrix}_{k}
+	+ \Delta t \bm{a}^W
+	\\
+	\begin{bmatrix}
+		q_0 \\ q_x \\ q_y \\ q_z 
+	\end{bmatrix}_{k+1}
+	&= 
+	\begin{bmatrix}
+		q_0 \\ q_x \\ q_y \\ q_z  
+	\end{bmatrix}_{k}
+	+ \frac{1}{2} \Delta t \bm{S} \left( \bm{q}_k \right) 
+	\left(
+	\begin{bmatrix}
+		g_x \\ g_y \\ g_z
+	\end{bmatrix}_{k}
+	-
+	\begin{bmatrix}
+		b_x \\ b_y \\ b_z
+	\end{bmatrix}_{k}
+	\right)
+	\\
+	\begin{bmatrix}
+		b_x \\ b_y \\ b_z
+	\end{bmatrix}_{k+1}
+	&= 
+	\begin{bmatrix}
+		b_x \\ b_y \\ b_z 
+	\end{bmatrix}_{k}	
+	\\
+	\begin{bmatrix}
+		az \\ el 
+	\end{bmatrix}_{k+1}
+	&= 
+	\begin{bmatrix}
+		az \\ el 
+	\end{bmatrix}_{k}
+	\label{state_end}
+\end{align}
+
+
+\begin{equation}
+	\bm{D} \left( \bm{q}, \bm{a}\right)
+	=
+	2
+	\begin{bmatrix}
+		a_xq_0 + a_yq_z - a_zq_y & a_yq_0 - a_xq_z + a_zq_x & a_zq_0 + a_xq_y - a_yq_x \\
+		a_xq_x + a_yq_y + a_zq_z & a_zq_0 + a_xq_y - a_yq_x & a_xq_z - a_xq_z - a_zq_x \\
+		a_yq_x - a_xq_y - a_zq_0 & a_xq_x + a_yq_y + a_zq_z & a_xq_0 - a_yq_z + a_zq_y \\
+		a_yq_0 - a_xq_z + a_zq_x & a_zq_y - a_yq_z - a_xq_0 & a_xq_x + a_yq_y + a_zq_z \\
+	\end{bmatrix}^T
+	\label{state_jacobi_begin}
+\end{equation}
+
+\begin{equation}
+	\renewcommand{\arraystretch}{1.3}
+	\bm{A} \left( \bm{x}, \bm{u} \right) = \frac{\partial \bm{f}}{\partial \bm{x}}
+	= 
+	\begin{bNiceArray}{c;c;c;c;c}
+		\bm{I}_{3x3} & \Delta t \bm{I}_{3x3} & \frac{\Delta t ^2}{2}\ \bm{D} \left( \bm{q}, \bm{a}\right) & \bm{0}_{3x3} & \bm{0}_{3x2} \\
+		\cdashedline
+		\bm{0}_{3x3} & \bm{I}_{3x3} & \Delta t\ \bm{D} \left( \bm{q}, \bm{a}\right) & \bm{0}_{3x3} & \bm{0}_{3x2} \\
+		\cdashedline
+		\bm{0}_{4x3} & \bm{0}_{4x3} & \bm{I}_{4x4} & - \frac{\Delta t}{2}\ \bm{S} \left( \bm{q}_k \right) & \bm{0}_{4x2} \\
+		\cdashedline
+		\bm{0}_{3x3} & \bm{0}_{3x3} & \bm{0}_{3x4} & \bm{I}_{3x3} & \bm{0}_{3x2} \\
+		\cdashedline
+		\bm{0}_{2x3} & \bm{0}_{2x3} & \bm{0}_{2x4} & \bm{0}_{2x3} & \bm{I}_{2x2} \\	
+	\end{bNiceArray}
+	\label{state_jacobi_end}
+\end{equation}
+
+Next, a measurement function was determined. The accelerometer reading is used to correct orientation. The external position provider is linked with a position and drawbar orientation. The length of the drawbar is constant and equal $d$. The measurement function is given in equation (\ref{h_fun}). The Jacobi matrix of the measurement function is calculated in equations (\ref{measurement_jacobi_start} - \ref{measurement_jacobi_end}).
+
+
+\begin{equation}
+	\bm{h} \left(\bm{x} \right)
+	= 
+	\
+	\begin{bmatrix}
+		\bm{DCM} \left( \bm{q} \right) 
+		\begin{bmatrix}
+			0 \\ 0 \\ g 
+		\end{bmatrix}\\
+		\begin{bmatrix}
+			x \\ y \\ z 
+		\end{bmatrix}
+		+
+		\bm{R}_z \left( az \right)
+		\bm{R}_y \left( el \right)
+		\begin{bmatrix}
+			d \\ 0 \\ 0 
+		\end{bmatrix}
+	\end{bmatrix}
+	=
+	\begin{bmatrix}
+		2g(q_x q_z + q_0 q_y) \\
+		2g(q_y q_z - q_0 q_x) \\
+		g(q_0^2 - q_x^2 - q_y^2 + q_z^2) \\
+		x + d\ cos(az)\ cos(el)\\
+		y + d\ sin(az)\ cos(el)\\
+		z - sin(el)
+	\end{bmatrix}
+	\label{h_fun}
+\end{equation}
+
+\begin{equation}
+	\bm{Ca} \left( \bm{q} \right)
+	=
+	\begin{bmatrix}
+		2q_y & 2q_z & q_0 & 2q_x \\
+		-2q_x & -2q_0 & 2q_z & 2q_y \\
+		2q_0 & -2q_x & -2q_y & 2q_z
+	\end{bmatrix}
+	\label{measurement_jacobi_start}
+\end{equation}
+
+\begin{equation}
+	\bm{Cp} \left( az, el\right)
+	=
+	\begin{bmatrix}
+		-sin(az)\ cos(el) & -cos(az)\ sin(el)\\
+		 cos(az)\ cos(el) & -sin(az)\ sin(el)\\
+		 0				  & -cos(el)
+		
+	\end{bmatrix}
+\end{equation}
+
+\begin{equation}
+	\renewcommand{\arraystretch}{1.3}
+	\bm{H} \left( \bm{x}, \bm{u} \right) = \frac{\partial \bm{h}}{\partial \bm{x}}
+	= 
+	\begin{bNiceArray}{c;c;c;c;c}
+		\bm{0}_{3x3} & \bm{0}_{3x3} & g\ \bm{Ca} \left( \bm{q} \right)& \bm{0}_{3x3} & \bm{0}_{3x2} \\
+		\cdashedline
+		\bm{I}_{3x3} & \bm{0}_{3x3} & \bm{0}_{3x4} & \bm{0}_{3x3} & d\ \bm{Cp} \left( az, el\right) \\
+	\end{bNiceArray}
+	\label{measurement_jacobi_end}
+\end{equation}
+
+
+
 
 \section{Time synchronization problem}
 

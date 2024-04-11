@@ -70,7 +70,7 @@ A distance constraint is defined as constraint that keeps a constant distance be
 \end{equation}
 
 where:
-\begin{itemize}
+\begin{itemize}[noitemsep]
 	\item $\bm{r}^{(0)}$ -- position of moving element, given in global coordinates frame,
 	\item $R(\bm{q})$ -- rotation matrix between world frame and element frame,
 	\item $\bm{s}^{(1)}$ -- position of featured point on the moving element, given in element's coordinate system,
@@ -87,39 +87,60 @@ However, a norm of vector requires calculation of squared root that value and de
 
 In order to calculate derivative of distance constraint MATLAB Symbolic Toolbox was used \mbox{(\textit{distance\_constraint\_derivative.m})}. Equation (\ref{distance_constraint_der1} -- \ref{distance_constraint_der2}) presents calculated partial derivatives with respect to $\bm{r}$ and $\bm{q}$ elements.
 
-\todo[inline, color=green]{
-	To fill up
-}
-
 \begin{equation}
-	\frac{\partial c(\bm{r}, \bm{q})}{r_x} = 
+	\frac{\partial c(\bm{r}, \bm{q})}{r_x} = 2(x - r_{bx} + r_{ax}(2q_0^2 + 2q_x^2 - 1) + r_{ay}(2q_0q_z - 2q_xq_y) + r_{az}(2q_0q_y - 2q_xq_z))^2 
 	\label{distance_constraint_der1}
 \end{equation}
 
 \begin{equation}
-	\frac{\partial c(\bm{r}, \bm{q})}{r_y} = 
+	\frac{\partial c(\bm{r}, \bm{q})}{r_y} = 2(y - r_{by} + r_{ay}(2q_0^2 + 2q_y^2 - 1) + r_{ax}(2q_0q_z + 2q_xq_y) + r_{az}(2q_0q_x + 2q_yq_z))^2
 \end{equation}
 
 \begin{equation}
-	\frac{\partial c(\bm{r}, \bm{q})}{r_z} = 
+	\frac{\partial c(\bm{r}, \bm{q})}{r_z} = 2(z - r_{bz} + r_{az}(2q_0^2 + 2q_z^2 - 1) + r_{ax}(2q_0q_y + 2q_xq_z) - r_{ay}(2q_0q_x - 2q_yq_z))^2
 \end{equation}
 
-\begin{equation}
-	\frac{\partial c(\bm{r}, \bm{q})}{q_0} = 
-\end{equation}
+\begin{align}
+\begin{split}
+	\frac{\partial c(\bm{r}, \bm{q})}{q_0} &= 2(2q_yr_{az} - 4q_0r_{ax} + 2q_zr_{ay})(r_{bx} - x - r_{ax}(2q_0^2 + 2q_x^2 - 1)\\
+	&+ r_{ay}(2q_0q_z - 2q_xq_y) + r_{az}(2q_0q_y - 2q_xq_z))^2\\
+	&+ 2(4q_0r_{ay} +  2q_xr_{az} + 2q_zr_{ax}) \cdot(y - r_{by} + r_{ay}(2q_0^2 + 2q_y^2 - 1)\\
+	&+ r_{ax}(2q_0q_z + 2q_xq_y) + r_{az}(2q_0q_x + 2q_yq_z))^2 + 2(4q_0r_{az} - 2q_xr_{ay} + 2q_yr_{ax})\\
+	&\cdot(z - r_{bz} + r_{az}(2q_0^2 + 2q_z^2 - 1) + r_{ax}(2q_0q_y + 2q_xq_z) - r_{ay}(2q_0q_x - 2q_yq_z))^2
+\end{split}
+\end{align}
 
-\begin{equation}
-	\frac{\partial c(\bm{r}, \bm{q})}{q_x} = 
-\end{equation}
+\begin{align}
+\begin{split}
+	\frac{\partial c(\bm{r}, \bm{q})}{q_x} &= 2(2q_0r_{az} + 2q_yr_{ax})(y - r_{by} + r_{ay}(2q_0^2 + 2q_y^2 - 1)\\
+	&+ r_{ax}(2q_0q_z + 2q_xq_y) + r_{az}(2q_0q_x + 2q_yq_z))^2\\
+	&- 2(4q_xr_{ax} + 2q_yr_{ay} + 2q_zr_{az})(r_{bx} - x - r_{ax}(2q_0^2 + 2q_x^2 - 1)\\
+	&+ r_{ay}(2q_0q_z - 2q_xq_y) + r_{az}(2q_0q_y - 2q_xq_z))^2 - 2(2q_0r_{ay} - 2q_zr_{ax})\\
+	&\cdot(z - r_{bz} + r_{az}(2q_0^2 + 2q_z^2 - 1) + r_{ax}(2q_0q_y + 2q_xq_z) - r_{ay}(2q_0q_x - 2q_yq_z))^2
+\end{split}
+\end{align}
 
-\begin{equation}
-	\frac{\partial c(\bm{r}, \bm{q})}{q_y} = 
-\end{equation}
+\begin{align}
+	\begin{split}
+	\frac{\partial c(\bm{r}, \bm{q})}{q_y} &= 2(2q_xr_{ax} + 4q_yr_{ay} + 2q_zr_{az})(y - r_{by} + r_{ay}(2q_0^2 + 2q_y^2 - 1)\\
+	&+ r_{ax}(2q_0q_z + 2q_xq_y) + r_{az}(2q_0q_x + 2q_yq_z))^2\\
+	&+ 2(2q_0r_{az} - 2q_xr_{ay})(r_{bx} - x - r_{ax}(2q_0^2 + 2q_x^2 - 1) \\
+	&+ r_{ay}(2q_0q_z - 2q_xq_y) + r_{az}(2q_0q_y - 2q_xq_z))^2 + 2(2q_0r_{ax} + 2q_zr_{ay})\\
+	&\cdot(z - r_{bz} + r_{az}(2q_0^2 + 2q_z^2 - 1) + r_{ax}(2q_0q_y + 2q_xq_z) - r_{ay}(2q_0q_x - 2q_yq_z))^2
+\end{split}
+\end{align}
 
-\begin{equation}
-	\frac{\partial c(\bm{r}, \bm{q})}{q_z} =
+\begin{align}
+	\begin{split}
+	\frac{\partial c(\bm{r}, \bm{q})}{q_z} &= 2(2q_xr_{ax} + 2q_yr_{ay} + 4q_zr_{az})(z - r_{bz} + r_{az}(2q_0^2 + 2q_z^2 - 1)\\
+	&+ r_{ax}(2q_0q_y + 2q_xq_z) - r_{ay}(2q_0q_x - 2q_yq_z))^2\\
+	&+ 2(2q_0r_{ay} + 2q_xr_{ax})(r_{bx} - x - r_{ax}(2q_0^2 + 2q_x^2 - 1)\\
+	&+ r_{ay}(2q_0q_z - 2q_xq_y) + r_{az}(2q_0q_y - 2q_xq_z))^2 - 2(2q_0r_{ax} - 2q_yr_{ay})\\
+	&\cdot(y - r_{by} + r_{ay}(2q_0^2 + 2q_y^2 - 1) + r_{ax}(2q_0q_z + 2q_xq_y) + r_{az}(2q_0q_x + 2q_yq_z))^2
 	\label{distance_constraint_der2}
-\end{equation}
+\end{split}
+\end{align}
+\\
 
 
 It is worth to mention that, if velocities are known, the equation function (\ref{distance_constraint_fun}) can be differentiated with respect to time to get extra constraint $c(\bm{r}, \bm{q}, \frac{d\bm{r}}{dt}, \frac{d\bm{q}}{dt})$. Nevertheless the position and velocity are strictly connected in EKF state function. In result the correction of position leads to correction of velocity.
@@ -164,7 +185,7 @@ In constraints correction phase only state of filter changes and covariance matr
 \end{equation}
 
 where:
-\begin{itemize}
+\begin{itemize}[noitemsep]
 	\item $\bm{D}$, $\bm{d}$ -- matrix and vector defining linear constraints,
 	\item $\bm{W}$ -- square weight matrix,
 	\item $\bm{\hat{x}}$ -- filter state before correction,

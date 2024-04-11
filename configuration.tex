@@ -32,10 +32,30 @@
 \lstset{basicstyle=\ttfamily, columns=fullflexible}
 \usepackage{todonotes}
 \usepackage{arydshln}
+\usepackage{nicematrix}
 \usepackage{tikz}
 \usetikzlibrary{positioning, arrows.meta}
 \usepackage{graphicx} %Loading the package
 \graphicspath{{.}{images/}}
+
+\NiceMatrixOptions
+{
+	custom-line = 
+	{
+		letter = ; , 
+		command = cdashedline ,
+		tikz = dashed 
+	}
+}
+
+\setlist[itemize]{noitemsep}
+
+\makeatletter
+\renewcommand*\env@matrix[1][*\c@MaxMatrixCols c]{%
+	\hskip -\arraycolsep
+	\let\@ifnextchar\new@ifnextchar
+	\array{#1}}
+\makeatother
 
 \usepackage[final]{pdfpages}
 \usepackage{commath}
