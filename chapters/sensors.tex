@@ -134,7 +134,7 @@ where:
 
 \subsection{Accelerometer}
 
-The purpose of accelerometer's calibration is to remove a bias and compensate effects of an assembly inaccuracy and a scale error. The accelerometer's noise compensation is usually moved to sensor fusion. In order to propose calibration method, model given in equation (\ref{acc_model2}) can be transformed to equation (\ref{acc_calib}). The noise is ignored, while $\bm{R}_M$ $\bm{S}$ forms new $\bm{\Phi}^{-1}$ coefficient matrix. The proof that the product of these matrices is the inverse of another 3 x 3 matrix is that the rotation matrix is an orthogonal matrix, and the scale matrix is a diagonal matrix. Both of these matrices are non-singular and so their product can also be inverted.
+The purpose of accelerometer's calibration is to remove a bias and compensate effects of an assembly inaccuracy and a scale error. The accelerometer's noise compensation is usually moved to sensor fusion. Before proposing a calibration method, model given in equation (\ref{acc_model2}) can be transformed to equation (\ref{acc_calib}). The noise is ignored, while $\bm{R}_M$ $\bm{S}$ forms new $\bm{\Phi}^{-1}$ coefficient matrix. The proof that the product of these matrices is the inverse of another 3 x 3 matrix is that the rotation matrix is an orthogonal matrix, and the scale matrix is a diagonal matrix. Both of these matrices are non-singular and so their product can also be inverted.
 
 \begin{equation}
 	\bm{\hat{a}}_{res}^B \approx \bm{\Phi}^{-1} \left( \bm{a}_{res}^B + \bm{b}_0 \right)
@@ -155,7 +155,7 @@ where:
 	\item $\bm{\Gamma}$ -- 3 x 1 calibration's coefficient vector.
 \end{itemize}
 
-In result, accelerometer's calibration comes down to finding values of $3 \cdot 3 + 3 = 12$ coefficients. To get that done, readings are collected when the sensor is in position, that expected readings are known. Accelerometer, even if not moving, measures gravitational acceleration. Assume, that sensor is closed in box, that edges are parallel to its coordinates system. When the box rest on each of its face on flat table the accelerometer is exprected to measure $\begin{bmatrix}\pm g & 0 & 0\end{bmatrix}^T$, $\begin{bmatrix}0 & \pm g & 0\end{bmatrix}^T$ or $\begin{bmatrix} 0 & 0 \pm g\end{bmatrix}^T$. Therefore, collecting measures from every face results in $6 \cdot 3 = 18$ equation that can be used to determinate values of calibration's coefficient. As there is more equations that unknowns, linear regression method is used. In the case of this work, it was decided to utilize Ordinal least squares method (OLS). In order to use this, all the equations have to be transformed to linear form given in equation (\ref{ols}).
+In result, the accelerometer's calibration comes down to finding values of $3 \cdot 3 + 3 = 12$ coefficients. To achieve this, readings are collected when the sensor is in positions for which the expected values are known. An accelerometer, even if not moving, measures gravitational acceleration. Assume, that sensor is closed in box, that edges are parallel to its coordinates system. When the box rest on each of its face on flat table the accelerometer is exprected to measure $\begin{bmatrix}\pm g & 0 & 0\end{bmatrix}^T$, $\begin{bmatrix}0 & \pm g & 0\end{bmatrix}^T$ or $\begin{bmatrix} 0 & 0 \pm g\end{bmatrix}^T$. Therefore, collecting measures from every face results in $6 \cdot 3 = 18$ equation that can be used to determinate values of calibration's coefficient. As there is more equations that unknowns, linear regression method is used. In the case of this work, it was decided to utilize Ordinal Least Squares method (OLS). Before method applying, all the equations have to be transformed to a linear form given in equation (\ref{ols}).
 \begin{equation}
 	\bm{X} \bm{\Theta} = \bm{Y}
 	\label{ols}
@@ -167,7 +167,7 @@ where:
 	\item $\bm{Y}$ -- n x 1 known matrix.
 \end{itemize}
  
-Transformation is given in equations (\ref{ols_theta} - \ref{ols_x})
+The transformation to linear form is given in equations (\ref{ols_theta} - \ref{ols_x})
 \setcounter{MaxMatrixCols}{25}
 
 \begin{equation}
@@ -229,7 +229,7 @@ According to OLS method, estimation $\bm{\hat{\Theta}}$ is given in equation (\r
 	\label{ols_est}
 \end{equation}
 
-Additionally, an intuitive procedure of collecting calibration measures is also part of the system. Usually accelerometer's calibration involves placing sensor on calibration table and approving measure (for example, by clicking). Moreover, in certain system, an order of sides that being measured is predetermined. This approach has a fundamental advantage, because it recognizes sensors mounted in any orientation. Nevertheless, if the sensor is roughly set properly (axes are directed in accordance, but not perfectly aligned), the calibration's process can be improved, by recognizing on what face sensor was plated. In this purpose sensor measurements are collected into statistics that calculates mean value and standard variance. If standard variance is below predefined threshold, it means that sensor is not moving. Next mean value is normalized and compared with every of 6 axes' unit vectors. If angle between normalized mean and unit vector is less that specified (that can be quickly checked using dot product), the face correlated with unit vector is recognized.
+Additionally, an intuitive procedure of collecting calibration measures is also part of the system. Usually accelerometer's calibration involves placing sensor on calibration table and approving measure (for example, by clicking a button). Moreover, in certain system, an order of sides that being measured is predetermined. This approach has a fundamental advantage, because it recognizes sensors mounted in any orientation. Nevertheless, if the sensor is roughly set properly (axes are directed in accordance, but not perfectly aligned), the calibration's process can be improved, by recognizing on what face sensor was plated. In this purpose sensor measurements are collected into statistics that calculates mean value and standard variance. If standard variance is below predefined threshold, it means that sensor is not moving. Next mean value is normalized and compared with every of 6 axes' unit vectors. If angle between normalized mean and unit vector is less that specified (that can be quickly checked using dot product), the face correlated with unit vector is recognized.
 
 
 
@@ -259,6 +259,6 @@ where:
 
 Proper frequency selection requires involving multiple factors. If noise bandwidth was not specified by sensor's producer, the frequency can be selected by analyzing logs. Assume that gyroscope was collecting data (without filtration) when the mechanism was moving along the determined trajectory, and for this trajectory the exprected velocities are known. Next, spectral transform is conducted for registered data and expectation. Noise spectrum can be obtained by subtraction spectrums from last step. Ultimately, cut-off frequency should be placed above the highest frequency in expectation's spectrum and below the lowest frequency in noise spectrum.\\
 
-It should be mentioned, that it is rewarding to use a bandpass filters instead low-pass filter in specific cases. The advantage of this approach is that the bandpass filter removes high-frequency noise, as well as bias. However, the measured signal often overlap the bias bandwidth and using such a filter leads to insensitivity to low velocities. Summarize this solution should be implemented only if an active drift correction is not possible or only high velocities are important for researches.
+It should be mentioned, that in specific cases it is rewarding to use a bandpass filters instead low-pass filter. The advantage of this approach is that the bandpass filter removes high-frequency noise, as well as bias. However, the measured signal often overlap the bias bandwidth and using such a filter leads to insensitivity to low velocities. Summarize this solution should be implemented only if an active drift correction is not possible or only high velocities are important for researches.
 
 

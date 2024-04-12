@@ -1,6 +1,6 @@
 \chapter{Constraints}
 
-Constraints are the limitation placed on system's state. They define an allowed setup, that the system can reach. Due to the origin, many types of constraints are distinguished. They can result from system's structure, known trajectory or be directly linked with limitation of mathematical instrument used in system description.
+Constraints are the limitation placed on system's state. They define an allowed setup, that the system can reach. Due to the origin, many types of constraints are distinguished. They can result from system's structure, known trajectory or be directly linked with limitation of mathematical instrument used in system description.\\
 
 A wide group of constraints is made of design constraints, i.e. the constraints that stem directly from mechanism's structure. They determine the directions in which the mechanism can move so as not to breach the constraints imposed by the existence of bonds.
 
@@ -39,13 +39,13 @@ Position and orientation constraints are the constraints that are known before t
 
 The constraints which are given by an entangled function of multiple state variables are usually harder to formulate and require an individual analysis. Example of this type is given in next section.\\
 
-Another example is a fixation of same parameter that can be calculated form system's state. Assume that the designed mechanism should keep a yaw angle of orientation equal to zero. If the state of system contains orientation given by quaternion, a yaw angle can be calculated from the following formula:
+Another example is a fixation of same parameter that can be calculated from system's state. Assume that the designed mechanism should keep a yaw angle of orientation equal to zero. If the state of system contains orientation given by quaternion, a yaw angle can be calculated from the following formula:
 
 \begin{equation}
 	\psi = {\mbox{atan2}}\left(2(q_{0}q_{z}+q_{x}q_{y}),1-2(q_{y}^{2}+q_{z}^{2})\right)
 \end{equation}
 
-However, the value of atan2 function is equal to zero then and only then the first argument is equal to zero. With that being said, the simple form of yaw constraint is given by equation (\ref{yaw_constraint_fun}). Equation (\ref{yaw_constraint_fun_der}) defines its derivative. The disadvantage of this approach is that the yaw angle equals to $\pi$ also fulfills the constraint.
+However, the value of \textit{atan2} function is equal to zero then and only then the first argument is equal to zero. With that being said, the simple form of yaw constraint is given by equation (\ref{yaw_constraint_fun}). Equation (\ref{yaw_constraint_fun_der}) defines its derivative. The disadvantage of this approach is that the yaw angle equals to $\pi$ also fulfills the constraint.
 
 \begin{equation}
 	c \left( \bm{q} \right) = q_{0}q_{z}+q_{x}q_{y}
@@ -195,7 +195,7 @@ where:
 It is proposed to use inverse of covariance matrix as weight matrix  $\bm{W} = \bm{P}^{-1}$. In case of linear constraints it leads to the maximum probability
 estimate of the state subject to state constraints.\\
 
-Proof of correctness of this method is well known in literature. So as not to duplicate this another proof will be shown, by showing the similarity to Newton-Raphson nonlinear equation's solving method. Assume that $\bm{D}$ is squared matrix with full rank. In order to find solution of constraint equation, iterative method is used to solve equation (\ref{Dxd}). Newton-Rapshon method requires Jacobi matrix, that in this case is given in equation (\ref{D})
+Proof of correctness of this method is well known in literature. So as not to duplicate this, another proof will be present, by showing the similarity to Newton-Raphson nonlinear equation's solving method. Assume that $\bm{D}$ is squared matrix with full rank. In order to find solution of constraint equation, iterative method is used to solve equation (\ref{Dxd}). Newton-Rapshon method requires Jacobi matrix, that in this case is given in equation (\ref{D})
 
 \begin{equation}
 	\bm{f} \left( \bm{x} \right) = \left( \bm{D} \bm{x} - \bm{d}  \right)
@@ -226,7 +226,7 @@ Furthermore, if the equation is underdeterminated, pseudo-inverse form a space o
 	\label{wieight_pseudo}
 \end{equation}
 
-Inserting equation (\ref{wieight_pseudo}) to (\ref{NR}) leads to constraint correction equation (\ref{constraint_corr}).
+Inserting equation (\ref{wieight_pseudo}) to (\ref{NR}) leads to constraint correction equation (\ref{constraint_corr}).\\
 
 The reasoning so far is based on the assumption that constraints are linear. 
 However, constraints in mechanic are mostly nonlinear. This problem is addressed by local linearization method. Equations \mbox{(\ref{linearization1} -- \ref{linearization2})} define substitution resulting from linearization.

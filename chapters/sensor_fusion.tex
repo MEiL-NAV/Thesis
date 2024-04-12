@@ -68,7 +68,7 @@ The Kalman filter performs two main steps: prediction and correction (figure \re
 \begin{figure}[!h]
 	\centering
 	\begin{tikzpicture}[
-		block/.style={rectangle, draw, text width=2cm, text centered, rounded corners, minimum height=1.5cm},
+		block/.style={rectangle, draw, text width=2cm, text centered, rounded corners, minimum height=1.2cm},
 		arrow/.style={->, >=stealth, thick}
 		]
 		% Nodes
@@ -110,7 +110,7 @@ where: $H_k = \frac{\partial h}{\partial x}\Bigr|_{\hat{x}_k^-}$, and $R_k$ is m
 
 Application an Extended Kalman Filter to estimate position and orientation involves determination of state vector and state equation, specification measurement sources and their linkage with state. In prediction phase high sample rate sensors and sensor that measurements must be integrated should be used, like inertial sensor. The correction phase that can be processed rarely should include rest of sensors. In this section the filter's model will be presented.\\
 
-In preparation, available sensors assigned into particular phase. The accelerometer and gyroscope's readings are used in prediction phase, as the reading are integrated. In correction phase external position source is used to correct position and accelerometer's readings are used to correct orientation.  Thus, the equation (\ref{u_vec}) presents the proposed control input vector and equation (\ref{h_vec}) presents measurement vector. Next state vector is set. The proposed state vector is presented in equation (\ref{state_vec}).
+In preparation, available sensors assigned into particular phase. The accelerometer and gyroscope's readings are used in prediction phase, as the reading are integrated. In correction phase external position source is used to correct position and accelerometer's readings are used to correct orientation.  Thus, the equation (\ref{u_vec}) presents the proposed control input vector and equation (\ref{h_vec}) presents measurement vector. Next, it is necessary to define the state vector. The proposed state vector is presented in equation (\ref{state_vec}).
 
 \begin{equation}
 	\bm{u} = \begin{bmatrix}
@@ -149,34 +149,7 @@ where:
 	\item $az$ and $el$ -- azimuth and elevation of drawbar.
 \end{itemize}
 
-The bias and orientation of draw bar require an additional comment. The gyroscope's bias in state vector enable drift tracking and its compensation. Thanks to an Kalman Filter's properties the value of actual bias will be almost automatically calculated when the filter runs. The azimuth and elevation of drawbar enables utilizing external position sources even if they are not directly connected to system. In this implementation the position is given for point that is connected to system via link with fixed length. To simplify it is assumed that drawbar is connected by spherical joint to origin of moving coordinates system.\\
-
-For the vectors so selected, the equation of state was determined. To increase readability, the state equation was split into equations (\ref{state_begin} - \ref{state_end}). The Jacobi matrix of the state function is calculated in equations (\ref{state_jacobi_begin} - \ref{state_jacobi_end}).
-
-
-
-
-\begin{align}
-	\bm{DCM} \left( \bm{q}_k \right) &=  \begin{bmatrix}
-		q_0^2 + q_x^2 - q_y^2 - q_z^2 & 2(q_x q_y - q_0 q_z) & 2(q_x q_z + q_0 q_y) \\
-		2(q_x q_y + q_0 q_z) & q_0^2 - q_x^2 + q_y^2 - q_z^2 & 2(q_y q_z - q_0 q_x) \\
-		2(q_x q_z - q_0 q_y) & 2(q_y q_z + q_0 q_x) & q_0^2 - q_x^2 - q_y^2 + q_z^2 \\
-	\end{bmatrix}
-	\label{state_begin}
-	\\
-	\bm{S} \left( \bm{q}_k \right)  &= \begin{bmatrix}
-		-q_x & -q_y & -q_z \\
-		q_0 & -q_z & q_y \\
-		q_z & q_0 & -q_x \\
-		-q_y & q_x & q_0 \\
-	\end{bmatrix}
-	\\
-	\bm{a}^W &= \bm{DCM} \left( \bm{q}_k \right) \begin{bmatrix}
-		a_x \\ a_y \\ a_z 
-	\end{bmatrix} - \begin{bmatrix}
-		0 \\ 0 \\ g 
-	\end{bmatrix}
-\end{align}
+The bias and orientation of draw bar require an additional comment. The gyroscope's bias in state vector enable drift tracking and its compensation. Thanks to an Kalman Filter's properties the value of actual bias will be almost automatically calculated when the filter runs. The azimuth and elevation of drawbar enables utilizing external position sources even if they are not directly connected to system. In this implementation the position is given for point that is connected to system via link with fixed length. To simplify it is assumed that drawbar is connected by spherical joint to origin of moving coordinates system. For the vectors so selected, the equation of state was determined. To increase readability, the state equation was split into equations (\ref{state_begin} - \ref{state_end}). The Jacobi matrix of the state function is calculated in equations (\ref{state_jacobi_begin} - \ref{state_jacobi_end}).
 
 \begin{align}
 	\begin{bmatrix}
@@ -191,6 +164,7 @@ For the vectors so selected, the equation of state was determined. To increase r
 	v_x \\ v_y \\ v_z 
 	\end{bmatrix}_{k}
 	+ \frac{1}{2} (\Delta t)^2 \bm{a}^W
+	\label{state_begin}
 	\\
 	\begin{bmatrix}
 		v_x \\ v_y \\ v_z 
@@ -233,9 +207,31 @@ For the vectors so selected, the equation of state was determined. To increase r
 	&= 
 	\begin{bmatrix}
 		az \\ el 
-	\end{bmatrix}_{k}
+	\end{bmatrix}_{k}	
+\end{align}
+
+\begin{align}
+	\bm{DCM} \left( \bm{q}_k \right) &=  \begin{bmatrix}
+		q_0^2 + q_x^2 - q_y^2 - q_z^2 & 2(q_x q_y - q_0 q_z) & 2(q_x q_z + q_0 q_y) \\
+		2(q_x q_y + q_0 q_z) & q_0^2 - q_x^2 + q_y^2 - q_z^2 & 2(q_y q_z - q_0 q_x) \\
+		2(q_x q_z - q_0 q_y) & 2(q_y q_z + q_0 q_x) & q_0^2 - q_x^2 - q_y^2 + q_z^2 \\
+	\end{bmatrix}
+	\\
+	\bm{S} \left( \bm{q}_k \right)  &= \begin{bmatrix}
+		-q_x & -q_y & -q_z \\
+		q_0 & -q_z & q_y \\
+		q_z & q_0 & -q_x \\
+		-q_y & q_x & q_0 \\
+	\end{bmatrix}
+	\\
+	\bm{a}^W &= \bm{DCM} \left( \bm{q}_k \right) \begin{bmatrix}
+		a_x \\ a_y \\ a_z 
+	\end{bmatrix} - \begin{bmatrix}
+		0 \\ 0 \\ g 
+	\end{bmatrix}
 	\label{state_end}
 \end{align}
+
 
 
 \begin{equation}
@@ -344,7 +340,7 @@ Next, a measurement function was determined. The accelerometer reading is used t
 
 Sensor's data flow to the server from multiple sensor's instance with various delays. The reading are used in prediction and correction phases. In correction phase, reading time is no so important, as this phase can be split into multiple correction. Formally, this approach is present in Multiplicative and Sequential Kalman Filters. Unfortunately, in predict phase all involved readings should be synchronized. If time of reading is known, the nearest readings are selected, or if calculation are conducted with fixed step, readings can be interpolated.\\
 
-The time of reading is also not a trivial term, especially in decentralized system. There are many time determination method known, which differ conditions (\cite{time_sync} \cite{time_sync2}). Consider the case that assume precise clock in server and low-precision clock in every sensor node. An example method of solving the synchronization problem presents itself as follows. Every fixed period server broadcasts time synchronize message that contains only unique sequence number. Sending time $T_1$ (according to server's clock) is stored. Every node that receives synchronize message replies immediately with sequence number and node's clock time $T_n$. Received message is saved with timestamp $T_2$. Based on this reply server calculates transmission delay and clocks' offset. First transmission delay (commonly called \textit{ping}) is calculated as a half of a period between broadcasting message and receiving reply (equation (\ref{ping}))). Next, node's clock offset in respect to server's clock is calculated and stored in array (equation (\ref{offset}))). Nodes send readings signed with timestamp, that is based on node's clock. Finally, true timestamp $T_r$ in respect to server's clock is calculated by adding relevant offset (equation (\ref{timestamp}))).
+The time of reading is also not a trivial term, especially in decentralized system. There are many time determination method known, which differ in the terms and conditions (\cite{time_sync} \cite{time_sync2}). Consider the case that assume precise clock in server and low-precision clock in every sensor node. An example method of solving the synchronization problem presents itself as follows. Every fixed period server broadcasts time synchronize message that contains only unique sequence number. Sending time $T_1$ (according to server's clock) is stored. Every node that receives synchronize message replies immediately with sequence number and node's clock time $T_n$. Received message is saved with timestamp $T_2$. Based on this reply server calculates transmission delay and clocks' offset. First transmission delay (commonly called \textit{ping}) is calculated as a half of a period between broadcasting message and receiving reply (equation (\ref{ping})). Next, node's clock offset in respect to server's clock is calculated and stored in array (equation (\ref{offset})). Nodes send readings signed with timestamp, that is based on node's clock. Finally, true timestamp $T_r$ in respect to server's clock is calculated by adding relevant offset (equation (\ref{timestamp})).
 
 \begin{equation}
 	ping = \frac{T_2 - T_1}{2}
