@@ -34,49 +34,6 @@ The system is organized into modules. The individual modules perform the followi
 
 Figure (\ref{architecture}) shows system architecture's diagram with communication paths between modules.
 
-\renewcommand{\arraystretch}{1.2}
-\begin{table}[!h]
-	\centering
-	\begin{tabular}{|m{0.03\textwidth}|m{0.13\textwidth}|m{0.025\textwidth}|m{0.68\textwidth}|} 
-		\hline
-		\rowcolor{Gray}		\multicolumn{2}{|c|}{Requirement} & No. & Description \\
-		\hline
-		\centering \multirow{2.0}{*}{\rotatebox[origin=c]{90}{Usability}}
-		&\multirow{1}{*}{Usability} 
-		& 1 & Server runs natively on UNIX or in Docker containter. Front-end application is multi-platform. \\
-		\cline{2-4}
-		& \multirow{1}{*}{Ergonomy} 
-		& 2 & User interface should be transparent and intuitive.  \\
-		\cline{3-4}
-		\hline
-		\centering \multirow{2.0}{*}{\rotatebox[origin=c]{90}{Reliability}}
-		& \multirow{1}{*}{Precision} 
-		& 3 & System should maximize estimation precision for collected readings. \\
-		\cline{2-4}
-		& \multirow{1}{*}{Verifiability} 
-		& 4 & Estimation results should match predictions and be verifiable. \\
-		\hline
-		\centering \multirow{1}{*}{\rotatebox[origin=c]{90}{Perf.}}
-		& \multirow{1}{*}{Performance} 
-		& 5 & System performance should scale relative to number of sensors. \\
-		\hline
-		\centering \multirow{5.5}{*}{\rotatebox[origin=c]{90}{Supportability}}
-		& \multirow{2}{*}{Maintenance} 
-		& 6 & System implementation should be transparent and easy to develop.  \\
-		\cline{3-4}
-		& & 7 & System should be divided into modules, that can be modified separately.\\
-		\cline{2-4}
-		& \multirow{1}{*}{Installability} 
-		& 8 & Installation process should be easy. It is recommanded for front-end software not to be installed. \\
-		\cline{2-4}
-		& \multirow{1}{*}{Configuration} 
-		& 9 & Software should be magic-number-free and all parameters should be configurable. \\
-		\hline
-	\end{tabular}
-	\caption{Non-functional requirements -- FURPS}
-	\label{furps}
-\end{table}
-
 \begin{figure}[!h]
 	\begin{center}
 		\begin{tikzpicture}[
@@ -129,13 +86,56 @@ The implementation of the project used various software technologies and librari
 \section{Prototype}
 Project realization includes the preparation of software and hardware. The hardware part is the sensor node, that perform low-lever sensor data collecting and transferring data to server. The selected hardware should provide adequate performance and support network communication. For this purpose, microcontrollers work well. Wemos D1 mini Pro development board was selected. The ESP8266EX chip used on it provides high performance and native support for network functions including Wi-Fi. Board is connected to two shields: power supply shield and custom shield with IMU. Power supply shield enables chip powering from Li-ion battery. Custom shield has installed Pololu MinIMU-9 that contains LSM303 accelerometer and L3GD20 gyroscope. Thus created device is very compact and together with battery fits into a 50x40x35mm 3D-printed enclosure (figure (\ref{prototype})).
 
-\begin{figure}
+\begin{figure}[!h]
 	\begin{center}
 		\includegraphics[width = 0.8\textwidth]{prototype.jpg}
 	\end{center}
 	\caption{Sensor node}
 	\label{prototype}
 \end{figure}
+
+\renewcommand{\arraystretch}{1.2}
+\begin{table}[!h]
+	\centering
+	\begin{tabular}{|m{0.03\textwidth}|m{0.13\textwidth}|m{0.025\textwidth}|m{0.68\textwidth}|} 
+		\hline
+		\rowcolor{Gray}		\multicolumn{2}{|c|}{Requirement} & No. & Description \\
+		\hline
+		\centering \multirow{2.0}{*}{\rotatebox[origin=c]{90}{Usability}}
+		&\multirow{1}{*}{Usability} 
+		& 1 & Server runs natively on UNIX or in Docker containter. Front-end application is multi-platform. \\
+		\cline{2-4}
+		& \multirow{1}{*}{Ergonomy} 
+		& 2 & User interface should be transparent and intuitive.  \\
+		\cline{3-4}
+		\hline
+		\centering \multirow{2.0}{*}{\rotatebox[origin=c]{90}{Reliability}}
+		& \multirow{1}{*}{Precision} 
+		& 3 & System should maximize estimation precision for collected readings. \\
+		\cline{2-4}
+		& \multirow{1}{*}{Verifiability} 
+		& 4 & Estimation results should match predictions and be verifiable. \\
+		\hline
+		\centering \multirow{1}{*}{\rotatebox[origin=c]{90}{Perf.}}
+		& \multirow{1}{*}{Performance} 
+		& 5 & System performance should scale relative to number of sensors. \\
+		\hline
+		\centering \multirow{5.5}{*}{\rotatebox[origin=c]{90}{Supportability}}
+		& \multirow{2}{*}{Maintenance} 
+		& 6 & System implementation should be transparent and easy to develop.  \\
+		\cline{3-4}
+		& & 7 & System should be divided into modules, that can be modified separately.\\
+		\cline{2-4}
+		& \multirow{1}{*}{Installability} 
+		& 8 & Installation process should be easy. It is recommanded for front-end software not to be installed. \\
+		\cline{2-4}
+		& \multirow{1}{*}{Configuration} 
+		& 9 & Software should be magic-number-free and all parameters should be configurable. \\
+		\hline
+	\end{tabular}
+	\caption{Non-functional requirements -- FURPS}
+	\label{furps}
+\end{table}
 
 \section{Plugins}
 
