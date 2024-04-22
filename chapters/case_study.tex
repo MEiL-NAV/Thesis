@@ -65,7 +65,13 @@ The outputs of ideal sensors' simulation are further passed to blocks that repre
 	\label{error_sensor}
 \end{figure}
 
-The final step was to implement and tune the Kalman Filter with constraints' correction. Once again, the MATLAB implementation is a simplified version of the filter described in section (\ref{filter_model}). A figure (\ref{ekf_sim}) presents the realization of filter in Simulink MATLAB.
+The final step was to implement and tune the Kalman Filter with constraints' correction. Once again, the MATLAB implementation is a simplified version of the filter described in section (\ref{filter_model}). An implemented constraints are given in equation (\ref{simplified_eq}).  A figure (\ref{ekf_sim}) presents the realization of filter in Simulink MATLAB.
+
+\begin{align}
+	x^2 + y^2 - r^2 &= 0\\
+	z &= 0
+	\label{simplified_eq}
+\end{align}
 
 \begin{figure}[!h]
 	\centering
@@ -73,8 +79,9 @@ The final step was to implement and tune the Kalman Filter with constraints' cor
 	\caption{The Kalman Filter with constraints' correction}
 	\label{ekf_sim}
 \end{figure}
+\ \\
 
-Thus prepared simulation was run multiple time to select an optimal set of parameters. The presented results are the best achieved after tuning process. First the filter work was examinated without the constraints' correction. A figure (\ref{no_con}) presents the coordinates change in function of time. The plot includes the robot's tip position, the moving platform's center's position and its estimation. The estimation (magenta, yellow and blue colors on plot) drifts heavily over simulation's time.
+Thus prepared simulation was run multiple time to select an optimal set of parameters. The presented results are the best achieved after tuning process. First the filter work was examinated without the constraints' correction. A figure (\ref{no_con}) presents the coordinates change in function of time. The plot includes the robot's tip position, the moving platform's center's position and its estimation. The estimation (magenta, yellow and blue colors on plot) drifts heavily over simulation's time.\\
 
 \begin{figure}[!h]
 	\centering
