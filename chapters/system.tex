@@ -2,37 +2,37 @@
 
 \section{Specification}
 
-Based on the knowledge gathered, the functional requirements for the system were formulated and described using use case methodology, where system is an actor.
+Based on the knowledge gathered, the functional requirements for the system were formulated and described using the use case methodology, where the system is an actor.
 
 System:
 \begin{itemize}
 	\item uses inerial sensor the measure accelerations and angular velocities,
 	\item retrieves data from external sensor and data providers,
 	\item filters raw data,
-	\item conduct sensor fusion to estimate position and orientation,
-	\item store readings and estimations in files,
-	\item displays system's state for operator.
+	\item conducts sensor fusion to estimate position and orientation,
+	\item stores readings and estimations in files,
+	\item displays the system state for an operator.
 \end{itemize}
 
-Beside above requirement, also non-functional requirements were formed. Table (\ref{furps}) presents requirements using FURPS metodology.
+Beside above requirements, also non-functional requirements were formed. Table \ref{furps} presents requirements using the FURPS metodology.
 
 \section{System architecture}
 
 The system is organized into modules. The individual modules perform the following tasks:\\
 
-\noindent\textbf{server} -- central module processing and storing data. Performs raw data filtration, sensor fusion and saving logs. Communicate with sensors and provides system's time. Issues the API used by the front-end application.\\
+\noindent\textbf{server} -- the central module processing and storing data. Performs raw data filtration, sensor fusion and saving logs. Communicate with sensors and provides the system time. Issues the API used by the front-end application.\\
 
-\noindent\textbf{node\_udp} -- sensor node's source code. Performs raw data collecting and efficient forwarding to server. Due to abstraction layer software is highly independent of  node's hardware.\\
+\noindent\textbf{node\_udp} -- the sensor node source code. Performs raw data collecting and efficient forwarding to the server. Due to abstraction layer, software is highly independent of the node hardware.\\
 
-\noindent\textbf{client} -- front-end application to visualize system's status and control it. Ultimately constitutes the main human-machine interface.\\
+\noindent\textbf{client} -- the front-end application to visualize system's status and control it. Ultimately, constitutes the main human-machine interface.\\
 
-\noindent\textbf{constraints} -- library providing constraints' equations. Separates mechanical structure from server source code.\\
+\noindent\textbf{constraints} -- a library providing constraint equations. Separates the mechanical structure from the server source code.\\
 
-\noindent\textbf{bridge} -- sensor node's mock, intended as rapid prototyping tool. Connects to server via same protocol as node\_udp.\\
+\noindent\textbf{bridge} -- the sensor node mock, intended as a rapid prototyping tool. Connects to the server via same protocol as node\_udp.\\
 
-\noindent\textbf{docker} -- Docker container's configuration. Container wraps the server and makes it independent of host machine. Prepared image can be run on every Docker-compatible machine.\\
+\noindent\textbf{docker} -- the Docker container configuration. The container wraps the server and makes it independent of the host machine. Prepared image can be run on every Docker-compatible machine.\\
 
-Figure (\ref{architecture}) shows system architecture's diagram with communication paths between modules.
+Figure \ref{architecture} shows the system architecture diagram with communication paths between modules.
 
 \begin{figure}[!h]
 	\begin{center}
@@ -58,7 +58,7 @@ Figure (\ref{architecture}) shows system architecture's diagram with communicati
 			
 		\end{tikzpicture}
 	\end{center}
-	\caption{System architecture's diagram}
+	\caption{The system architecture diagram}
 	\label{architecture}
 \end{figure}
 
@@ -66,20 +66,20 @@ Figure (\ref{architecture}) shows system architecture's diagram with communicati
 
 The implementation of the project used various software technologies and libraries. The following summary explains the choice of specific technologies.\\
 
-\noindent\textbf{server, constraints} -- due to the large computational effort required to run online calculations, the C++ language was chosen. Because of its performance and flexibility, it is a natural choice for efficient computer simulations. In addition, the following libraries were used:
+\noindent\textbf{server, constraints} -- due to the large computational effort required to run online calculations, the C++ language was chosen. Because of its performance and flexibility, it is a natural choice for efficient computer simulations. The following libraries were used:
 \begin{itemize}[noitemsep,nolistsep]
 	\item Eigen3 -- a library containing elements of linear algebra: matrices, vectors and related algorithms. Eigen3 prioritizes efficiency by using SIMD and maintains a clear syntax.
 	\item ZeroMQ -- libzmq library binding for C++. Libzmq is a base implementation of ZeroMQ queues written in C,
 	\item yaml-cpp -- a library providing YAML serializer and deserializer,
-	\item Boost -- multi-purpose C++ library, in case of this project Boost provides asynchronous TCP and UDP client. 
-	\item libmodbus -- a library providing support for MODBUS protocol
+	\item Boost -- multi-purpose C++ library, in case of this project Boost provides asynchronous TCP and UDP client,
+	\item libmodbus -- a library providing support for MODBUS protocol.
 \end{itemize}
 \  \\
-\textbf{node\_udp} -- embedded source code is also written in C++, due to the fact that microcontroller's producers usually provides a base chip's API using C or C++. C++ is currently the first choice language for Atmega, STM and ESP chips.\\
+\textbf{node\_udp} -- embedded source code is also written in C++, due to the fact that microcontroller producers usually provide a base chip API using C or C++. C++ is currently the first choice language for Atmega, STM and ESP chips.\\
 
-\noindent\textbf{client} -- having in mind the provision of cross-platform, the Qt library was used to implement the front-end application. Further, to avoid multiple compilation Python Qt library was used. \\
+\noindent\textbf{client} -- having in mind the provision of cross-platform, the Qt library was used to implement the front-end application. Further, to avoid multiple compilation, Python Qt library was used. \\
 
-\noindent\textbf{bridge} -- the implementation also uses Python, but due to its other features. Bridge is supposed to be rapid developed, and its code should be understood for as many developers as possible,\\
+\noindent\textbf{bridge} -- the implementation also uses Python, but due to its other features. Bridge is supposed to be rapidly developed, and its code should be understood for as many developers as possible,\\
 
 \noindent\textbf{docker} -- as the name suggests, Docker was used to containerize system.   
 	
@@ -97,44 +97,44 @@ Project realization includes the preparation of software and hardware. The hardw
 \renewcommand{\arraystretch}{1.2}
 \begin{table}[!h]
 	\centering
-	\begin{tabular}{|m{0.03\textwidth}|m{0.13\textwidth}|m{0.025\textwidth}|m{0.68\textwidth}|} 
+	\caption{Non-functional requirements -- FURPS}
+	\label{furps}
+	\begin{tabular}{|m{0.028\textwidth}|m{0.14\textwidth}|m{0.02\textwidth}|m{0.72\textwidth}|} 
 		\hline
 		\rowcolor{Gray}		\multicolumn{2}{|c|}{Requirement} & No. & Description \\
 		\hline
 		\centering \multirow{2.0}{*}{\rotatebox[origin=c]{90}{Usability}}
 		&\multirow{1}{*}{Usability} 
-		& 1 & Server runs natively on UNIX or in Docker containter. Front-end application is multi-platform. \\
+		& 1 & The server runs natively on UNIX or in the Docker containter. The front-end application is multi-platform. \\
 		\cline{2-4}
 		& \multirow{1}{*}{Ergonomy} 
-		& 2 & User interface should be transparent and intuitive.  \\
+		& 2 & The user interface should be transparent and intuitive.  \\
 		\cline{3-4}
 		\hline
 		\centering \multirow{2.0}{*}{\rotatebox[origin=c]{90}{Reliability}}
 		& \multirow{1}{*}{Precision} 
-		& 3 & System should maximize estimation precision for collected readings. \\
+		& 3 & The system should maximize estimation precision for collected readings. \\
 		\cline{2-4}
 		& \multirow{1}{*}{Verifiability} 
 		& 4 & Estimation results should match predictions and be verifiable. \\
 		\hline
 		\centering \multirow{1}{*}{\rotatebox[origin=c]{90}{Perf.}}
 		& \multirow{1}{*}{Performance} 
-		& 5 & System performance should scale relative to number of sensors. \\
+		& 5 & The system performance should scale relative to the number of sensors. \\
 		\hline
 		\centering \multirow{5.5}{*}{\rotatebox[origin=c]{90}{Supportability}}
 		& \multirow{2}{*}{Maintenance} 
-		& 6 & System implementation should be transparent and easy to develop.  \\
+		& 6 & The system implementation should be transparent and easy to develop.  \\
 		\cline{3-4}
-		& & 7 & System should be divided into modules, that can be modified separately.\\
+		& & 7 & The system should be divided into modules that can be modified separately.\\
 		\cline{2-4}
 		& \multirow{1}{*}{Installability} 
-		& 8 & Installation process should be easy. It is recommanded for front-end software not to be installed. \\
+		& 8 & The installation process should be easy. It is recommended for front-end software not to be installed. \\
 		\cline{2-4}
 		& \multirow{1}{*}{Configuration} 
-		& 9 & Software should be magic-number-free and all parameters should be configurable. \\
+		& 9 & Software should be magic-number-free, and all parameters should be configurable. \\
 		\hline
 	\end{tabular}
-	\caption{Non-functional requirements -- FURPS}
-	\label{furps}
 \end{table}
 
 \section{Graphical user interface}
@@ -144,28 +144,28 @@ Figures (\ref{gui1} - \ref{gui4}) present graphical user interface of client mod
 \begin{figure}[!h]
 	\centering
 	\includegraphics[width=0.8\textwidth]{gui_dashboard.png}
-	\caption{GUI: main dashboard}
+	\caption{GUI: the main dashboard}
 	\label{gui1}
 \end{figure}
 
 \begin{figure}[!h]
 	\centering
 	\includegraphics[width=0.8\textwidth]{gui_sensor.png}
-	\caption{GUI: sensor tab}
+	\caption{GUI: the sensor tab}
 	\label{gui2}
 \end{figure}
 
 \begin{figure}[!h]
 	\centering
 	\includegraphics[width=0.85\textwidth]{gui_force.png}
-	\caption{GUI: force tab}
+	\caption{GUI: the force tab}
 	\label{gui3}
 \end{figure}
 
 \begin{figure}[!h]
 	\centering
 	\includegraphics[width=0.85\textwidth]{gui_consol.png}
-	\caption{GUI: console tab}
+	\caption{GUI: the console tab}
 	\label{gui4}
 \end{figure}
 
@@ -179,7 +179,7 @@ An example of plugin, that was added to system is force logger. The main task of
 
 Tuning is a process selection of a set of parameters provides the best results in terms of the chosen criterion. For the solution being developed, the greatest number of unknowns are the parameters of sensor filtration and fusion. Based on similar projects and applications, the initial value of parameters can be selected, but the tuning is an unmissable step on the way to precise estimation.\\
 
-In measurement systems, the final result is affected by almost every element of the system: sensor errors, installation errors, delays and more. Due to that, there is no universal method of tuning. The process largely depends on the operator's experience and ability to recognize system responses. Nevertheless, it is prolific to plan the experiments that highlight certain regions of interest and, as a result, lead to shorter tuning times.\\
+In measurement systems, the final result is affected by almost every element of the system: sensor errors, installation errors, delays, and more. Due to that, there is no universal method of tuning. The process largely depends on the operator's experience and ability to recognize system responses. Nevertheless, it is prolific to plan experiments that highlight certain regions of interest and, as a result, lead to shorter tuning times.\\
 
-The project took care to include all the parameters in a configuration file that is freely editable. Parameters were divided into categories and a few of them can be modified on-line, when the system runs. The source code is devoid of modifiable numerical constants (so-called \textit{magic numbers}). Additionally, the configuration file contains software variables that define network topology, addressing and other parameters that are configured during deployment.
+The project took care to include all the parameters in a configuration file that is freely editable. Parameters were divided into categories, and a few of them can be modified on-line, when the system runs. The source code is devoid of modifiable numerical constants (so-called \textit{magic numbers}). Additionally, the configuration file contains software variables that define network topology, addressing and other parameters that are configured during deployment.
 

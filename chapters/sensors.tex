@@ -1,29 +1,29 @@
 \chapter{Sensors}
 
-Sensors are the fundamental components of any measurement system, enabling it to perceive the world. There is a vast array of sensor types, each designed to measure specific physical quantities. Even within a one type of measured value, sensors can vary significantly in terms of precision and cost. \\
+Sensors are the fundamental components of any measurement system, enabling it to perceive the world. There is a vast array of sensor types, each designed to measure specific physical quantities. Even within one type of measured value, sensors can vary significantly in terms of precision and cost. \\
 
 Sensors can generally be classified into two main categories: those that operate independently and those that depend on external infrastructure. Independent sensors operate based on the principles of physics. For example, at its simplest, a temperature sensor exploits the fact that electrical resistance changes with temperature variations. On the other hand, dependent sensors require external resources to function. An example of such a sensor is a GNSS receiver, which estimates its position only when a sufficient number of satellites are visible.\\
 
 Accurately estimating position and orientation typically involves a combination of sensors that measure not only position, velocity, and acceleration but also have an indirect relationship with the state being estimated. The most precise results are achievable when every aspect of the state is directly measured, which is often impractical. The absence of distance sensors and encoders means that state estimation must rely on alternative methods. This thesis will explore dead reckoning, a method that estimates position and orientation by integrating measurements from inertial sensors. At a minimum, this method requires two types of inertial sensors: an accelerometer to measure acceleration and a gyroscope to measure angular velocity. However, results from this minimal setup tend to be suboptimal. In real-world applications, systems are enhanced through redundancy and the incorporation of partial information sources.
 
-\section{Sensor's types}
+\section{Types of sensors}
 
-Sensors that measuring a specific type of value, even within the same family, can differ significantly in the methodologies they employ to obtain that a value. The development of new sensor types is a constant effort, primarily aimed at enhancing accuracy. However, this pursuit of higher accuracy often results in increased sensor costs. It is worthwhile to briefly outline how these methods have evolved over time.\\
+Sensors measuring a specific type of value, even within the same family, can differ significantly in the methodologies they employ to obtain that value. The development of new sensor types is a constant effort primarily aimed at enhancing accuracy. However, this pursuit of higher accuracy often results in increased sensor costs. It is worthwhile to briefly outline how these methods have evolved over time.\\
 
-For inertial sensors, this evolution can be traced from mechanical sensors to Micro-Electro-Mechanical Systems (MEMS) sensors, and onto today’s laboratory-grade sensors. Each step on this path not only represents a leap in the technology used but also reflects a balance between achieving greater precision and managing production and operational costs. Mechanical sensors, which were among the first to be developed, rely on mechanical components and physical principles for their operation. Many moving parts often cause that mechanical sensor were unreliable. MEMS sensors, a significant advancement, integrate mechanical components and electronics into a single system, offering improved accuracy, smaller size, and lower power consumption. Today's laboratory-grade sensors, which represent the peak of current technology, provide unparalleled accuracy but at a significantly higher cost. This progression underscores the relentless pursuit of precision in the field of sensor technology, driven by the demands of increasingly sophisticated applications.\\
+For inertial sensors, this evolution can be traced from mechanical sensors to Micro-Electro-Mechanical Systems (MEMS) sensors, and onto today’s laboratory-grade sensors. Each step on this path not only represents a leap in the technology used but also reflects a balance between achieving greater precision and managing production and operational costs. Mechanical sensors, which were among the first to be developed, rely on mechanical components and physical principles for their operation. Many moving parts often made mechanical sensor unreliable. MEMS sensors, a significant advancement, integrate mechanical components and electronics into a single system, offering improved accuracy, smaller size, and lower power consumption. Today's laboratory-grade sensors, which represent the peak of current technology, provide unparalleled accuracy but at a significantly higher cost. This progression underscores the relentless pursuit of precision in the field of sensor technology, driven by the demands of increasingly sophisticated applications.\\
 
 However, when considering the balance between quality and cost, MEMS sensors are favored in most applications. They guarantee minimal enclosure size and offer quality that is commensurate with their dimensions. Furthermore, the compactness and cost-effectiveness of MEMS sensors make it feasible to deploy arrays of multiple sensors. Integrating their measurements can significantly enhance accuracy. This approach of blending data from multiple MEMS sensors not only improves the precision of measurements but also leverages the strengths of each sensor to compensate for individual limitations, making it a highly efficient strategy in various applications.
 
-\section{Sensor's model}
+\section{Models of sensors}
 
-The description of sensors so far has mainly concerned their features and types. However, to use them in an estimation, this description should be enriched with a formalized mathematical model. The sensor's model defines the relation between physical quantities and sensor output, but also includes an error. A well-prepared model allows the development of better filtration methods and ultimately leads to better results.
+The description of sensors presented so far has mainly concerned their features and types. However, to use them in an estimation, this description should be enriched with a formalized mathematical model. The sensor model defines the relation between physical quantities and sensor output but also includes an error. A well-prepared model allows the development of better filtration methods and ultimately leads to better results.
 
 \subsection{Accelerometer}
 
-An accelerometer measures all accelerations that affect the sensor. It means that if the sensor was mount in a non-inertial reference frame, beside the linear acceleration of frame, it will also measure centripetal, angular and Coriolis acceleration. What's more, masses on Earth experience constant gravitational acceleration, and that feature is especially useful in orientation's estimation. An accelerometer measurement is a resultant of those accelerations. Equation (\ref{acc_model1}) represents measured acceleration as a sum of components. Because of its complexity it is often assume that accelerometer is located in frame center and $\bm{r^W} = \bm{0}$. It leads to simplification given in equation (\ref{acc_model1b}).
+An accelerometer measures all accelerations that affect the sensor. It means that if the sensor is mounted in a non-inertial reference frame, beside the linear acceleration of frame, it will also measure centripetal, angular and Coriolis acceleration. What's more, masses on Earth experience constant gravitational acceleration, and that feature is especially useful in orientation's estimation. An accelerometer measurement is the resultant of those accelerations. Equation (\ref{acc_model1}) represents measured acceleration as a sum of components. Because of its complexity, it is often assumed that the accelerometer is located in the frame center and $\bm{r^W} = \bm{0}$. This leads to a simplification as shown in equation (\ref{acc_model1b}).
 \\
 \begin{equation}
-	\bm{a}_{res}^B = \bm{a}^B + \bm{R}^W_B \left( \bm{\omega}^W \times \left( \bm{\omega}^W \times \bm{r}^W \right) + \bm{\epsilon}^W \times \bm{r}^W - 2\left( \bm{\omega}^W \times \bm{v}^W \right) - \bm{g}  \right)  
+	\bm{a}_{res}^B = \bm{a}^B + \bm{R}^W_B \left( \bm{\omega}^W \times \left( \bm{\omega}^W \times \bm{r}^W \right) + \bm{\epsilon}^W \times \bm{r}^W + 2\left( \bm{\omega}^W \times \bm{v}^W \right) - \bm{g}  \right)  
 	\label{acc_model1}
 \end{equation}
 
@@ -34,20 +34,20 @@ An accelerometer measures all accelerations that affect the sensor. It means tha
 
 where:
 \begin{itemize}
-	\item $\bm{a}_{res}^B$ -- resultant acceleration given in moving frame (linked with body),
-	\item $\bm{a}^B$ -- acceleration of moving frame given in this frame,
-	\item $\bm{R}^W_B$ -- rotation matrix form world frame to moving frame,
-	\item $\bm{\omega}^W$ -- moving frame's angular velocity given in world frame,
-	\item $\bm{\epsilon}^W$ -- moving frame's angular acceleration given in world frame,
-	\item $\bm{r}^W$ -- sensor position in moving frame given in world frame,
-	\item $\bm{v}^W$ -- moving frame's linear velocity given in world frame,
-	\item $\bm{g}$ -- gravitation acceleration in world frame $\left( \bm{g} = \begin{bmatrix}
+	\item $\bm{a}_{res}^B$ -- resultant acceleration given in a moving frame (linked with a body),
+	\item $\bm{a}^B$ -- acceleration of the moving frame given in this frame,
+	\item $\bm{R}^W_B$ -- rotation matrix from world frame to the moving frame,
+	\item $\bm{\omega}^W$ -- the moving frame's angular velocity given in the world frame,
+	\item $\bm{\epsilon}^W$ -- the moving frame's angular acceleration given in the world frame,
+	\item $\bm{r}^W$ -- sensor position in moving frame given in the world frame,
+	\item $\bm{v}^W$ -- the moving frame's linear velocity given in the world frame,
+	\item $\bm{g}$ -- gravitation acceleration in the world frame $\left( \bm{g} = \begin{bmatrix}
 		0 &  0 &  g
 	\end{bmatrix}^T \right)$.
 \end{itemize}
 
-The second part of model is an inclusion of error. Accelerometers' readings are subject to scale error, bias, assembly's inaccuracies and noise.
-The scale error means that the readings are linearly dependent of acceleration, but the slope factor is not equal 1 precisely. The bias means that the linear function describing transform is not homogeneous and constant coefficient is non-zero. The assembly inaccuracy is due to the fact that the sensor axes are not collinear with the reference frame. However, the assembly inaccuracy is described as rotation that does not affect the measure's norm. Finally, the noise is a random component added to measure. Fortunately, in case of accelerometer, the noise is negligibly small. Equation (\ref{acc_model2}) describe the correlation between acceleration and output from sensor.\\
+The second part of the model provides an inclusion of error. Accelerometers readings are subject to scale error, bias, assembly inaccuracies, and noise.
+The scale error means that the readings are linearly dependent on acceleration, but the slope factor is not equal 1 precisely. The bias means that the linear function is not homogeneous and the constant coefficient is non-zero. The assembly inaccuracy is due to the fact that the sensor axes are not collinear with the reference frame. However, the assembly inaccuracy is described as a rotation that does not affect the measure's norm. Finally, the noise is a random component added to measure. Fortunately, in the case of an accelerometer, the noise is negligibly small. Equation (\ref{acc_model2}) describe the correlation between acceleration and output from the sensor.\\
 
 
 \begin{equation}
@@ -57,7 +57,7 @@ The scale error means that the readings are linearly dependent of acceleration, 
 
 where:
 \begin{itemize}
-	\item $\bm{\hat{a}}_{res}^B$ -- accelerometer's output,
+	\item $\bm{\hat{a}}_{res}^B$ -- accelerometer output,
 	\item $\bm{R}_M$ -- rotation matrix due to assembly inaccuracy,
 	\item $\bm{S}$ -- diagonal scale matrix,
 	\item $\bm{b}_0$ -- sensor constant bias,
@@ -69,9 +69,9 @@ where:
 \subsection{Gyroscope}
 A gyroscope is a sensor designed to measure angular velocities. In a non-inertial frame, angular velocity remains constant at every point, making gyroscope readings independent of its position within the moving reference frame.\\
 
-The primary advantage of a gyroscope lies in its ability to measure raw angular velocities. However, it's important to note that this measurement is not direct; for example, in MEMS sensors, the measurement is based on the transfer of energy between two vibration modes caused by the acceleration of Coriolis \cite{passaro2017gyroscope}.\\
+The primary advantage of a gyroscope lies in its ability to measure raw angular velocities. However, it's important to note that this measurement is not direct; for example, in MEMS sensors, the measurement is based on the transfer of energy between two vibration modes caused by the Coriolis acceleration \cite{passaro2017gyroscope}.\\
 
-Despite its advantages, a gyroscope's measurements are susceptible to various errors. Two significant sources of error are bias and drift. Bias refers to a constant offset in the measured values, which is inherent to the sensor and remains relatively stable over time. Drift, on the other hand, is the gradual change in bias over time, leading to a continuous deviation from the true value. In addition to bias and drift, gyroscopes are also affected by high-frequency noise, which can obscure the true signal. An equation (\ref{gyro_model}) presents a mathematical model of gyroscope.
+Despite its advantages, a gyroscope's measurements are susceptible to various errors. Two significant sources of error are bias and drift. Bias refers to a constant offset in the measured values, which is inherent to the sensor and remains relatively stable over time. Drift, on the other hand, is the gradual change in bias over time, leading to a continuous deviation from the true value. In addition to bias and drift, gyroscopes are also affected by high-frequency noise, which can obscure the true signal. The following equation presents a mathematical model of a gyroscope.
 
 \begin{equation}
 	\bm{\hat{\omega}}^B = \bm{\omega}^B + \bm{b}(t) + \bm{b}_0 + \bm{h}
@@ -83,18 +83,19 @@ where:
 	\item $\bm{\hat{\omega}}^B$ -- gyroscope's output,
 	\item $\bm{\omega}^B$ -- moving frame angular velocity given in moving reference frame,
 	\item $\bm{b}(t)$ -- bias that change over time,
+	\item $\bm{b}_0$ -- the constant part of bias, %%TODO
 	\item $\bm{h}$ -- high-frequency random noise.
 \end{itemize}
 
 While bias presence is inevitable in gyroscopes, it is crucial to monitor and account for drift, as it can significantly affect the accuracy of long-term measurements. Understanding and mitigating these errors are essential for ensuring the reliable performance of gyroscopes in various applications.\\
 
-Finally, it is worth mentioning why the assembly inaccuracy are not included in sensor's model. Obviously, a gyroscope can be mounted improperly, but the effects of this flaw can be included in bias. What will transpire later, the gyroscope is not used in absolute orientation estimation, and its error is compensated.
+Finally, it is worth mentioning why the assembly inaccuracies are not included in the sensor model. Obviously, a gyroscope can be mounted improperly, but the effects of this flaw can be included in bias. What will transpire later, the gyroscope is not used in absolute orientation estimation, and its error is compensated.
 
 \subsection{External position and orientation provider}
 
-External provides supply additional data that can appear to be useful in the further estimation. There are many sources providing various measurements. Some of them deliver only partial information, while the other can estimate a full description of the system. However, the measurements may be low-precise or too slowly updated to be used alone as an estimation.\\
+External provides supply additional data that can appear to be useful in further estimation. There are many sources providing various measurements. Some of them deliver only partial information, while others can estimate a full description of the system. However, the measurements may be low-precise or too slowly updated to be used alone as an estimation.\\
 
-An example considered in this project is the use of the robot's tip position calculated by its control system. The industrial robot acquires tip position by calculating forward kinematics based on encoder readings and knowledge about robot's structure. The orientation of tip is also calculated and can be used in estimation if the connection between robot's arm and mechanism is rigid.\\
+An example considered in this project is the use of the robot's tip position calculated by its control system. The industrial robot acquires tip position by calculating forward kinematics based on encoder readings and knowledge about the robot's structure. The orientation of the tip is also calculated and can be used in the estimation if the connection between the robot's arm and the mechanism is rigid.\\
 
 The model of external providers as a sensor is not as straightforward as model presented so far. Many factors are involved in it, including, position and type of connection between tip and mechanism, relative positions of them, and the accuracy of robot's calculation. Moreover, the accuracy is not always directly specified, due to the fact that for industrial robots repeatability is much important that it's precision \cite{shiakolas2002accuracy}.
 It is always reasonable to assume that reading include additional noise.\\
@@ -120,15 +121,15 @@ Assume that the tip of the robot is connected with the origin of moving coordina
 
 where:
 \begin{itemize}
-	\item $x_t$, $y_t$, $z_t$ -- 3 components of the tip's position,
-	\item $x$, $y$, $z$ -- 3 components of the origin's position,
-	\item $d$ -- a length of the drawbar,
+	\item $x_t$, $y_t$, $z_t$ -- components of the tip's position,
+	\item $x$, $y$, $z$ -- components of the origin's position,
+	\item $d$ -- the length of the drawbar,
 	\item $az$, $el$ -- a description of the drawbar's orientation. The $el$ is an elevation, the angle between the drawbar's translation vector and OXY world plane. The $az$ is an azimuth, the angle between the drawbar's translation vector's projection on OXY plane and OX axis.
 \end{itemize}
 
 
 
-\section{Sensor's calibration and filtration}
+\section{Sensor calibration and filtration}
 
 
 
@@ -141,7 +142,7 @@ The purpose of accelerometer's calibration is to remove a bias and compensate ef
 	\label{acc_calib}
 \end{equation}
 
-That being said, calibration model is proposed in equation (\ref{acc_calib2}).
+That being said, calibration model is proposed as:
 
 \begin{equation}
 	\bm{\tilde{a}}_{res}^B = \bm{\Phi} \bm{\hat{a}}_{res}^B - \bm{b}_0 = \bm{\Phi} \bm{\hat{a}}_{res}^B + \bm{\Gamma}
@@ -163,11 +164,11 @@ In result, the accelerometer's calibration comes down to finding values of $3 \c
 where:
 \begin{itemize}
 	\item $\bm{X}$ -- n x m known matrix,
-	\item $\bm{\Theta}$ -- m x 1 vector, that value is estimated,
+	\item $\bm{\Theta}$ -- m x 1 vector whose value is estimated,
 	\item $\bm{Y}$ -- n x 1 known matrix.
 \end{itemize}
  
-The transformation to linear form is given in equations (\ref{ols_theta} - \ref{ols_x})
+The transformation to linear form is given in the following:
 \setcounter{MaxMatrixCols}{25}
 
 \begin{equation}
@@ -186,56 +187,56 @@ The transformation to linear form is given in equations (\ref{ols_theta} - \ref{
 \begin{equation}
 	\bm{X} = 
 	\begin{bmatrix}
-	\bm{a}^T_T & 1 & \bm{0}_{3x1} & 0 & \bm{0}_{3x1} & 0\\
-	\bm{0}_{3x1} & 0 & \bm{a}^T_T & 1 & \bm{0}_{3x1} & 0\\
-	\bm{0}_{3x1} & 0 & \bm{0}_{3x1} & 0 & \bm{a}^T_T & 1\\
+	\bm{a}^T_T & 1 & \bm{0}_{1x3} & 0 & \bm{0}_{1x3} & 0\\
+	\bm{0}_{1x3} & 0 & \bm{a}^T_T & 1 & \bm{0}_{1x3} & 0\\
+	\bm{0}_{1x3} & 0 & \bm{0}_{1x3} & 0 & \bm{a}^T_T & 1\\
 	
-	\bm{a}^T_D & 1 & \bm{0}_{3x1} & 0 & \bm{0}_{3x1} & 0\\
-	\bm{0}_{3x1} & 0 & \bm{a}^T_D & 1 & \bm{0}_{3x1} & 0\\
-	\bm{0}_{3x1} & 0 & \bm{0}_{3x1} & 0 & \bm{a}^T_D & 1\\
+	\bm{a}^T_D & 1 & \bm{0}_{1x3} & 0 & \bm{0}_{1x3} & 0\\
+	\bm{0}_{1x3} & 0 & \bm{a}^T_D & 1 & \bm{0}_{1x3} & 0\\
+	\bm{0}_{1x3} & 0 & \bm{0}_{1x3} & 0 & \bm{a}^T_D & 1\\
 	
-	\bm{a}^T_F & 1 & \bm{0}_{3x1} & 0 & \bm{0}_{3x1} & 0\\
-	\bm{0}_{3x1} & 0 & \bm{a}^T_F & 1 & \bm{0}_{3x1} & 0\\
-	\bm{0}_{3x1} & 0 & \bm{0}_{3x1} & 0 & \bm{a}^T_F & 1\\
+	\bm{a}^T_F & 1 & \bm{0}_{1x3} & 0 & \bm{0}_{1x3} & 0\\
+	\bm{0}_{1x3} & 0 & \bm{a}^T_F & 1 & \bm{0}_{1x3} & 0\\
+	\bm{0}_{1x3} & 0 & \bm{0}_{1x3} & 0 & \bm{a}^T_F & 1\\
 	
-	\bm{a}^T_B & 1 & \bm{0}_{3x1} & 0 & \bm{0}_{3x1} & 0\\
-	\bm{0}_{3x1} & 0 & \bm{a}^T_B & 1 & \bm{0}_{3x1} & 0\\
-	\bm{0}_{3x1} & 0 & \bm{0}_{3x1} & 0 & \bm{a}^T_B & 1\\
+	\bm{a}^T_B & 1 & \bm{0}_{1x3} & 0 & \bm{0}_{1x3} & 0\\
+	\bm{0}_{1x3} & 0 & \bm{a}^T_B & 1 & \bm{0}_{1x3} & 0\\
+	\bm{0}_{1x3} & 0 & \bm{0}_{1x3} & 0 & \bm{a}^T_B & 1\\
 	
-	\bm{a}^T_R & 1 & \bm{0}_{3x1} & 0 & \bm{0}_{3x1} & 0\\
-	\bm{0}_{3x1} & 0 & \bm{a}^T_R & 1 & \bm{0}_{3x1} & 0\\
-	\bm{0}_{3x1} & 0 & \bm{0}_{3x1} & 0 & \bm{a}^T_R & 1\\
+	\bm{a}^T_R & 1 & \bm{0}_{1x3} & 0 & \bm{0}_{1x3} & 0\\
+	\bm{0}_{1x3} & 0 & \bm{a}^T_R & 1 & \bm{0}_{1x3} & 0\\
+	\bm{0}_{1x3} & 0 & \bm{0}_{1x3} & 0 & \bm{a}^T_R & 1\\
 	
-	\bm{a}^T_L & 1 & \bm{0}_{3x1} & 0 & \bm{0}_{3x1} & 0\\
-	\bm{0}_{3x1} & 0 & \bm{a}^T_L & 1 & \bm{0}_{3x1} & 0\\
-	\bm{0}_{3x1} & 0 & \bm{0}_{3x1} & 0 & \bm{a}^T_L & 1\\
+	\bm{a}^T_L & 1 & \bm{0}_{1x3} & 0 & \bm{0}_{1x3} & 0\\
+	\bm{0}_{1x3} & 0 & \bm{a}^T_L & 1 & \bm{0}_{1x3} & 0\\
+	\bm{0}_{1x3} & 0 & \bm{0}_{1x3} & 0 & \bm{a}^T_L & 1\\
 	\end{bmatrix} 
 	\label{ols_x}
 \end{equation}
 where:
 \begin{itemize}
-	\item $\bm{a}_T$ -- measurement when box is top face up,
-	\item $\bm{a}_D$ -- measurement when box is down face up,
-	\item $\bm{a}_F$ -- measurement when box is front face up,
-	\item $\bm{a}_B$ -- measurement when box is back face up,
-	\item $\bm{a}_R$ -- measurement when box is right face up,
-	\item $\bm{a}_L$ -- measurement when box is left face up.
+	\item $\bm{a}_T$ -- measurement the box is top face up,
+	\item $\bm{a}_D$ -- measurement the box is down face up,
+	\item $\bm{a}_F$ -- measurement the box is front face up,
+	\item $\bm{a}_B$ -- measurement the box is back face up,
+	\item $\bm{a}_R$ -- measurement the box is right face up,
+	\item $\bm{a}_L$ -- measurement the box is left face up.
 \end{itemize}
 
-According to OLS method, estimation $\bm{\hat{\Theta}}$ is given in equation (\ref{ols_est}). Ultimately, the result is decomposed into $\bm{\Phi}$ and $\bm{\Gamma}$
+According to OLS method, estimation $\bm{\hat{\Theta}}$ is given by:
 
 \begin{equation}
 	\bm{\hat{\Theta}} = \left( \bm{X}^T \bm{X} \right)^{-1} \bm{X}^T \bm{Y}
 	\label{ols_est}
 \end{equation}
 
-Additionally, an intuitive procedure of collecting calibration measures is also part of the system. Usually accelerometer's calibration involves placing sensor on calibration table and approving measure (for example, by clicking a button). Moreover, in certain system, an order of sides that being measured is predetermined. This approach has a fundamental advantage, because it recognizes sensors mounted in any orientation. Nevertheless, if the sensor is roughly set properly (axes are directed in accordance, but not perfectly aligned), the calibration's process can be improved, by recognizing on what face sensor was plated. In this purpose sensor measurements are collected into statistics that calculates mean value and standard variance. If standard variance is below predefined threshold, it means that sensor is not moving. Next mean value is normalized and compared with every of 6 axes' unit vectors. If angle between normalized mean and unit vector is less that specified (that can be quickly checked using dot product), the face correlated with unit vector is recognized.
+Ultimately, the result is decomposed into $\bm{\Phi}$ and $\bm{\Gamma}$. Additionally, an intuitive procedure of collecting calibration measures is also part of the system. Usually accelerometer's calibration involves placing sensor on calibration table and approving measure (for example, by clicking a button). Moreover, in certain system, an order of sides that being measured is predetermined. This approach has a fundamental advantage, because it recognizes sensors mounted in any orientation. Nevertheless, if the sensor is roughly set properly (axes are directed in accordance, but not perfectly aligned), the calibration's process can be improved, by recognizing on what face sensor was plated. In this purpose sensor measurements are collected into statistics that calculates mean value and standard variance. If standard variance is below predefined threshold, it means that sensor is not moving. Next mean value is normalized and compared with every of 6 axes' unit vectors. If angle between normalized mean and unit vector is less that specified (that can be quickly checked using dot product), the face correlated with unit vector is recognized.
 
 
 
 \subsection{Gyroscope}
 
-The gyroscope's readings contain bias and high-frequancy noise. The constant component of bias can be calculated and removed in calibration. After sensor's start, gyroscope's readings are collected for specified period and create a statistic. Next, mean and standard variance is calculated. If standard variance is small enough it is assumed that the sensor is not broken, and it was not moved during the calibration. In the opposite case, the calibration is repeated. The mean is a calculated bias that will be subjected from reading.
+The gyroscope's readings contain bias and high-frequancy noise. The constant component of bias can be calculated and removed in calibration. After sensor's start, gyroscope's readings are collected for specified period and create a statistic. Next, mean and standard variance is calculated. If standard variance is small enough it is assumed that the sensor is not broken, and it was not moved during the calibration. In the opposite case, the calibration is repeated. The mean is a calculated bias that will be subtracted from reading.
 Unfortunately, there is no method that can remove the drift, before the system run. However, the drift tracking and correction can be a part of sensor fusion that will be presented further.\\
 
 Moving on, the noise is removed by passing reading through filters. In order to remove high-frequancy noise, low pass filters are used. They are characterized by a cutoff frequency and an order. The cutoff frequency is the limit beyond which the higher frequency signal is dampened. The filter's order defines the slope factor of this dampening. First order low-pass filter is given by equations (\ref{lpf_alpha} - \ref{lpf}). If readings are collected with a constant sampling rate, $\alpha$ coefficient is calculated only once.

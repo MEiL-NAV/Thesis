@@ -1,16 +1,16 @@
 \chapter{Constraints}
 
-Constraints are the limitation placed on system's state. They define an allowed setup, that the system can reach. Due to the origin, many types of constraints are distinguished. They can result from system's structure, known trajectory or be directly linked with limitation of mathematical instrument used in system description.\\
+Constraints are the limitations imposed on the system state. They define an allowed setup, that the system can reach. Due to the origin, many types of constraints are distinguished. They can result from system's structure, known trajectory or be directly linked with limitation of mathematical instrument used in the system description.\\
 
-A wide group of constraints is made of design constraints, i.e. the constraints that stem directly from mechanism's structure. They determine the directions in which the mechanism can move so as not to breach the constraints imposed by the existence of bonds.
+A wide group of constraints is made of geometric constraints, i.e., the constraints that stem directly from the mechanism's structure. They determine the directions in which the mechanism can move so as not to breach the limits imposed by the existence of kinematic pairs.
 
 \section{Selected constrains}
 
-This section presents selected constraints that usually appear in robotics. Every constraint is briefly described and formulated as a function of system's state $\bm{c}(\bm{x})$ (constraint is satisfied when the function is equal to a vector of zeros). In view of its later use a derivative of constraint function by state $\frac{\partial \bm{c}(\bm{x})}{\partial \bm{x}}$ is also given.
+This section presents selected constraints that usually appear in robotics. Every constraint is briefly described and formulated as a function of system's state $\bm{c}(\bm{x})$ (constraint is satisfied when the function is equal to a vector of zeros). In view of its later, use a derivative of constraint function with respect to state $\frac{\partial \bm{c}(\bm{x})}{\partial \bm{x}}$ is also given.
 
 \subsection{Quaternion norm constraint}
 
-A quaternion is defined as four real numbers, and every coefficient is independent. However, when the quaternion is used as a description of orientation, its norm must be equal 1. Due to computer's precision repetitive quaternion rotating applied in EKF leads to error accumulation and to shrinking or stretching this norm. Moreover, the formula used in EKF is designed to keep constant quaternion norm only if the initial quaternion's norm was equal to 1.\\
+A quaternion is defined as four real numbers, and every coefficient is independent. However, when the quaternion is used as a description of orientation, its norm must be equal to 1. Due to the computer's precision, repetitive quaternion rotating applied in the EKF leads to error accumulation and to shrinking or stretching this norm. Moreover, the formula used in the EKF is designed to keep the constant quaternion norm only if the initial quaternion's norm had been equal to 1.\\
 
 In mechanical simulation this problem is solved by adding an extra pure-synthetic term to differential equation describing system \cite{quaternion}. Unfortunately, this method can not be easily adapted in case of Kalman Filter. The solution is to treat the quaternion norm equal to 1 as a constraint imposed on the system. Equation (\ref{quat_constraint_fun}) defines the constraint function and equation (\ref{quat_constraint_fun_der}) defines its derivative. Naturally, the constraint function and its derivative is quaternion's dependent only, and it is scalar function.
 
@@ -26,7 +26,7 @@ In mechanical simulation this problem is solved by adding an extra pure-syntheti
 
 \subsection{Position and orientation constraints}
 
-Position and orientation constraints are the constraints that are known before the system moves. They may affect only selected state variable and apply only at certain times. For example, the position of a robot may be precisely identified as long as the robot is close to sensor. The general formula that describes this is given by equation (\ref{constraint_fun}). The derivative of this function is a mostly-zero matrix with one only on position correlated with limited state variable.
+Position and orientation constraints are the constraints that are known before the system moves. They may affect only selected state variables and be applied only at certain times. For example, the position of a robot may be precisely identified as long as the robot is close to the sensor. The general formula that describes this type of constraint is given by equation (\ref{constraint_fun}). The derivative of this function is a mostly-zero matrix with one only on position correlated with the limited state variable.
 
 \begin{equation}
 	c \left( \bm{x} \right) = \begin{bmatrix}
@@ -37,7 +37,7 @@ Position and orientation constraints are the constraints that are known before t
 	\label{constraint_fun}
 \end{equation} 
 
-The constraints which are given by an entangled function of multiple state variables are usually harder to formulate and require an individual analysis. Example of this type is given in next section.\\
+The constraints that are given by an entangled function of multiple state variables are usually harder to formulate and require an individual analysis. An example of this type is given in the next section.\\
 
 Another example is a fixation of same parameter that can be calculated from system's state. Assume that the designed mechanism should keep a yaw angle of orientation equal to zero. If the state of system contains orientation given by quaternion, a yaw angle can be calculated from the following formula:
 
@@ -45,7 +45,7 @@ Another example is a fixation of same parameter that can be calculated from syst
 	\psi = {\mbox{atan2}}\left(2(q_{0}q_{z}+q_{x}q_{y}),1-2(q_{y}^{2}+q_{z}^{2})\right)
 \end{equation}
 
-However, the value of \textit{atan2} function is equal to zero then and only then the first argument is equal to zero. With that being said, the simple form of yaw constraint is given by equation (\ref{yaw_constraint_fun}). Equation (\ref{yaw_constraint_fun_der}) defines its derivative. The disadvantage of this approach is that the yaw angle equals to $\pi$ also fulfills the constraint.
+However, the value of \textit{atan2} function is equal to zero if and only if the first argument is equal to zero. With that being said, the simple form of yaw constraint is given by equation (\ref{yaw_constraint_fun}). Equation (\ref{yaw_constraint_fun_der}) defines its derivative. The disadvantage of this approach is that the yaw angle equal to $\pi$ also fulfills the constraint.
 
 \begin{equation}
 	c \left( \bm{q} \right) = q_{0}q_{z}+q_{x}q_{y}
@@ -71,21 +71,21 @@ A distance constraint is defined as constraint that keeps a constant distance be
 
 where:
 \begin{itemize}[noitemsep]
-	\item $\bm{r}^{(0)}$ -- position of moving element, given in global coordinates frame,
-	\item $R(\bm{q})$ -- rotation matrix between world frame and element frame,
-	\item $\bm{s}^{(1)}$ -- position of featured point on the moving element, given in element's coordinate system,
-	\item $\bm{r}_p^{(0)}$ -- position of fixed point, given in global coordinates frame,
-	\item d -- distance between constraint's points.
+	\item $\bm{r}^{(0)}$ -- position of the moving body, given in global coordinate frame,
+	\item $R(\bm{q})$ -- rotation matrix between the world frame and the body-fixed frame,
+	\item $\bm{s}^{(1)}$ -- position of the selected point on the moving body, given in the body-fixed coordinate system,
+	\item $\bm{r}_p^{(0)}$ -- position of the fixed point, given in the global coordinate frame,
+	\item d -- the distance between constraint's points.
 \end{itemize}
 
-However, a norm of vector requires calculation of squared root that value and derivative are more difficult to calculate. Without any loss of generality, constraint can be transformed to equation (\ref{distance_constraint_fun}).
+However, a norm of vector requires calculation of square root that value and derivative are more difficult to calculate. Without any loss of generality, constraint can be transformed to equation (\ref{distance_constraint_fun}).
 
 \begin{equation}
 	c(\bm{r}, \bm{q}) = \left( \bm{r}^{(0)} + R(\bm{q})\bm{s}^{(1)} - \bm{r}_p^{(0)} \right)^T \left( \bm{r}^{(0)} + R(\bm{q})\bm{s}^{(1)} - \bm{r}_p^{(0)} \right) - d^2
 	\label{distance_constraint_fun}
 \end{equation}
 
-In order to calculate derivative of distance constraint MATLAB Symbolic Toolbox was used \mbox{(\textit{distance\_constraint\_derivative.m})}. Equation (\ref{distance_constraint_der1} -- \ref{distance_constraint_der2}) presents calculated partial derivatives with respect to $\bm{r}$ and $\bm{q}$ elements.
+In order to calculate derivative of distance constraint, the MATLAB Symbolic Toolbox was used \mbox{(\textit{distance\_constraint\_derivative.m})}. Equations (\ref{distance_constraint_der1} -- \ref{distance_constraint_der2}) presents calculated partial derivatives with respect to $\bm{r}$ and $\bm{q}$.
 
 \begin{equation}
 	\frac{\partial c(\bm{r}, \bm{q})}{r_x} = 2(x - r_{bx} + r_{ax}(2q_0^2 + 2q_x^2 - 1) + r_{ay}(2q_0q_z - 2q_xq_y) + r_{az}(2q_0q_y - 2q_xq_z))^2 
@@ -147,12 +147,12 @@ It is worth to mention that, if velocities are known, the equation function (\re
 
 
 
-\section{Inclusion of constraints in estimation}
+\section{Inclusion of constraints in the estimation}
 
-Assume that a novel system for locating metro wagons is planned to be developed. The first idea that comes to mind is to use a satellite navigation system, as is usually the case in location-based tasks. However, this solution suffers from a significant flaw: these systems perform much worse underground. The question is whether the quality of the position estimate can be easily improved, and the short answer is yes. A simple assumption that can be made is that metro wagons can only be on the rails. Using the well-known track, it is possible to stick the calculated location to the nearest rails thus improving its accuracy.
+Assume that a novel system for locating metro wagons is planned to be developed. The first idea that comes to mind is to use a satellite navigation system, as is usually the case in location-based tasks. However, this solution suffers from a significant flaw: these systems perform much worse underground. The question is whether the quality of the position estimate can be easily improved, and the short answer is yes. A simple assumption that can be made is that metro wagons can only be on the rails. Using the well-known track, it is possible to stick the calculated location to the nearest rails, thus improving its accuracy.
 This illustrative example implicitly demonstrates the principle of constraint's correction.\\
 
-The inclusion of constraint in state estimation is not a popular solution. Usually transform to other state variables that fulfill constraints is suggested. However, it provokes the redesign of the state estimator every time, when constraints change. The unique approach is by Dan Simon in articles \cite{simon}, \cite{simon2010kalman} and \cite{simon2006kalman}. It is proposed to add the third phase to conventional Extended Kalman Filter, as it is shown on figure (\ref{ekf_three_phases}).
+The inclusion of constraints in state estimation is not a popular solution. Usually, transform to other state variables that fulfill constraints is suggested. However, it provokes the redesign of the state estimator every time when constraints change. The unique approach is discussed by Dan Simon in articles \cite{simon}, \cite{simon2010kalman} and \cite{simon2006kalman}. It is proposed to add the third phase to the conventional Extended Kalman Filter, as it is shown in figure (\ref{ekf_three_phases}).
 
 \begin{figure}[!h]
 	\begin{center}
@@ -177,7 +177,7 @@ The inclusion of constraint in state estimation is not a popular solution. Usual
 	\label{ekf_three_phases}
 \end{figure}
 
-In constraints correction phase only state of filter changes and covariance matrix remains unchanged. For linear constraints $\left( \bm{D} \bm{x} = \bm{d}  \right)$ equation (\ref{constraint_corr}) presents constraints correction phase.
+In constraints correction phase only state of filter changes and covariance matrix remains unchanged. For linear constraints $\left( \bm{D} \bm{x} = \bm{d}  \right)$, the following equation presents constraints correction phase:
 
 \begin{equation}
 	\bm{\tilde{x}} = \bm{\hat{x}} - \bm{W}^{-1} \bm{D}^T \left( \bm{D} \bm{W}^{-1} \bm{D}^T \right)^{-1} \left( \bm{D} \bm{\hat{x}} - \bm{d}  \right)
@@ -192,7 +192,7 @@ where:
 	\item $\bm{\tilde{x}}$ -- filter state after correction.
 \end{itemize}
 
-It is proposed to use inverse of covariance matrix as weight matrix  $\bm{W} = \bm{P}^{-1}$. In case of linear constraints it leads to the maximum probability
+It is proposed to use the inverse of covariance matrix as the weight matrix  $\bm{W} = \bm{P}^{-1}$. In the case of linear constraints, it leads to the maximum probability
 estimate of the state subject to state constraints.\\
 
 Proof of correctness of this method is well known in literature. So as not to duplicate this, another proof will be present, by showing the similarity to Newton-Raphson nonlinear equation's solving method. Assume that $\bm{D}$ is squared matrix with full rank. In order to find solution of constraint equation, iterative method is used to solve equation (\ref{Dxd}). Newton-Rapshon method requires Jacobi matrix, that in this case is given in equation (\ref{D})
@@ -219,17 +219,17 @@ In general $\bm{D}$ matrix is not full rank or is not squared, so it can not be 
 	\label{pseudoinverse}
 \end{equation}
 
-Furthermore, if the equation is underdeterminated, pseudo-inverse form a space of propel inverses, scaled by weight matrix $\bm{W}$ (equation (\ref{wieight_pseudo})).
+Furthermore, if the equation is underdetermined, the pseudo-inverse forms a space of proper inverses, scaled by a weight matrix $\bm{W}$:
 
 \begin{equation}
 	\bm{D}^{\#} = \bm{W}^{-1} \bm{D}^T \left( \bm{D} \bm{W}^{-1} \bm{D}^T \right) ^ {-1}
 	\label{wieight_pseudo}
 \end{equation}
 
-Inserting equation (\ref{wieight_pseudo}) to (\ref{NR}) leads to constraint correction equation (\ref{constraint_corr}).\\
+Inserting equation (\ref{wieight_pseudo}) to (\ref{NR}) leads to the constraint correction equation (\ref{constraint_corr}).\\
 
-The reasoning so far is based on the assumption that constraints are linear. 
-However, constraints in mechanic are mostly nonlinear. This problem is addressed by local linearization method. Equations \mbox{(\ref{linearization1} -- \ref{linearization2})} define substitution resulting from linearization.
+The reasoning so far was based on the assumption that constraints are linear. 
+However, constraints in mechanic are mostly nonlinear. This problem is addressed by the local linearization method. The following equation define substitutions resulting from linearization:
 
 \begin{equation}
 	\bm{D} = \frac{\partial \bm{c}}{\partial \bm{x}}(\bm{\hat{x}})
@@ -241,13 +241,14 @@ However, constraints in mechanic are mostly nonlinear. This problem is addressed
 	\label{linearization2}
 \end{equation}
 
-In result, constraint correction method can be used for nonlinear equation.\\ 
+As a result, the constraint correction method can be used for nonlinear equations.\\ 
 
-As a part of this thesis, constraint correction method was developed. Based on its similarity to Newton-Raphson method it is proposed to use additional coefficient that scale correction $\alpha$, and k-times repeats in one phase. The final correction is given in equation (\ref{constraint_final}).
+%% TODO HIGHLIGHT
+As a part of this thesis, the constraint correction method was developed. Based on its similarity to the Newton-Raphson method, it is proposed to use an additional coefficient $\alpha$ that scales the correction, and k-times repeats in one phase. The final correction is given by:
 
 \begin{equation}
 	\bm{\hat{x}}_{i+1} = \bm{\hat{x}}_{i} - \alpha \bm{P} \bm{D}^T \left( \bm{D} \bm{P} \bm{D}^T \right)^{-1} \left( \bm{D} \bm{\hat{x}} - \bm{d}  \right) \hspace{10pt} \text{for i = 1,2,..,k}
 	\label{constraint_final}
 \end{equation}
 
- Parameters selection is part of tuning.  
+ Parameters selection is the part of tuning.  

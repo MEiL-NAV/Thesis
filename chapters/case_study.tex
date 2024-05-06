@@ -14,7 +14,7 @@ Case study describes a solution's deployment on the mechanism that was a motivat
 	\begin{minipage}{.5\textwidth}
 		\centering
 		\includegraphics[width=.9\linewidth]{render.jpg}
-		\captionof{figure}{Render of MBS}
+		\captionof{figure}{Render of the MBS}
 		\label{fig:render}
 	\end{minipage}
 \end{figure}
@@ -23,7 +23,7 @@ The scientific significance of this mechanism is revealed in the determination o
 
 The mechanism is driven by FANUC M-10iA serial industrial robots. The robot's control system provides arm's tip position. To avoid problems resulting from inaccurate manufacturing the robot is connected to platform center via a drawbar, so the tip's orientation is unusable. Moreover, the position's refresh rate is relatively slow, but can be successfully used in sensor fusion.\\
 
-The mechanism thus presented is a representative example of the application of the developed system. Due to its properties, convetional methods are hard to apply. The proposed solution is challenging as well, but the procedure that lead to working system are structured and split into steps. 
+The mechanism thus presented is a representative example of the application of the developed measuring system. Due to its properties, conventional methods are hard to apply. The proposed solution is challenging as well, but the procedure that leads to a working system is structured and split into steps. 
 
 \section{Computer simulation}
 
@@ -37,7 +37,7 @@ A figure (\ref{adams}) presents multi-body system modeled in ADAMS software. Thu
 	\label{adams}
 \end{figure}
 
-Next, to move the mechanism trajectory generator was prepared. One of the allowed trajectory is a circular motion in the horizontal plane. In order to check position tracking the tangential velocity was constantly increased. Equations (\ref{tcp_begin} - \ref{tcp_end}) presents the 3 components of the robot's tip as a function of time.
+Next, to move the mechanism, a trajectory generator was prepared. One of the allowed trajectories is a circular motion in the horizontal plane. In order to check position tracking, the tangential velocity was constantly increased. Equations (\ref{tcp_begin} - \ref{tcp_end}) present the three components of the robot's tip as a function of time.
 
 \begin{align}
 	x_{TCP} &= x_0 +  R\ cos( t^2 )
@@ -47,7 +47,7 @@ Next, to move the mechanism trajectory generator was prepared. One of the allowe
 	\label{tcp_end}
 \end{align}
 
-With the platform that already moves, the following stage is to simulate inertial sensors: an accelerometer and a gyroscope. The sensors are simulated based on ADAMS block outputs. The gyroscope returns an angular velocity, when the accelerometer returns linear velocity with gravitation acceleration added. A figure (\ref{acc_sym}) presents Simulink blocks that represents an ideal accelerometer.
+With the platform that already moves, the following stage is to simulate inertial sensors: an accelerometer and a gyroscope. The sensors are simulated based on ADAMS block outputs. The gyroscope returns an angular velocity, while the accelerometer returns linear velocity with gravitation acceleration added. Figure \ref{acc_sym} presents Simulink blocks that represent an ideal accelerometer.
 
 \begin{figure}[!h]
 	\centering
@@ -61,22 +61,23 @@ The outputs of ideal sensors' simulation are further passed to blocks that repre
 \begin{figure}[!h]
 	\centering
 	\includegraphics[width=0.7\textwidth]{duw/error.png}
-	\caption{The simulation of a sensor's error}
+	\caption{The simulation of a sensor error}
 	\label{error_sensor}
 \end{figure}
 
-The final step was to implement and tune the Kalman Filter with constraints' correction. Once again, the MATLAB implementation is a simplified version of the filter described in section (\ref{filter_model}). An implemented constraints are given in equation (\ref{simplified_eq}).  A figure (\ref{ekf_sim}) presents the realization of filter in Simulink MATLAB.
+The final step was to implement and tune the Kalman Filter with constraints' correction. Once again, the MATLAB implementation is a simplified version of the filter described in section (\ref{filter_model}). An implemented constraints are given in equations (\ref{simplified_eq} -- \ref{simplified_eq2}).  A figure (\ref{ekf_sim}) presents the realization of filter in Simulink MATLAB.
 
 \begin{align}
-	x^2 + y^2 - r^2 &= 0\\
+	x^2 + y^2 - r^2 &= 0
+	\label{simplified_eq}\\
 	z &= 0
-	\label{simplified_eq}
+	\label{simplified_eq2}
 \end{align}
 
 \begin{figure}[!h]
 	\centering
 	\includegraphics[width=0.9\textwidth]{duw/ekf.png}
-	\caption{The Kalman Filter with constraints' correction}
+	\caption{The Kalman Filter with constraints correction}
 	\label{ekf_sim}
 \end{figure}
 \ \\
