@@ -95,9 +95,9 @@ Finally, it is worth mentioning why the assembly inaccuracies are not included i
 
 External provides supply additional data that can appear to be useful in further estimation. There are many sources providing various measurements. Some of them deliver only partial information, while others can estimate a full description of the system. However, the measurements may be low-precise or too slowly updated to be used alone as an estimation.\\
 
-An example considered in this project is the use of the robot's tip position calculated by its control system. The industrial robot acquires tip position by calculating forward kinematics based on encoder readings and knowledge about the robot's structure. The orientation of the tip is also calculated and can be used in the estimation if the connection between the robot's arm and the mechanism is rigid.\\
+An example considered in this project is the use of the robot's end-effector position calculated by its control system. The industrial robot acquires end-effector position by calculating forward kinematics based on encoder readings and knowledge about the robot's structure. The orientation of the end-effector is also calculated and can be used in the estimation if the connection between the robot's arm and the mechanism is rigid.\\
 
-The model of an external provider, treated as a sensor, is not as straightforward as the models presented so far. Many factors are involved, including the position and type of connection between the tip and mechanism, their relative positions, and the accuracy of the robot’s calculation. Moreover, accuracy is not always directly specified because, for industrial robots, repeatability is much more important than precision \cite{shiakolas2002accuracy}. It is always reasonable to assume that readings include additional noise.\\
+The model of an external provider, treated as a sensor, is not as straightforward as the models presented so far. Many factors are involved, including the position and type of connection between the end-effector and mechanism, their relative positions, and the accuracy of the robot’s calculation. Moreover, accuracy is not always directly specified because, for industrial robots, repeatability is much more important than precision \cite{shiakolas2002accuracy}. It is always reasonable to assume that readings include additional noise.\\
 
 Assume that the robot's end-effector is connected with the origin of the moving coordinate frame with a rigid drawbar. The drawbar is double-ended with spherical joints, so the orientation of the end-effector does not affect the driven system. In this case, the position provided by the robot's control system is a composition of the moving frame origin's position, and the translation is inserted by the drawbar. The following equation presents the relation between the origin's position and the end-effector position when the length and orientation of the drawbar are known.
 
@@ -120,7 +120,7 @@ Assume that the robot's end-effector is connected with the origin of the moving 
 
 where:
 \begin{itemize}
-	\item $x_t$, $y_t$, $z_t$ -- components of the tip's position,
+	\item $x_t$, $y_t$, $z_t$ -- components of the end-effector's position,
 	\item $x$, $y$, $z$ -- components of the origin's position,
 	\item $d$ -- the length of the drawbar,
 	\item $az$, $el$ -- a description of the drawbar's orientation. The $el$ is an elevation, the angle between the drawbar's translation vector and OXY world plane. The $az$ is an azimuth, the angle between the drawbar's translation vector's projection on OXY plane and OX axis.
