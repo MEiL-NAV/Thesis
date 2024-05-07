@@ -12,7 +12,7 @@ This section presents selected constraints that usually appear in robotics. Ever
 
 A quaternion is defined as four real numbers, and every coefficient is independent. However, when the quaternion is used as a description of orientation, its norm must be equal to 1. Due to the computer's precision, repetitive quaternion rotating applied in the EKF leads to error accumulation and to shrinking or stretching this norm. Moreover, the formula used in the EKF is designed to keep the constant quaternion norm only if the initial quaternion's norm had been equal to 1.\\
 
-In mechanical simulation this problem is solved by adding an extra pure-synthetic term to differential equation describing system \cite{quaternion}. Unfortunately, this method can not be easily adapted in case of Kalman Filter. The solution is to treat the quaternion norm equal to 1 as a constraint imposed on the system. Equation (\ref{quat_constraint_fun}) defines the constraint function and equation (\ref{quat_constraint_fun_der}) defines its derivative. Naturally, the constraint function and its derivative is quaternion's dependent only, and it is scalar function.
+In mechanical simulation, this problem is solved by adding an extra pure-synthetic term to the differential equation describing the system \cite{quaternion}. Unfortunately, this method can not be easily adapted in the case of the Kalman Filter. The solution is to treat the quaternion norm equal to 1 as a constraint imposed on the system. Equation (\ref{quat_constraint_fun}) defines the constraint function, and equation (\ref{quat_constraint_fun_der}) defines its derivative. Naturally, the constraint function and its derivative are quaternion-dependent only, and they are scalar functions.
 
 \begin{equation}
 	c \left( \bm{q} \right) = \bm{q}^T \bm{q} - 1
@@ -39,7 +39,7 @@ Position and orientation constraints are the constraints that are known before t
 
 The constraints that are given by an entangled function of multiple state variables are usually harder to formulate and require an individual analysis. An example of this type is given in the next section.\\
 
-Another example is a fixation of same parameter that can be calculated from system's state. Assume that the designed mechanism should keep a yaw angle of orientation equal to zero. If the state of system contains orientation given by quaternion, a yaw angle can be calculated from the following formula:
+Another example is a fixation of some parameter that can be calculated from the system state. Assume that the designed mechanism should keep the yaw angle of orientation equal to zero. If the state of the system contains orientation given by a quaternion, the yaw angle can be calculated from the following formula:
 
 \begin{equation}
 	\psi = {\mbox{atan2}}\left(2(q_{0}q_{z}+q_{x}q_{y}),1-2(q_{y}^{2}+q_{z}^{2})\right)
@@ -62,7 +62,7 @@ However, the value of \textit{atan2} function is equal to zero if and only if th
 
 \subsection{Distance constraint}
 
-A distance constraint is defined as constraint that keeps a constant distance between a fixed point in space and a featured point on the moving element. Equation (\ref{distance_constraint_prim}) formalize the so defined constraint.
+The distance constraint is defined as a constraint that keeps a constant distance between a fixed point in space and a specified point on the moving element. Equation (\ref{distance_constraint_prim}) formalizes the so-defined constraint.
 
 \begin{equation}
 	\left| \bm{r}^{(0)} + R(\bm{q})\bm{s}^{(1)} - \bm{r}_p^{(0)} \right| - d = 0
@@ -78,7 +78,7 @@ where:
 	\item d -- the distance between constraint's points.
 \end{itemize}
 
-However, a norm of vector requires calculation of square root that value and derivative are more difficult to calculate. Without any loss of generality, constraint can be transformed to equation (\ref{distance_constraint_fun}).
+However, the norm of a vector requires calculation of the square root, which value and derivative are more difficult to calculate. Without any loss of generality, the distance constraint can be transformed into the following equation:
 
 \begin{equation}
 	c(\bm{r}, \bm{q}) = \left( \bm{r}^{(0)} + R(\bm{q})\bm{s}^{(1)} - \bm{r}_p^{(0)} \right)^T \left( \bm{r}^{(0)} + R(\bm{q})\bm{s}^{(1)} - \bm{r}_p^{(0)} \right) - d^2
@@ -142,9 +142,7 @@ In order to calculate derivative of distance constraint, the MATLAB Symbolic Too
 \end{align}
 \\
 
-
-It is worth to mention that, if velocities are known, the equation function (\ref{distance_constraint_fun}) can be differentiated with respect to time to get extra constraint $c(\bm{r}, \bm{q}, \frac{d\bm{r}}{dt}, \frac{d\bm{q}}{dt})$. Nevertheless the position and velocity are strictly connected in EKF state function. In result the correction of position leads to correction of velocity.
-
+It is worth mentioning that if velocities are known, the equation function (\ref{distance_constraint_fun}) can be differentiated with respect to time to get extra constraint $c(\bm{r}, \bm{q}, \frac{d\bm{r}}{dt}, \frac{d\bm{q}}{dt})$. Nevertheless, the position and velocity are strictly connected within the EKF state function. As a result, the correction of position leads to the correction of velocity.
 
 
 \section{Inclusion of constraints in the estimation}
@@ -177,7 +175,7 @@ The inclusion of constraints in state estimation is not a popular solution. Usua
 	\label{ekf_three_phases}
 \end{figure}
 
-In constraints correction phase only state of filter changes and covariance matrix remains unchanged. For linear constraints $\left( \bm{D} \bm{x} = \bm{d}  \right)$, the following equation presents constraints correction phase:
+In the constraints correction phase, only the state of the filter changes, and the covariance matrix remains unchanged. For linear constraints $\left( \bm{D} \bm{x} = \bm{d}  \right)$, the following equation presents constraints correction phase:
 
 \begin{equation}
 	\bm{\tilde{x}} = \bm{\hat{x}} - \bm{W}^{-1} \bm{D}^T \left( \bm{D} \bm{W}^{-1} \bm{D}^T \right)^{-1} \left( \bm{D} \bm{\hat{x}} - \bm{d}  \right)
@@ -195,7 +193,7 @@ where:
 It is proposed to use the inverse of covariance matrix as the weight matrix  $\bm{W} = \bm{P}^{-1}$. In the case of linear constraints, it leads to the maximum probability
 estimate of the state subject to state constraints.\\
 
-Proof of correctness of this method is well known in literature. So as not to duplicate this, another proof will be present, by showing the similarity to Newton-Raphson nonlinear equation's solving method. Assume that $\bm{D}$ is squared matrix with full rank. In order to find solution of constraint equation, iterative method is used to solve equation (\ref{Dxd}). Newton-Rapshon method requires Jacobi matrix, that in this case is given in equation (\ref{D})
+Proof of the correctness of this method is well-known in the literature. So as not to duplicate this, another proof will be presented by showing the similarity to Newton-Raphson's nonlinear equations solving method. Assume that $\bm{D}$ is a square matrix with full rank. In order to find the solution of constraint equations, an iterative method is used to solve equation (\ref{Dxd}). The Newton-Rapshon method requires the Jacobi matrix, which in this case is given in equation (\ref{D})
 
 \begin{equation}
 	\bm{f} \left( \bm{x} \right) = \left( \bm{D} \bm{x} - \bm{d}  \right)
@@ -207,7 +205,7 @@ Proof of correctness of this method is well known in literature. So as not to du
 	\label{D}
 \end{equation}
 
-According to method every algorithm iteration is given in equation (\ref{NR})
+According to the Newton-Raphson method, every iteration is given by:
 \begin{equation}
 	\bm{\tilde{x}} = \bm{\hat{x}} - \left( \frac{\partial \bm{f} \left( \bm{x} \right)}{\partial \bm{x}} \right) ^{-1} \bm{f} \left( \bm{x} \right) = \bm{\hat{x}} - \bm{D}^{-1} \left( \bm{D} \bm{\hat{x}} - \bm{d}  \right)
 	\label{NR}

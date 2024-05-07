@@ -1,7 +1,6 @@
 \chapter{Case study}
 
-
-Case study describes a solution's deployment on the mechanism that was a motivation for this project. The mechanism shown on figures (\ref{fig:mbs} - \ref{fig:render}) is an overconstrainted multibody system (\cite{bib:BPAS2012}), that involves moving platform connected to ground by 6 rigid rods. The lower and upper rods are parallel to each other and have equal length. Although constraints describing the mechanism form a six-dimensional system of equations, they are linear dependent what is observable as a movement of the platform. The mechanism has one degree of freedom, except for two points where a bifurcation occurs. Due to this anomaly it's hard to simplify mechanism model to minimal set of coordinates.
+The case study describes a measuring system deployment on a mechanism that was the motivation for this project. The mechanism shown in figures \ref{fig:mbs} - \ref{fig:render} is an overconstrained multibody system \cite{bib:BPAS2012} that consists of a moving platform connected to the ground by 6 rigid rods. The rods have equal lengths. In the assembly variant shown in the figures, all lower and upper rods, respectively, are parallel to each other. The mechanism has one degree of freedom (plus 6 internal mobilities), except for two points where a bifurcation occurs. Due to this property, it is hard to simplify the mechanism model to a minimal set of coordinates.
 
 \begin{figure}[!h]
 	\centering
@@ -19,16 +18,15 @@ Case study describes a solution's deployment on the mechanism that was a motivat
 	\end{minipage}
 \end{figure}
 
-The scientific significance of this mechanism is revealed in the determination of the reaction forces that occur in rods. Mechanism is statically indeterminate which makes it even more difficult to analyze and highlights its research value. The further researches require collecting data from test stand, when the platform moves. State description should contain platform's position and orientation as well as readings from force sensor installed in rods, what is covered by developed system.\\
+The scientific significance of this mechanism is revealed in the determination of the reaction forces that occur in rods. The mechanism is statically indeterminate, which makes it even more difficult to analyze and highlights its research value. Further research will require collecting data from the test stand when the platform moves. The state description should contain platform position and orientation as well as readings from the force sensors installed in rods, which will be covered by the system being developed.\\
 
-The mechanism is driven by FANUC M-10iA serial industrial robots. The robot's control system provides arm's tip position. To avoid problems resulting from inaccurate manufacturing the robot is connected to platform center via a drawbar, so the tip's orientation is unusable. Moreover, the position's refresh rate is relatively slow, but can be successfully used in sensor fusion.\\
+The mechanism is driven by the FANUC M-10iA serial industrial robot. The robot’s control system tracks the end-effector position. To avoid problems resulting from inaccurate manufacturing and imperfect trajectory execution, the robot is connected to the platform center via a drawbar, so that the imperfections can be compensated by additional -- otherwise not used -- relative motion possibilities. Additionally, such a connection makes the end-effector orientation unimportant. Moreover, the robot position refresh rate is relatively slow but can be successfully used in sensor fusion.\\
 
 The mechanism thus presented is a representative example of the application of the developed measuring system. Due to its properties, conventional methods are hard to apply. The proposed solution is challenging as well, but the procedure that leads to a working system is structured and split into steps. 
 
 \section{Computer simulation}
 
-Before real-life experiments, the fundamental aspects of projected were tested in computer simulation. The simulation involves preparing kinematic simulation in ADAMS and connecting it with simplified estimation system in MATLAB Simulink. A finished model was used, created earlier as part of a research project. The ADAMS's model was extended with new cylinder-shaped body that represents the robot's tip. The added part is connected with the moving platform's center and will be used as a motion source. A position of the simulated robot's tip is set as a control variable, that input to the program. The kinematic's simulation's outputs are postion and orientation of the moving platform, and its linear acceleration and angular velocity expressed in local coordinates system. Those variables will be used to simulate sensors' readings.
-A figure (\ref{adams}) presents multi-body system modeled in ADAMS software. Thus prepared model was converted to a Simulink block. 
+Before real-life experiments, fundamental aspects of the project were tested in computer simulation. The simulation involves preparing a kinematic model in ADAMS and connecting it with a simplified estimation system in MATLAB Simulink. A ready-to-use model was employed (created earlier as part of the research project). The ADAMS model was extended with a new cylinder-shaped body that represents the robot end-effector. The added part is connected to the moving platform center and was used as the motion source. The simulated position of the end-effector was set as a control variable that constitutes input to the program. The kinematic simulation outputs are the position and orientation of the moving platform, its linear acceleration, and angular velocity expressed in the local coordinate system. These variables will be used to simulate the sensors' readings. Figure \ref{adams} presents multi-body system modeled in ADAMS software. That prepared model was converted to a Simulink block.
 
 \begin{figure}[!h]
 	\centering
@@ -56,7 +54,7 @@ With the platform that already moves, the following stage is to simulate inertia
 	\label{acc_sym}
 \end{figure}
 
-The outputs of ideal sensors' simulation are further passed to blocks that represents sensor's error. In this simplified simulation the sensor's error was limited to adding a pink noise and bias. A figure (\ref{error_sensor}) presents Simulink blocks that represents a sensor's error.
+The output of an ideal sensor simulation is further passed to blocks that represent the sensor error. This simplified simulation limited the sensor error to adding a pink noise and bias. Figure \ref{error_sensor} shows Simulink blocks that represent a sensor error.
 
 \begin{figure}[!h]
 	\centering
@@ -65,7 +63,7 @@ The outputs of ideal sensors' simulation are further passed to blocks that repre
 	\label{error_sensor}
 \end{figure}
 
-The final step was to implement and tune the Kalman Filter with constraints' correction. Once again, the MATLAB implementation is a simplified version of the filter described in section (\ref{filter_model}). An implemented constraints are given in equations (\ref{simplified_eq} -- \ref{simplified_eq2}).  A figure (\ref{ekf_sim}) presents the realization of filter in Simulink MATLAB.
+The final step was to implement and tune the Kalman Filter with constraints correction. Once again, the MATLAB implementation is a simplified version of the filter described in section \ref{filter_model}. The implemented constraints are given in equation (\ref{simplified_eq} -- \ref{simplified_eq2}). Figure \ref{ekf_sim} presents a realization of the filter in Simulink.
 
 \begin{align}
 	x^2 + y^2 - r^2 &= 0
@@ -82,7 +80,7 @@ The final step was to implement and tune the Kalman Filter with constraints' cor
 \end{figure}
 \ \\
 
-Thus prepared simulation was run multiple time to select an optimal set of parameters. The presented results are the best achieved after tuning process. First the filter work was examinated without the constraints' correction. A figure (\ref{no_con}) presents the coordinates change in function of time. The plot includes the robot's tip position, the moving platform's center's position and its estimation. The estimation (magenta, yellow and blue colors on plot) drifts heavily over simulation's time.\\
+That prepared simulation was run multiple times to select the optimal set of parameters. The presented results are the best achieved after the tuning process. First, the filter work was examined without the constraints correction. Figure \ref{no_con} presents the coordinates change as a function of time. The plot includes the robot end-effector position, the moving platform center position, and their estimations. The estimations (magenta, yellow, and blue colors in the plots) drift heavily over simulation time.\\
 
 \begin{figure}[!h]
 	\centering
@@ -91,8 +89,7 @@ Thus prepared simulation was run multiple time to select an optimal set of param
 	\label{no_con}
 \end{figure}
 
-A figure (\ref{corr}) presents the run of same simulation, but with constraints' correction turned on. 
-The estimation match the position for most of the simulation. During the second revolution the system lost tracked value but the match was quickly restored.
+Figure \ref{corr} presents the run of an analogous simulation, however,  with constraints correction turned on. The estimation matches the position for most of the simulation time. During the second revolution, the system lost the tracked value, but the match was quickly restored.
 
 \begin{figure}[!h]
 	\centering
@@ -102,4 +99,4 @@ The estimation match the position for most of the simulation. During the second 
 \end{figure}
 
 \newpage
-Summarize, the simulation shows how positive is the impact of using the constraints' correction. Chronologically, the computer simulation was part of preparations for the realization of this thesis that energized the further work and complete system's implementation.
+To summarize, the simulation shows a substantial and positive impact of applying correction of constraints. Chronologically, computer simulation was part of the preparations for the realization of this thesis, which energized further work and complete system implementation.

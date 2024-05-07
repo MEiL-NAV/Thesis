@@ -84,7 +84,8 @@ The implementation of the project used various software technologies and librari
 \noindent\textbf{docker} -- as the name suggests, Docker was used to containerize system.   
 	
 \section{Prototype}
-Project realization includes the preparation of software and hardware. The hardware part is the sensor node, that perform low-lever sensor data collecting and transferring data to server. The selected hardware should provide adequate performance and support network communication. For this purpose, microcontrollers work well. Wemos D1 mini Pro development board was selected. The ESP8266EX chip used on it provides high performance and native support for network functions including Wi-Fi. Board is connected to two shields: power supply shield and custom shield with IMU. Power supply shield enables chip powering from Li-ion battery. Custom shield has installed Pololu MinIMU-9 that contains LSM303 accelerometer and L3GD20 gyroscope. Thus created device is very compact and together with battery fits into a 50x40x35mm 3D-printed enclosure (figure (\ref{prototype})).
+
+Project realization includes the preparation of software and hardware. The hardware part is the sensor node, which performs low-level sensor data collecting and transferring data to the server. The selected hardware should provide adequate performance and support network communication. For this purpose, microcontrollers work well. Wemos D1 mini Pro development board was selected. The ESP8266EX chip used on it provides high performance and native support for network functions, including Wi-Fi. The board is connected to two shields: a power supply shield and a custom shield with IMU. The power supply shield enables chip powering from a Li-ion battery. The custom shield has installed Pololu MinIMU-9, which contains the LSM303 accelerometer and L3GD20 gyroscope. That created device is very compact and, together with the battery, fits into a 50x40x35mm 3D-printed enclosure (figure \ref{prototype}).
 
 \begin{figure}[!h]
 	\begin{center}
@@ -177,7 +178,7 @@ An example of plugin, that was added to system is force logger. The main task of
 
 \section{Tuning}
 
-Tuning is a process selection of a set of parameters provides the best results in terms of the chosen criterion. For the solution being developed, the greatest number of unknowns are the parameters of sensor filtration and fusion. Based on similar projects and applications, the initial value of parameters can be selected, but the tuning is an unmissable step on the way to precise estimation.\\
+Tuning is a process of selecting the set of parameters that provides the best results in terms of the chosen criterion. For the system being developed, the greatest number of unknowns are the parameters of sensor filtration and fusion. Based on similar projects and applications, the initial value of parameters can be selected, but tuning is an unmissable step on the way to precise estimation.\\
 
 In measurement systems, the final result is affected by almost every element of the system: sensor errors, installation errors, delays, and more. Due to that, there is no universal method of tuning. The process largely depends on the operator's experience and ability to recognize system responses. Nevertheless, it is prolific to plan experiments that highlight certain regions of interest and, as a result, lead to shorter tuning times.\\
 
