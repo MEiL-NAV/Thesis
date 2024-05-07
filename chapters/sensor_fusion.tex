@@ -9,57 +9,55 @@ Complementary filter method involves estimating orientation two ways: incrementa
 Direction Cosine Matrix (DCM) method is also based on incremental model with drift correction.
 To correct drift, DCM involves using PI controller. The method is strongly linked with rotation matrix's properties. Moreover, if velocity source is present, the method can explicitly compensate acceleration that is not gravitational. \\
 
-Madgwick filter method is an algorithm developed by Sebastian Madgwick. The method uses a quaternion representation and structural definition, easy to implement in low-level languages. Unlike traditional methods like the Kalman filter, the Madgwick filter is highly efficient computationally, making it suitable for real-time applications even on resource-constrained platforms. However, it has a closed structure, that makes it less readable. Quoting the description of the Python filter implementation \cite{madgwick2}: \textit{The filter employs a quaternion representation of orientation to describe the nature of orientations in three-dimensions and is not subject to the singularities associated with an Euler angle representation, allowing accelerometer and magnetometer data to be used in an analytically derived and optimised gradient-descent algorithm to compute the direction of the gyroscope measurement error as a quaternion derivative.}\\
+Madgwick filter method is an algorithm developed by Sebastian Madgwick. The method uses a quaternion representation and structural definition, easy to implement in low-level languages. Unlike traditional methods like the Kalman filter, the Madgwick filter is highly efficient computationally, making it suitable for real-time applications even on resource-constrained platforms. However, it has a closed structure, that makes it less readable. \cite{madgwick2}\\
 
 All of presented method so far enable orientation estimation only and are hardly modifiable. This results in the need to find more sophisticated methods. For many years the most popular and universal method has been the use of the Kalman filter \cite{ekf_poor}.
 
 \section{The Kalman Filter}
 
-\todo[inline, color=green]{
-	This section is directly taken and translated from my bachelor thesis. Should it be marked somehow?
-}
-
-The Kalman filter is a mathematical estimation method for efficiently tracking the dynamic state of a system and filtering out measurement data. It is based on modeling the system with state equations and measurement equations. The equations of state describe the evolution of the system state over time, while the measurement equations represent the relationship between the system state and the measurement data. Mathematically, the Kalman Filter can be represented by equations:
+The Kalman filter is a mathematical estimation method for efficiently tracking the dynamic state of a system and filtering out measurement data. It is based on modeling the system with state equations and measurement equations. The equations of state describe the evolution of the system state over time, while the measurement equations represent the relationship between the system state and the measurement data.
+The following description of the Kalman filter is based on an earlier thesis by the author of this work.
+Mathematically, the Kalman Filter can be represented by equations:
 
 \begin{equation}
-	\bm{x}_k = A \cdot \bm{x}_{k-1} + B \cdot \bm{u}_k + \bm{w}_k
+	\bm{x}_k = \bm{A} \bm{x}_{k-1} + \bm{B} \bm{u}_k + \bm{w}_k
 	\label{kf1}
 \end{equation}
 
 \begin{equation}
-	\bm{z}_k = H \cdot \bm{x}_k + \bm{v}_k
+	\bm{z}_k = \bm{H} \bm{x}_k + \bm{v}_k
 	\label{kf2}
 \end{equation}
 
 where:
 \begin{itemize}[noitemsep]
 	\item $\bm{x}_k$ -- state vector at the k-th time step,
-	\item $A$ -- state matrix, 
-	\item $B$  -- input matrix, 
+	\item $\bm{A}$ -- state matrix, 
+	\item $\bm{B}$  -- input matrix, 
 	\item $\bm{u}_k$  -- control input vector, 
 	\item $\bm{w}_k$ -- process noise vector, 
 	\item $\bm{z}_k$  -- measurement vector at the time of k, 
-	\item $H$ -- measurement matrix,
+	\item $\bm{H}$ -- measurement matrix,
 	\item $\bm{v}_k$ -- measurement noise vector.
 \end{itemize}
 
 The equations presented above are similar to the equation of state of a system with white noise added. The idea of the filter is based on finding the state, which from a statistical point of view is the most probable, for the recorded measurements. The disadvantage of the above notation is the requirement of linear state equation. Fortunately, the solution to this problem is provided by the use of Extended Kalman Filter (EKF), which state is presented in equations:
 
 \begin{equation}
-	\bm{x}_k =  f \left( \bm{x}_{k-1},  \bm{u}_k \right) + \bm{w}_k
+	\bm{x}_k =  \bm{f} \left( \bm{x}_{k-1},  \bm{u}_k \right) + \bm{w}_k
 	\label{ekf1}
 \end{equation}
 
 \begin{equation}
-	\bm{z}_k = h \left(\bm{x}_k \right) + \bm{v}_k
+	\bm{z}_k = \bm{h} \left(\bm{x}_k \right) + \bm{v}_k
 	\label{ekf2}
 \end{equation}
 
 
 where:
 \begin{itemize}
-	\item $ f \left( \bm{x}_{k-1},  \bm{u}_k \right)$ -- state function, 
-	\item $h \left(\bm{x}_k \right)$ -- measurement function.
+	\item $\bm{f} \left( \bm{x}_{k-1},  \bm{u}_k \right)$ -- state function, 
+	\item $\bm{h} \left(\bm{x}_k \right)$ -- measurement function.
 \end{itemize}
 
 The Kalman filter performs two main steps: prediction and correction (figure \ref{kf_diagram}). In the prediction step, the new state of the system and its covariance is predicted. In the correction step, based on the new measurements, an adjustment is made to the prediction, taking into account measurement errors and improving the estimation of the system state. The filter, especially in its extended version, is a major tool in the field of control and state's estimation, enabling systems to maintain the precision of measurements in dynamic conditions and improve the quality of system parameter estimation.\\
@@ -84,32 +82,28 @@ The Kalman filter performs two main steps: prediction and correction (figure \re
 \end{figure}
 
 Prediction phase:
-\[
-\begin{aligned}
-	\hat{x}_k^- & = f(\hat{x}_{k-1}, \bm{u}_k) \quad \text{(predicted state)}, \\
-	P_k^- & = A_k P_{k-1} A_k^T + Q_k \quad \text{(predicted covariance)},
-\end{aligned}
-\]
+\begin{align}
+	\bm{\hat{x}}_k^- & = \bm{f}(\bm{\hat{x}}_{k-1}, \bm{u}_k) \quad \text{(predicted state)}, \\
+	\bm{P}_k^- & = \bm{A}_k \bm{P}_{k-1} \bm{A}_k^T + \bm{Q}_k \quad \text{(predicted covariance)},
+\end{align}
 
-where: $A_k = \frac{\partial f}{\partial x}\Bigr|_{\hat{x}_{k-1}, \bm{u}_k}$, and $Q_k$ is process noise covariance matrix.\\
+where: $\bm{A}_k = \frac{\partial \bm{f}}{\partial \bm{x}}\Bigr|_{\bm{\hat{x}}_{k-1}, \bm{u}_k}$, and $\bm{Q}_k$ is process noise covariance matrix.\\
 
 Correction phase:
-\[
-\begin{aligned}
-	&K_k = P_k^- H_k^T (H_k P_k^- H_k^T + R_k)^{-1} \quad \text{(Kalman's gain)}, \\
-	&\hat{x}_k = \hat{x}_k^- + K_k(\bm{z}_k - h(\hat{x}_k^-)) \quad \text{(corrected state)}, \\
-	&P_k = (I - K_k H_k) P_k^- \quad \text{(corrected covariance)},
-\end{aligned}
-\]
+\begin{align}
+	&\bm{K}_k = \bm{P}_k^- \bm{H}_k^T (\bm{H}_k \bm{P}_k^- \bm{H}_k^T + \bm{R}_k)^{-1} \quad \text{(Kalman's gain)}, \\
+	&\bm{\hat{x}}_k = \bm{\hat{x}}_k^- + \bm{K}_k(\bm{\bm{z}}_k - \bm{h}(\bm{\hat{x}}_k^-)) \quad \text{(corrected state)}, \\
+	&\bm{P}_k = (\bm{I} - \bm{K}_k \bm{H}_k) \bm{P}_k^- \quad \text{(corrected covariance)},
+\end{align}
 
-where: $H_k = \frac{\partial h}{\partial x}\Bigr|_{\hat{x}_k^-}$, and $R_k$ is measurement noise covariance matrix.
+where: $\bm{H}_k = \frac{\partial \bm{h}}{\partial \bm{x}}\Bigr|_{\bm{\hat{x}}_k^-}$, and $\bm{R}_k$ is measurement noise covariance matrix.
 
 
 
 \section{The  Extended Kalman Filter as the position and orientation estimator}
 \label{filter_model}
 
-Application of the Extended Kalman Filter to estimate the position and orientation involves determination of state vector and the state equation, specification of measurement sources and their relationships with state. In prediction phase high sample rate sensors and sensor that measurements must be integrated should be used, like inertial sensor. The correction phase that can be processed rarely should include rest of sensors. In this section the filter model is presented.\\
+Application of the Extended Kalman Filter to estimate the position and orientation involves determination of state vector and the state equation, specification of measurement sources and their relationships with state. In prediction phase the inertial sensor are used as they are characterized by high sample rate and their measurements must be integrated over time. The correction phase, that can be processed rarely, should include rest of sensors. In this section the filter model is presented.\\
 
 In preparation, available sensors are assigned to a particular phase. The accelerometer and gyroscope readings are used in the prediction phase, as the readings are integrated. In the correction phase, the external position source is used to correct the position, and the accelerometer readings are used to correct the orientation. Thus, equation (\ref{u_vec}) presents the proposed control input vector, and equation (\ref{h_vec}) presents the measurement vector. Next, it is necessary to define the state vector. The proposed state vector is presented in equation (\ref{state_vec}).
 
@@ -136,7 +130,7 @@ where:
 
 \begin{equation}
 	\bm{x} = \begin{bmatrix}
-	x & y & z & v_x & v_y & v_z & q_0 & q_x & q_y & q_z & b_x & b_y & b_z & az & el
+	x & y & z & v_x & v_y & v_z & q_0 & q_x & q_y & q_z & b_x & b_y & b_z & \zeta & \eta
 	\end{bmatrix}^T
 	\label{state_vec}
 \end{equation}
@@ -147,10 +141,10 @@ where:
 	\item $v_x$, $v_y$, $v_z$ -- components of the velocity,
 	\item $q_0$, $q_x$, $q_y$, $q_z$ -- quaternion of the orientation,
 	\item $b_x$, $b_y$, $b_z$ -- components of the gyroscope bias,
-	\item $az$ and $el$ -- azimuth and elevation of the drawbar.
+	\item $\zeta$ and $\eta$ -- azimuth and elevation of the drawbar.
 \end{itemize}
 
-The bias and orientation of draw bar require an additional comment. The gyroscope bias in state vector enable drift tracking and its compensation. Thanks to an Kalman Filter properties, the value of actual bias will be almost automatically calculated when the filter runs. The azimuth and elevation of drawbar enables utilizing external position sources even if they are not directly connected to system. In this implementation, the position is given for the point that is connected to system via link with fixed length. To simplify, it is assumed that drawbar is connected by a spherical joint to the origin of moving coordinate system. For the vectors so selected, the equation of state was determined. To increase readability, the state equation was split into equations (\ref{state_begin} - \ref{state_end}). The Jacobi matrix of the state function is calculated in equations (\ref{state_jacobi_begin} - \ref{state_jacobi_end}).
+The bias and orientation of draw bar require an additional comment. The gyroscope bias in state vector enable drift tracking and its compensation. Thanks to an Kalman Filter properties, the value of actual bias will be almost automatically calculated when the filter runs. The azimuth and elevation of drawbar enables utilizing external position sources even if they are not directly connected to system. In this implementation, the position is given for the point that is connected to system via link with fixed length. To simplify, it is assumed that drawbar is connected by a spherical joint to the origin of moving coordinate system. For the vectors so selected, the equation of state was determined. To increase readability, the state equation was split into equations (\ref{state_begin} - \ref{state_end}). The Jacobi matrix of the state function is calculated in equations (\ref{state_jacobi_begin} - \ref{state_jacobi_end}).  The derivations of the equations stem from \cite{ekf_poor}.
 
 \begin{align}
 	\begin{bmatrix}
@@ -160,11 +154,11 @@ The bias and orientation of draw bar require an additional comment. The gyroscop
 	\begin{bmatrix}
 		x \\ y \\ z 
 	\end{bmatrix}_{k}
-	+ \Delta t
+	+ \varDelta t
 	\begin{bmatrix}
 	v_x \\ v_y \\ v_z 
 	\end{bmatrix}_{k}
-	+ \frac{1}{2} (\Delta t)^2 \bm{a}^W
+	+ \frac{1}{2} (\varDelta t)^2 \bm{a}^W
 	\label{state_begin}
 	\\
 	\begin{bmatrix}
@@ -174,7 +168,7 @@ The bias and orientation of draw bar require an additional comment. The gyroscop
 	\begin{bmatrix}
 		v_x \\ v_y \\ v_z 
 	\end{bmatrix}_{k}
-	+ \Delta t \bm{a}^W
+	+ \varDelta t \bm{a}^W
 	\\
 	\begin{bmatrix}
 		q_0 \\ q_x \\ q_y \\ q_z 
@@ -183,7 +177,7 @@ The bias and orientation of draw bar require an additional comment. The gyroscop
 	\begin{bmatrix}
 		q_0 \\ q_x \\ q_y \\ q_z  
 	\end{bmatrix}_{k}
-	+ \frac{1}{2} \Delta t \bm{S} \left( \bm{q}_k \right) 
+	+ \frac{1}{2} \varDelta t \bm{S} \left( \bm{q}_k \right) 
 	\left(
 	\begin{bmatrix}
 		g_x \\ g_y \\ g_z
@@ -203,16 +197,16 @@ The bias and orientation of draw bar require an additional comment. The gyroscop
 	\end{bmatrix}_{k}	
 	\\
 	\begin{bmatrix}
-		az \\ el 
+		\zeta \\ \eta 
 	\end{bmatrix}_{k+1}
 	&= 
 	\begin{bmatrix}
-		az \\ el 
+		\zeta \\ \eta 
 	\end{bmatrix}_{k}	
 \end{align}
 
 \begin{align}
-	\bm{DCM} \left( \bm{q}_k \right) &=  \begin{bmatrix}
+	\bm{R_q} \left( \bm{q}_k \right) &=  \begin{bmatrix}
 		q_0^2 + q_x^2 - q_y^2 - q_z^2 & 2(q_x q_y - q_0 q_z) & 2(q_x q_z + q_0 q_y) \\
 		2(q_x q_y + q_0 q_z) & q_0^2 - q_x^2 + q_y^2 - q_z^2 & 2(q_y q_z - q_0 q_x) \\
 		2(q_x q_z - q_0 q_y) & 2(q_y q_z + q_0 q_x) & q_0^2 - q_x^2 - q_y^2 + q_z^2 \\
@@ -225,7 +219,7 @@ The bias and orientation of draw bar require an additional comment. The gyroscop
 		-q_y & q_x & q_0 \\
 	\end{bmatrix}
 	\\
-	\bm{a}^W &= \bm{DCM} \left( \bm{q}_k \right) \begin{bmatrix}
+	\bm{a}^W &= \bm{R_q} \left( \bm{q}_k \right) \begin{bmatrix}
 		a_x \\ a_y \\ a_z 
 	\end{bmatrix} - \begin{bmatrix}
 		0 \\ 0 \\ g 
@@ -253,20 +247,20 @@ The bias and orientation of draw bar require an additional comment. The gyroscop
 	\bm{A} \left( \bm{x}, \bm{u} \right) = \frac{\partial \bm{f}}{\partial \bm{x}}
 	= 
 	\begin{bNiceArray}{c;c;c;c;c}
-		\bm{I}_{3x3} & \Delta t \bm{I}_{3x3} & \frac{\Delta t ^2}{2}\ \bm{D} \left( \bm{q}, \bm{a}\right) & \bm{0}_{3x3} & \bm{0}_{3x2} \\
+		\bm{I}_{3 \times 3} & \varDelta t \bm{I}_{3 \times 3} & \frac{\varDelta t ^2}{2}\ \bm{D} \left( \bm{q}, \bm{a}\right) & \bm{0}_{3 \times 3} & \bm{0}_{3 \times 2} \\
 		\cdashedline
-		\bm{0}_{3x3} & \bm{I}_{3x3} & \Delta t\ \bm{D} \left( \bm{q}, \bm{a}\right) & \bm{0}_{3x3} & \bm{0}_{3x2} \\
+		\bm{0}_{3 \times 3} & \bm{I}_{3 \times 3} & \varDelta t\ \bm{D} \left( \bm{q}, \bm{a}\right) & \bm{0}_{3 \times 3} & \bm{0}_{3 \times 2} \\
 		\cdashedline
-		\bm{0}_{4x3} & \bm{0}_{4x3} & \bm{I}_{4x4} & - \frac{\Delta t}{2}\ \bm{S} \left( \bm{q}_k \right) & \bm{0}_{4x2} \\
+		\bm{0}_{4 \times 3} & \bm{0}_{4 \times 3} & \bm{I}_{4 \times 4} & - \frac{\varDelta t}{2}\ \bm{S} \left( \bm{q}_k \right) & \bm{0}_{4 \times 2} \\
 		\cdashedline
-		\bm{0}_{3x3} & \bm{0}_{3x3} & \bm{0}_{3x4} & \bm{I}_{3x3} & \bm{0}_{3x2} \\
+		\bm{0}_{3 \times 3} & \bm{0}_{3 \times 3} & \bm{0}_{3 \times 4} & \bm{I}_{3 \times 3} & \bm{0}_{3 \times 2} \\
 		\cdashedline
-		\bm{0}_{2x3} & \bm{0}_{2x3} & \bm{0}_{2x4} & \bm{0}_{2x3} & \bm{I}_{2x2} \\	
+		\bm{0}_{2 \times 3} & \bm{0}_{2 \times 3} & \bm{0}_{2 \times 4} & \bm{0}_{2 \times 3} & \bm{I}_{2 \times 2} \\	
 	\end{bNiceArray}
 	\label{state_jacobi_end}
 \end{equation}
 
-Next, a measurement function was determined. The accelerometer reading is used to correct orientation. The external position provider is linked with a position and drawbar orientation. The length of the drawbar is constant and equal $d$. The measurement function is given in equation (\ref{h_fun}). The Jacobi matrix of the measurement function is calculated in equations (\ref{measurement_jacobi_start} - \ref{measurement_jacobi_end}).
+Next, a measurement function was determined. The accelerometer reading is used to correct orientation. The external position provider measurement can be calculated based on the origin of the moving frame, and the drawbar orientation and length. The length of the drawbar is constant and equal $d$. The measurement function is given in equation (\ref{h_fun}). The Jacobi matrix of the measurement function is calculated in equations (\ref{measurement_jacobi_start} - \ref{measurement_jacobi_end}).
 
 
 \begin{equation}
@@ -274,7 +268,7 @@ Next, a measurement function was determined. The accelerometer reading is used t
 	= 
 	\
 	\begin{bmatrix}
-		\bm{DCM} \left( \bm{q} \right) 
+		\bm{R_q} \left( \bm{q} \right) 
 		\begin{bmatrix}
 			0 \\ 0 \\ g 
 		\end{bmatrix}\\
@@ -282,8 +276,8 @@ Next, a measurement function was determined. The accelerometer reading is used t
 			x \\ y \\ z 
 		\end{bmatrix}
 		+
-		\bm{R}_z \left( az \right)
-		\bm{R}_y \left( el \right)
+		\bm{R}_z \left( \zeta \right)
+		\bm{R}_y \left( \eta \right)
 		\begin{bmatrix}
 			d \\ 0 \\ 0 
 		\end{bmatrix}
@@ -293,15 +287,15 @@ Next, a measurement function was determined. The accelerometer reading is used t
 		2g(q_x q_z + q_0 q_y) \\
 		2g(q_y q_z - q_0 q_x) \\
 		g(q_0^2 - q_x^2 - q_y^2 + q_z^2) \\
-		x + d\ cos(az)\ cos(el)\\
-		y + d\ sin(az)\ cos(el)\\
-		z - sin(el)
+		x + d\ cos(\zeta)\ cos(\eta)\\
+		y + d\ sin(\zeta)\ cos(\eta)\\
+		z - sin(\eta)
 	\end{bmatrix}
 	\label{h_fun}
 \end{equation}
 
 \begin{equation}
-	\bm{Ca} \left( \bm{q} \right)
+	\bm{C_a} \left( \bm{q} \right)
 	=
 	\begin{bmatrix}
 		2q_y & 2q_z & q_0 & 2q_x \\
@@ -312,12 +306,12 @@ Next, a measurement function was determined. The accelerometer reading is used t
 \end{equation}
 
 \begin{equation}
-	\bm{Cp} \left( az, el\right)
+	\bm{C_p} \left( \zeta, \eta \right)
 	=
 	\begin{bmatrix}
-		-sin(az)\ cos(el) & -cos(az)\ sin(el)\\
-		 cos(az)\ cos(el) & -sin(az)\ sin(el)\\
-		 0				  & -cos(el)
+		-sin(\zeta)\ cos(\eta) & -cos(\zeta)\ sin(\eta)\\
+		 cos(\zeta)\ cos(\eta) & -sin(\zeta)\ sin(\eta)\\
+		 0				  & -cos(\eta)
 		
 	\end{bmatrix}
 \end{equation}
@@ -327,9 +321,9 @@ Next, a measurement function was determined. The accelerometer reading is used t
 	\bm{H} \left( \bm{x}, \bm{u} \right) = \frac{\partial \bm{h}}{\partial \bm{x}}
 	= 
 	\begin{bNiceArray}{c;c;c;c;c}
-		\bm{0}_{3x3} & \bm{0}_{3x3} & g\ \bm{Ca} \left( \bm{q} \right)& \bm{0}_{3x3} & \bm{0}_{3x2} \\
+		\bm{0}_{3 \times 3} & \bm{0}_{3 \times 3} & g\ \bm{C_a} \left( \bm{q} \right)& \bm{0}_{3 \times 3} & \bm{0}_{3 \times 2} \\
 		\cdashedline
-		\bm{I}_{3x3} & \bm{0}_{3x3} & \bm{0}_{3x4} & \bm{0}_{3x3} & d\ \bm{Cp} \left( az, el\right) \\
+		\bm{I}_{3 \times 3} & \bm{0}_{3 \times 3} & \bm{0}_{3 \times 4} & \bm{0}_{3 \times 3} & d\ \bm{C_p} \left( \zeta, \eta\right) \\
 	\end{bNiceArray}
 	\label{measurement_jacobi_end}
 \end{equation}
@@ -341,19 +335,19 @@ Next, a measurement function was determined. The accelerometer reading is used t
 
 Sensors' data flow to the server from multiple sensors instance with various delays. The readings are used in the prediction and correction phases. In the correction phase, reading time is no so important, as this phase can be split into multiple corrections. Formally, this approach is present in Multiplicative and Sequential Kalman Filters. Unfortunately, in the predict phase all involved readings should be synchronized. If time of reading is known, the nearest readings are selected, or if calculation are conducted with fixed step, readings can be interpolated.\\
 
-The determination of the time of reading is also not a trivial issue, especially in decentralized systems. Many known time determination methods differ in underlying principles and conditions (\cite{time_sync} \cite{time_sync2}). Consider a system with a precise clock in the server and low-precision clocks in every sensor node. An example method of solving the synchronization problem presents itself as follows. Every fixed period, the server broadcasts the time-synchronize message that contains only a unique sequence number. Sending time $T_1$ (according to the server clock) is stored. Every node that receives the time-synchronize message replies immediately with a sequence number and the node clock time $T_n$. The received message is saved with a timestamp $T_2$. Based on this reply, the server calculates transmission delay and clocks’ offset. First, the transmission delay (commonly called ping) is calculated as half of the period between broadcasting the message and receiving the reply (equation (\ref{ping})). Next, the node clock offset, with respect to the server clock, is calculated and stored in an array (equation (\ref{offset})). Nodes send readings signed with a timestamp, which is based on the node clock. Finally, the true timestamp,  $T_r$, with respect to the server clock, is calculated by adding a relevant offset (equation (\ref{timestamp})).
+The determination of the time of reading is also not a trivial issue, especially in decentralized systems. Many known time determination methods differ in underlying principles and conditions (\cite{time_sync} \cite{time_sync2}). Consider a system with a precise clock in the server and low-precision clocks in every sensor node. An example method of solving the synchronization problem presents itself as follows. Every fixed period, the server broadcasts the time-synchronize message that contains only a unique sequence number. Sending time $T_1$ (according to the server clock) is stored. Every node that receives the time-synchronize message replies immediately with a sequence number and the node clock time $T_n$. The received message is saved with a timestamp $T_2$. Based on this reply, the server calculates transmission delay and clocks’ offset. First, the transmission delay (commonly called ping) is calculated as half of the period between broadcasting the message and receiving the reply, commonly called ping $p$ (equation (\ref{ping})). Next, the node clock offset $o$, with respect to the server clock, is calculated and stored in an array (equation (\ref{offset})). Nodes send readings signed with a timestamp, which is based on the node clock. Finally, the true timestamp,  $T_r$, with respect to the server clock, is calculated by adding a relevant offset (equation (\ref{timestamp})).
 
 \begin{equation}
-	ping = \frac{T_2 - T_1}{2}
+	p = \frac{T_2 - T_1}{2}
 	\label{ping}
 \end{equation}
 
 \begin{equation}
-	offset = T_2 - ping - T_n
+	o = T_2 - p - T_n
 	\label{offset}
 \end{equation}
 
 \begin{equation}
-	T_r = T_n + offset
+	T_r = T_n + o
 	\label{timestamp}
 \end{equation}

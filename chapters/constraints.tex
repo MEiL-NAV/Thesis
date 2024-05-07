@@ -26,7 +26,7 @@ In mechanical simulation, this problem is solved by adding an extra pure-synthet
 
 \subsection{Position and orientation constraints}
 
-Position and orientation constraints are the constraints that are known before the system moves. They may affect only selected state variables and be applied only at certain times. For example, the position of a robot may be precisely identified as long as the robot is close to the sensor. The general formula that describes this type of constraint is given by equation (\ref{constraint_fun}). The derivative of this function is a mostly-zero matrix with one only on position correlated with the limited state variable.
+Position and orientation constraints are the constraints that are known before the system moves. They may affect only selected state variables and be applied only at certain times. The general formula that describes this type of constraint is given by equation (\ref{constraint_fun}). The derivative of this function is a mostly-zero matrix with one only on position correlated with the limited state variable.
 
 \begin{equation}
 	c \left( \bm{x} \right) = \begin{bmatrix}
@@ -150,7 +150,7 @@ It is worth mentioning that if velocities are known, the equation function (\ref
 Assume that a novel system for locating metro wagons is planned to be developed. The first idea that comes to mind is to use a satellite navigation system, as is usually the case in location-based tasks. However, this solution suffers from a significant flaw: these systems perform much worse underground. The question is whether the quality of the position estimate can be easily improved, and the short answer is yes. A simple assumption that can be made is that metro wagons can only be on the rails. Using the well-known track, it is possible to stick the calculated location to the nearest rails, thus improving its accuracy.
 This illustrative example implicitly demonstrates the principle of constraint's correction.\\
 
-The inclusion of constraints in state estimation is not a popular solution. Usually, transform to other state variables that fulfill constraints is suggested. However, it provokes the redesign of the state estimator every time when constraints change. The unique approach is discussed by Dan Simon in articles \cite{simon}, \cite{simon2010kalman} and \cite{simon2006kalman}. It is proposed to add the third phase to the conventional Extended Kalman Filter, as it is shown in figure (\ref{ekf_three_phases}).
+The inclusion of constraints in state estimation is not a popular solution. Usually, transform to other state variables that fulfill constraints is suggested. However, it provokes the redesign of the state estimator every time when constraints change. The unique approach is discussed by Dan Simon in articles \cite{simon}, \cite{simon2010kalman} and \cite{simon2006kalman}. It is proposed to add the third phase to the conventional Extended Kalman Filter, as it is shown in figure \ref{ekf_three_phases}.
 
 \begin{figure}[!h]
 	\begin{center}
@@ -211,7 +211,7 @@ According to the Newton-Raphson method, every iteration is given by:
 	\label{NR}
 \end{equation}
 
-In general $\bm{D}$ matrix is not full rank or is not squared, so it can not be inverse. To address this problem right pseudo-inverse can be used (equation (\ref{pseudoinverse})).
+In general $\bm{D}$ matrix is not square, as there is fewer constraints than the degree of freedom of the mechanisms and $\bm{D}$ can not be inverse trivial. To address this problem right pseudo-inverse can be used (equation (\ref{pseudoinverse})).
 \begin{equation}
 	\bm{D}^{\#} = \bm{D}^T \left( \bm{D} \bm{D}^T \right) ^ {-1}
 	\label{pseudoinverse}
@@ -225,6 +225,8 @@ Furthermore, if the equation is underdetermined, the pseudo-inverse forms a spac
 \end{equation}
 
 Inserting equation (\ref{wieight_pseudo}) to (\ref{NR}) leads to the constraint correction equation (\ref{constraint_corr}).\\
+
+It is worth mentioning that the presented method of calculating the pseudoinverse of D is only valid under the assumption of a full order of the D matrix. The reduction of the order of the matrix occurs when the constraints become linearly dependent. In this situation, another method of calculating pseudo-inversion should be used, e.g, SVD decomposition. \cite{golub2013matrix}\\
 
 The reasoning so far was based on the assumption that constraints are linear. 
 However, constraints in mechanic are mostly nonlinear. This problem is addressed by the local linearization method. The following equation define substitutions resulting from linearization:

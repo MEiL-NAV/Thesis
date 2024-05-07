@@ -67,11 +67,11 @@ where:
 
 
 \subsection{Gyroscope}
-A gyroscope is a sensor designed to measure angular velocities. In a non-inertial frame, angular velocity remains constant at every point, making gyroscope readings independent of its position within the moving reference frame.\\
+A gyroscope is a sensor designed to measure angular velocities. An angular velocity characterizes the whole moving body. Thus, the gyroscope readings are independent of the sensor position within the moving reference frame.\\
 
 The primary advantage of a gyroscope lies in its ability to measure raw angular velocities. However, it's important to note that this measurement is not direct; for example, in MEMS sensors, the measurement is based on the transfer of energy between two vibration modes caused by the Coriolis acceleration \cite{passaro2017gyroscope}.\\
 
-Despite its advantages, a gyroscope's measurements are susceptible to various errors. Two significant sources of error are bias and drift. Bias refers to a constant offset in the measured values, which is inherent to the sensor and remains relatively stable over time. Drift, on the other hand, is the gradual change in bias over time, leading to a continuous deviation from the true value. In addition to bias and drift, gyroscopes are also affected by high-frequency noise, which can obscure the true signal. The following equation presents a mathematical model of a gyroscope.
+Despite its advantages, a gyroscope's measurements are susceptible to various errors. Two significant sources of error are bias and drift. Bias refers to a constant offset in the measured values, which is inherent to the sensor and remains relatively stable over time. Drift, on the other hand, is the gradual change in sensor offset over time, leading to a continuously growing deviation from the true value. In addition to bias and drift, gyroscopes are also affected by high-frequency noise, which can obscure the true signal. The following equation presents a mathematical model of a gyroscope.
 
 \begin{equation}
 	\bm{\hat{\omega}}^B = \bm{\omega}^B + \bm{b}(t) + \bm{b}_0 + \bm{h}
@@ -82,8 +82,8 @@ where:
 \begin{itemize}
 	\item $\bm{\hat{\omega}}^B$ -- gyroscope's output,
 	\item $\bm{\omega}^B$ -- moving frame angular velocity given in moving reference frame,
-	\item $\bm{b}(t)$ -- bias that change over time,
-	\item $\bm{b}_0$ -- the constant part of bias, %%TODO
+	\item $\bm{b}(t)$ -- drift -- the part of sensor offset that change over time,
+	\item $\bm{b}_0$ -- the constant part of sensor offset,
 	\item $\bm{h}$ -- high-frequency random noise.
 \end{itemize}
 
@@ -95,7 +95,7 @@ Finally, it is worth mentioning why the assembly inaccuracies are not included i
 
 External provides supply additional data that can appear to be useful in further estimation. There are many sources providing various measurements. Some of them deliver only partial information, while others can estimate a full description of the system. However, the measurements may be low-precise or too slowly updated to be used alone as an estimation.\\
 
-An example considered in this project is the use of the robot's end-effector position calculated by its control system. The industrial robot acquires end-effector position by calculating forward kinematics based on encoder readings and knowledge about the robot's structure. The orientation of the end-effector is also calculated and can be used in the estimation if the connection between the robot's arm and the mechanism is rigid.\\
+An example considered in this project is the use of the robot's end-effector position calculated by its control system. The industrial robot acquires end-effector position by calculating forward kinematics based on encoder readings and knowledge about the robot's structure. The orientation of the end-effector is also calculated and can be used in the estimation if the connection between the robot's arm and the mechanism is rigid. Within the scope of this work, the data from the external provider should be identified with the data from the industrial robot control system.\\
 
 The model of an external provider, treated as a sensor, is not as straightforward as the models presented so far. Many factors are involved, including the position and type of connection between the end-effector and mechanism, their relative positions, and the accuracy of the robot’s calculation. Moreover, accuracy is not always directly specified because, for industrial robots, repeatability is much more important than precision \cite{shiakolas2002accuracy}. It is always reasonable to assume that readings include additional noise.\\
 
@@ -110,8 +110,8 @@ Assume that the robot's end-effector is connected with the origin of the moving 
 		x \\ y \\ z 
 	\end{bmatrix}
 	+
-	\bm{R}_z \left( az \right)
-	\bm{R}_y \left( el \right)
+	\bm{R}_z \left( \zeta \right)
+	\bm{R}_y \left( \eta \right)
 	\begin{bmatrix}
 		d \\ 0 \\ 0 
 	\end{bmatrix}
@@ -123,7 +123,7 @@ where:
 	\item $x_t$, $y_t$, $z_t$ -- components of the end-effector's position,
 	\item $x$, $y$, $z$ -- components of the origin's position,
 	\item $d$ -- the length of the drawbar,
-	\item $az$, $el$ -- a description of the drawbar's orientation. The $el$ is an elevation, the angle between the drawbar's translation vector and OXY world plane. The $az$ is an azimuth, the angle between the drawbar's translation vector's projection on OXY plane and OX axis.
+	\item $\zeta$, $\eta$ -- a description of the drawbar's orientation. The $\eta$ is an elevation, the angle between the drawbar's translation vector and OXY world plane. The $\zeta$ is an azimuth, the angle between the drawbar's translation vector's projection on OXY plane and OX axis.
 \end{itemize}
 
 
@@ -134,35 +134,35 @@ where:
 
 \subsection{Accelerometer}
 
-Accelerometer calibration aims to remove a bias and compensate for the effects of an assembly inaccuracy and a scale error. The accelerometer's noise compensation is usually moved to sensor fusion. Before proposing a calibration method, the model given in equation (\ref{acc_model2}) can be transformed into the following equation. The noise is ignored, while the product $\bm{R}_M$ $\bm{S}$ is treated as an inverse of a new coefficient matrix $\bm{\Phi}$. The proof that the product of matrices $\bm{R}_M$ and $\bm{S}$ is the inverse of some $3 \times 3$ matrix $\bm{\Phi}$ is that the rotation matrix is orthogonal, and the scale matrix is diagonal. Both these matrices are non-singular, so their product can also be inverted.
+Accelerometer calibration aims to remove a bias and compensate for the effects of an assembly inaccuracy and a scale error. The accelerometer's noise compensation is usually moved to sensor fusion. Before proposing a calibration method, the model given in equation (\ref{acc_model2}) can be transformed into the following equation. The noise is ignored, while the product $\bm{R}_M$ $\bm{S}$ is treated as an inverse of a new coefficient matrix $\bm{\varPhi}$. The proof that the product of matrices $\bm{R}_M$ and $\bm{S}$ is the inverse of some $3 \times 3$ matrix $\bm{\varPhi}$ is that the rotation matrix is orthogonal, and the scale matrix is diagonal. Both these matrices are non-singular, so their product can also be inverted.
 
 \begin{equation}
-	\bm{\hat{a}}_{res}^B \approx \bm{\Phi}^{-1} \left( \bm{a}_{res}^B + \bm{b}_0 \right)
+	\bm{\hat{a}}_{res}^B \approx \bm{\varPhi}^{-1} \left( \bm{a}_{res}^B + \bm{b}_0 \right)
 	\label{acc_calib}
 \end{equation}
 
 That being said, calibration model is proposed as:
 
 \begin{equation}
-	\bm{\tilde{a}}_{res}^B = \bm{\Phi} \bm{\hat{a}}_{res}^B - \bm{b}_0 = \bm{\Phi} \bm{\hat{a}}_{res}^B + \bm{\Gamma}
+	\bm{\tilde{a}}_{res}^B = \bm{\varPhi} \bm{\hat{a}}_{res}^B - \bm{b}_0 = \bm{\varPhi} \bm{\hat{a}}_{res}^B + \bm{\varGamma}
 	\label{acc_calib2}
 \end{equation}
 
 where:
 \begin{itemize}
-	\item $\bm{\hat{a}}_{res}^B$ -- calibrated accelerometer's output,
-	\item $\bm{\Phi}$ -- 3 x 3 calibration's coefficient matrix,
-	\item $\bm{\Gamma}$ -- 3 x 1 calibration's coefficient vector.
+	\item $\bm{\tilde{a}}_{res}^B$ -- calibrated accelerometer's output,
+	\item $\bm{\varPhi}$ -- $3 \times 3$ calibration's coefficient matrix,
+	\item $\bm{\varGamma}$ -- $3 \times 1$ calibration's coefficient vector.
 \end{itemize}
 As a result, the accelerometer’s calibration comes down to finding values of $3 \cdot 3 + 3 = 12$ coefficients. To achieve this, readings are collected when the sensor is in positions for which the expected values are known. An accelerometer, even if not moving, measures gravitational acceleration. Assume that the sensor is closed in the box and that the edges are parallel to its coordinates system. When the box rests on each of its faces on a flat table, the accelerometer is expected to measure $\begin{bmatrix}\pm g & 0 & 0\end{bmatrix}^T$, $\begin{bmatrix}0 & \pm g & 0\end{bmatrix}^T$ or $\begin{bmatrix} 0 & 0 \pm g\end{bmatrix}^T$. Therefore, collecting measures from every face results in $6 \cdot 3 = 18$ equations that can be used to determine the values of calibration coefficients. As there are more equations than unknowns, the linear regression method is used. In this work, it was decided to utilize the Ordinary Least Squares method (OLS). Before the method is applied, all the equations have to be transformed to a linear form given in the following equation.
 \begin{equation}
-	\bm{X} \bm{\Theta} = \bm{Y}
+	\bm{X} \bm{\varTheta} = \bm{Y}
 	\label{ols}
 \end{equation}
 where:
 \begin{itemize}
 	\item $\bm{X}$ -- n x m known matrix,
-	\item $\bm{\Theta}$ -- m x 1 vector whose value is estimated,
+	\item $\bm{\varTheta}$ -- m x 1 vector whose value is estimated,
 	\item $\bm{Y}$ -- n x 1 known matrix.
 \end{itemize}
  
@@ -170,7 +170,7 @@ The transformation to linear form is given in the following:
 \setcounter{MaxMatrixCols}{25}
 
 \begin{equation}
-	\bm{\Theta} = \begin{bmatrix} \Phi_{11} & \Phi_{12} & \Phi_{13} & \Gamma_1 & \Phi_{21} & \Phi_{22} & \Phi_{23} & \Gamma_2 & \Phi_{31} & \Phi_{32} & \Phi_{33} & \Gamma_3 \\
+	\bm{\varTheta} = \begin{bmatrix} \varPhi_{11} & \varPhi_{12} & \varPhi_{13} & \varGamma_1 & \varPhi_{21} & \varPhi_{22} & \varPhi_{23} & \varGamma_2 & \varPhi_{31} & \varPhi_{32} & \varPhi_{33} & \varGamma_3 \\
 	\end{bmatrix}^T
 	\label{ols_theta}
 \end{equation}
@@ -185,29 +185,29 @@ The transformation to linear form is given in the following:
 \begin{equation}
 	\bm{X} = 
 	\begin{bmatrix}
-	\bm{a}^T_T & 1 & \bm{0}_{1x3} & 0 & \bm{0}_{1x3} & 0\\
-	\bm{0}_{1x3} & 0 & \bm{a}^T_T & 1 & \bm{0}_{1x3} & 0\\
-	\bm{0}_{1x3} & 0 & \bm{0}_{1x3} & 0 & \bm{a}^T_T & 1\\
+	\bm{a}^T_T & 1 & \bm{0}_{1 \times 3} & 0 & \bm{0}_{1 \times 3} & 0\\
+	\bm{0}_{1 \times 3} & 0 & \bm{a}^T_T & 1 & \bm{0}_{1 \times 3} & 0\\
+	\bm{0}_{1 \times 3} & 0 & \bm{0}_{1 \times 3} & 0 & \bm{a}^T_T & 1\\
 	
-	\bm{a}^T_D & 1 & \bm{0}_{1x3} & 0 & \bm{0}_{1x3} & 0\\
-	\bm{0}_{1x3} & 0 & \bm{a}^T_D & 1 & \bm{0}_{1x3} & 0\\
-	\bm{0}_{1x3} & 0 & \bm{0}_{1x3} & 0 & \bm{a}^T_D & 1\\
+	\bm{a}^T_D & 1 & \bm{0}_{1 \times 3} & 0 & \bm{0}_{1 \times 3} & 0\\
+	\bm{0}_{1 \times 3} & 0 & \bm{a}^T_D & 1 & \bm{0}_{1 \times 3} & 0\\
+	\bm{0}_{1 \times 3} & 0 & \bm{0}_{1 \times 3} & 0 & \bm{a}^T_D & 1\\
 	
-	\bm{a}^T_F & 1 & \bm{0}_{1x3} & 0 & \bm{0}_{1x3} & 0\\
-	\bm{0}_{1x3} & 0 & \bm{a}^T_F & 1 & \bm{0}_{1x3} & 0\\
-	\bm{0}_{1x3} & 0 & \bm{0}_{1x3} & 0 & \bm{a}^T_F & 1\\
+	\bm{a}^T_F & 1 & \bm{0}_{1 \times 3} & 0 & \bm{0}_{1 \times 3} & 0\\
+	\bm{0}_{1 \times 3} & 0 & \bm{a}^T_F & 1 & \bm{0}_{1 \times 3} & 0\\
+	\bm{0}_{1 \times 3} & 0 & \bm{0}_{1 \times 3} & 0 & \bm{a}^T_F & 1\\
 	
-	\bm{a}^T_B & 1 & \bm{0}_{1x3} & 0 & \bm{0}_{1x3} & 0\\
-	\bm{0}_{1x3} & 0 & \bm{a}^T_B & 1 & \bm{0}_{1x3} & 0\\
-	\bm{0}_{1x3} & 0 & \bm{0}_{1x3} & 0 & \bm{a}^T_B & 1\\
+	\bm{a}^T_B & 1 & \bm{0}_{1 \times 3} & 0 & \bm{0}_{1 \times 3} & 0\\
+	\bm{0}_{1 \times 3} & 0 & \bm{a}^T_B & 1 & \bm{0}_{1 \times 3} & 0\\
+	\bm{0}_{1 \times 3} & 0 & \bm{0}_{1 \times 3} & 0 & \bm{a}^T_B & 1\\
 	
-	\bm{a}^T_R & 1 & \bm{0}_{1x3} & 0 & \bm{0}_{1x3} & 0\\
-	\bm{0}_{1x3} & 0 & \bm{a}^T_R & 1 & \bm{0}_{1x3} & 0\\
-	\bm{0}_{1x3} & 0 & \bm{0}_{1x3} & 0 & \bm{a}^T_R & 1\\
+	\bm{a}^T_R & 1 & \bm{0}_{1 \times 3} & 0 & \bm{0}_{1 \times 3} & 0\\
+	\bm{0}_{1 \times 3} & 0 & \bm{a}^T_R & 1 & \bm{0}_{1 \times 3} & 0\\
+	\bm{0}_{1 \times 3} & 0 & \bm{0}_{1 \times 3} & 0 & \bm{a}^T_R & 1\\
 	
-	\bm{a}^T_L & 1 & \bm{0}_{1x3} & 0 & \bm{0}_{1x3} & 0\\
-	\bm{0}_{1x3} & 0 & \bm{a}^T_L & 1 & \bm{0}_{1x3} & 0\\
-	\bm{0}_{1x3} & 0 & \bm{0}_{1x3} & 0 & \bm{a}^T_L & 1\\
+	\bm{a}^T_L & 1 & \bm{0}_{1 \times 3} & 0 & \bm{0}_{1 \times 3} & 0\\
+	\bm{0}_{1 \times 3} & 0 & \bm{a}^T_L & 1 & \bm{0}_{1 \times 3} & 0\\
+	\bm{0}_{1 \times 3} & 0 & \bm{0}_{1 \times 3} & 0 & \bm{a}^T_L & 1\\
 	\end{bmatrix} 
 	\label{ols_x}
 \end{equation}
@@ -221,14 +221,14 @@ where:
 	\item $\bm{a}_L$ -- measurement the box is left face up.
 \end{itemize}
 
-According to OLS method, estimation $\bm{\hat{\Theta}}$ is given by:
+According to OLS method, estimation $\bm{\hat{\varTheta}}$ is given by:
 
 \begin{equation}
-	\bm{\hat{\Theta}} = \left( \bm{X}^T \bm{X} \right)^{-1} \bm{X}^T \bm{Y}
+	\bm{\hat{\varTheta}} = \left( \bm{X}^T \bm{X} \right)^{-1} \bm{X}^T \bm{Y}
 	\label{ols_est}
 \end{equation}
 
-Ultimately, the result is decomposed into $\bm{\Phi}$ and $\bm{\Gamma}$. An intuitive procedure of collecting calibration measures is also part of the system. Usually, accelerometer calibration involves placing the sensor on the calibration table and approving the measure (for example, by clicking a button). Moreover, in certain systems, the order of sides that are being measured is predetermined. This approach has a fundamental advantage because it recognizes sensors mounted in any orientation. Nevertheless, if the sensor is roughly set properly (axes are directed in accordance but not perfectly aligned), the calibration process can be improved by recognizing which face sensor was plated. For this purpose, sensor measurements are collected into statistics that calculate the mean value and standard deviation. If the standard deviation is below a predefined threshold, the sensor is not moving. Next, the mean value is normalized and compared with every 6 axes’ unit vectors. If the angle between the normalized mean and the unit vector is less than specified (that can be quickly checked using the dot product), the face correlated with the unit vector is recognized.
+Ultimately, the result is decomposed into $\bm{\varPhi}$ and $\bm{\varGamma}$. An intuitive procedure of collecting calibration measures is also part of the system. Usually, accelerometer calibration involves placing the sensor on the calibration table and approving the measure (for example, by clicking a button). Moreover, in certain systems, the order of sides that are being measured is predetermined. This approach has a fundamental advantage because it recognizes sensors mounted in any orientation. Nevertheless, if the sensor is roughly set properly (axes are directed in accordance but not perfectly aligned), the calibration process can be improved by recognizing which face sensor was plated. For this purpose, sensor measurements are collected into statistics that calculate the mean value and standard deviation. If the standard deviation is below a predefined threshold, the sensor is not moving. Next, the mean value is normalized and compared with every 6 axes’ unit vectors. If the angle between the normalized mean and the unit vector is less than specified (that can be quickly checked using the dot product), the face correlated with the unit vector is recognized.
 
 
 
@@ -240,12 +240,12 @@ The gyroscope readings contain bias and high-frequency noise. The constant compo
 Moving on, the noise is removed by passing reading through filters. Low-pass filters are used to remove high-frequency noise. They are characterized by a cutoff frequency and an order. The cutoff frequency is the limit beyond which the higher-frequency signal is dampened. The filter’s order defines the slope factor of this dampening. The first-order low-pass filter is given by the equations that follow. If readings are collected with a constant sampling rate, $\alpha$ coefficient is calculated only once.
 
 \begin{equation}
-	 \alpha = e^{ - \omega_{cf} \Delta t}
+	 \alpha = e^{ - \omega_{cf} \varDelta t}
 	\label{lpf_alpha}
 \end{equation}
 
 \begin{equation}
-	\bm{\tilde{\omega}}^B(t) = \alpha  \bm{\hat{\omega}}^B(t) + \left( 1 - \alpha \right) \bm{\hat{\omega}}^B(t - \Delta t)
+	\bm{\tilde{\omega}}^B(t) = \alpha  \bm{\hat{\omega}}^B(t) + \left( 1 - \alpha \right) \bm{\hat{\omega}}^B(t - \varDelta t)
 	\label{lpf}
 \end{equation}
 
@@ -253,7 +253,7 @@ where:
 \begin{itemize}
 	\item $\bm{\tilde{\omega}}^B$ -- filtered angular velocity,
 	\item $\omega_{cf}$ -- cut-off frequency,
-	\item $\Delta t$ -- sampling interval.
+	\item $\varDelta t$ -- sampling interval.
 \end{itemize}
 
 Proper frequency selection requires involving multiple factors. If noise bandwidth was not specified by the sensor producer, the frequency can be selected by analyzing logs. Assume that the gyroscope was collecting data (without filtration) when the mechanism was moving along the determined trajectory, and for this trajectory, the expected velocities are known. Next, spectral transform is conducted for registered data and expectations. The noise spectrum can be obtained by subtraction spectrums from the last step. Ultimately, the cut-off frequency should be placed above the highest frequency in the expectation spectrum and below the lowest frequency in the noise spectrum.\\

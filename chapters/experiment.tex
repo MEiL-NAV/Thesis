@@ -62,7 +62,7 @@ The configuration without a position provider was also examined, but the results
 
 \section{Results}
 
-The gathered logs were post-processed and compared using MATLAB scripts. Figures \ref{ori_est_roll} - \ref{ori_est_yaw} present the orientation estimation from the first experiment. The estimated orientation angles are compared with the orientation calculated by the robot positioning system.\\
+The gathered logs were post-processed and compared using MATLAB scripts. Figures \ref{ori_est_roll} - \ref{ori_est_yaw} present the orientation estimation from the first experiment. The estimated orientation angles are compared with the orientation calculated by the robot positioning system. However, as the notation used to describe orientation differ -- the system use quaternions, while the FANUC robot use W-P-R notation -- both orientations where transformed to more readable Euler angles (roll-pitch-yaw).  \\
 
 Figures \ref{pos_est_x} - \ref{ori_est_yaw2} present the position and orientation estimations obtained for the proposed configuration. It is expected that x and y coordinates estimate circular motion while the z and orientation angles remain zeros.\\
 

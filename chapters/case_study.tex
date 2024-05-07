@@ -26,11 +26,11 @@ The mechanism thus presented is a representative example of the application of t
 
 \section{Computer simulation}
 
-Before real-life experiments, fundamental aspects of the project were tested in computer simulation. The simulation involves preparing a kinematic model in ADAMS and connecting it with a simplified estimation system in MATLAB Simulink. A ready-to-use model was employed (created earlier as part of the research project). The ADAMS model was extended with a new cylinder-shaped body that represents the robot end-effector. The added part is connected to the moving platform center and was used as the motion source. The simulated position of the end-effector was set as a control variable that constitutes input to the program. The kinematic simulation outputs are the position and orientation of the moving platform, its linear acceleration, and angular velocity expressed in the local coordinate system. These variables will be used to simulate the sensors' readings. Figure \ref{adams} presents multi-body system modeled in ADAMS software. That prepared model was converted to a Simulink block.
+Before real-life experiments, fundamental aspects of the project were tested in computer simulation. The simulation involves preparing a kinematic model in ADAMS and connecting it with a simplified estimation system in MATLAB Simulink. A ready-to-use model was employed (created earlier as part of the research project). The ADAMS model was extended with a new cylinder-shaped body that represents the robot end-effector. The added part is connected to the moving platform center and was used as the motion source. The simulated position of the end-effector was set as a control variable that constitutes input to the program. The kinematic simulation outputs are the position and orientation of the moving platform, its linear acceleration, and angular velocity expressed in the local coordinate system. These variables will be used to simulate the sensors' readings. An angular velocity is used to simulate a gyroscope, while a linear acceleration is used to simulate an accelerometer. Figure \ref{adams} presents multi-body system modeled in ADAMS software. That prepared model was converted to a Simulink block.
 
 \begin{figure}[!h]
 	\centering
-	\includegraphics[width=0.8\textwidth]{duw/adams.png}
+	\includegraphics[width=0.6\textwidth]{duw/adams.png}
 	\caption{The mechanism modeled in ADAMS software}
 	\label{adams}
 \end{figure}
