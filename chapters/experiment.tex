@@ -5,11 +5,11 @@ The experiments were aimed at validation of the functionality of the designed an
 First, the orientation estimation was examined. The node was rigidly linked to the robot gripper. Figure \ref{sensor_mount} presents the sensor mounted to the robot. The sponges were used to mitigate vibrations. Then, the robot executed a predetermined motion in which the position remained constant while only the orientation changed among five learned configurations. The orientation calculated by the robot control system was compared with the orientation estimated by the inertial sensors. Due to the lack of a magnetometer, the yaw angle could not be properly estimated, so its analyses were skipped. However, the yaw angle can be fixed by using an appropriate constraint (equation (\ref{yaw_constraint_fun})). The experiment was repeated without and with constraints correction and with various speeds. Listing \ref{karel1} presents the KAREL program that realizes this trajectory.
  
  \begin{figure}[!h]
- 	\centering
- 	\includegraphics[width=0.42\textwidth]{sensor_mount.jpg}
- 	\caption{Sensor mounted in the robot's gripper}
- 	\label{sensor_mount}
- \end{figure}
+	\centering
+	\includegraphics[width=0.4\textwidth]{sensor_mount.jpg}
+	\caption{Sensor mounted in the robot's gripper}
+	\label{sensor_mount}
+\end{figure}
  
  \begin{lstlisting}[caption={The KAREL program realizing an orientation changes}, captionpos=t, label=karel1]
 	 1:  RUN PY_LOGGER;
@@ -145,7 +145,7 @@ The profit from the application of constraint correction is eminently visible wh
 
 The first experiment showed that the system is able to provide adequate results based only on inertial sensors' readings. The estimation is reliable for slow and fast motions, where the fast motion is defined as a limit of the used industrial robot. However, in a minimal configuration, only roll and pitch angles can be estimated. In order to achieve full orientation estimation, additional system information is needed.\\
 
-The second experiment reflected the behavior of the system under normal operating conditions. It turned out that in cases B and E, the estimated position was noise. The reason for that phenomenon is related to the properties of the system structure represented by constraints. For the examined mechanism, any orientation other than $\begin{bmatrix}0 & 0 & 0 \end{bmatrix}^T$ is strictly linked with a specified point in space (mind the alternative assembly of the system, corresponding to the alternative branch of bifurcation). Moreover, the implemented correction is more likely to change position than the orientation. As a result, when the orientation drifts, the correction tries to find the position that fulfills the constraint equations. To prove that hypothesis, case F was added to an experiment. It shows that if the orientation and position are not linked by constraints, the presence of the inertial sensor and the drifts do not lead to noisy estimation. The results cast doubt on the profitability of using an accelerometer in the prediction phase. Its presence leads to a disturbance in the z coordinate. However, this does not exclude accelerometer usage when correcting orientation. Furthermore, the influence of constraints correction is especially visible in the estimation amplitude.
+The second experiment reflected the behavior of the system under normal operating conditions. It turned out that in cases B and E, the estimated position was noise. The reason for that phenomenon is related to the properties of the system structure represented by constraints. For the examined mechanism, any orientation other than $\begin{bmatrix}0 & 0 & 0 \end{bmatrix}^T$ is strictly linked with a specified point in space (mind the alternative assembly of the system, corresponding to the alternative branch of bifurcation). Moreover, the implemented correction is more likely to change position than the orientation. As a result, when the orientation drifts, the correction tries to find the position that fulfills the constraint equations. To prove that hypothesis, case F was added to an experiment. It shows that if the orientation and position are not linked by constraints, the presence of the inertial sensor and the drifts do not lead to noisy estimation. The results cast doubt on the profitability of using an accelerometer in the prediction phase. Its presence leads to a disturbance in the z coordinate. However, this does not exclude accelerometer usage when correcting orientation. Furthermore, the influence of constraints correction is especially visible in the estimation amplitude.\\
   
 Despite the described issues, it is possible to choose a variant without major defects.
 The research conducted allows to conclude that the developed system can correctly estimate the position and orientation. 
