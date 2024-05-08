@@ -16,7 +16,7 @@ However, when considering the balance between quality and cost, MEMS sensors are
 
 \section{Models of sensors}
 
-The description of sensors presented so far has mainly concerned their features and types. However, to use them in an estimation, this description should be enriched with a formalized mathematical model. The sensor model defines the relation between physical quantities and sensor output but also includes an error. A well-prepared model allows the development of better filtration methods and ultimately leads to better results.
+The description of sensors presented so far has mainly concerned their features and types. However, to use them in an estimation, this description should be enriched with a formalized mathematical model. The sensor model defines the relation between physical quantities and sensor output and also contains terms that take account various sources of errors. A well-prepared model allows the development of better filtration methods and ultimately leads to better results.
 
 \subsection{Accelerometer}
 
@@ -99,7 +99,7 @@ An example considered in this project is the use of the robot's end-effector pos
 
 The model of an external provider, treated as a sensor, is not as straightforward as the models presented so far. Many factors are involved, including the position and type of connection between the end-effector and mechanism, their relative positions, and the accuracy of the robot’s calculation. Moreover, accuracy is not always directly specified because, for industrial robots, repeatability is much more important than precision \cite{shiakolas2002accuracy}. It is always reasonable to assume that readings include additional noise.\\
 
-Assume that the robot's end-effector is connected with the origin of the moving coordinate frame with a rigid drawbar. The drawbar is double-ended with spherical joints, so the orientation of the end-effector does not affect the driven system. In this case, the position provided by the robot's control system is a composition of the moving frame origin's position, and the translation is inserted by the drawbar. The following equation presents the relation between the origin's position and the end-effector position when the length and orientation of the drawbar are known.
+Assume that the robot's end-effector is connected with the origin of the moving coordinate frame with a rigid drawbar. The drawbar is double-ended with spherical joints, so the orientation of the end-effector does not affect the driven system. In this case, the position provided by the robot's control system is a composition of the moving frame origin's position, and the translation is inserted by the drawbar. The following equation presents the relation between the origin's position and the end-effector position when the length and orientation of the drawbar are known. Note that, the information about the end-effector's position does not clearly determine the origin's position and drawbar orientation. The orientation of the drawbar is not measured, and therefore it also becomes part of the estimate. However, as will be presented later, even incomplete information has the potential to be used in estimation.
 
 \begin{equation}
 	\begin{bmatrix}
@@ -160,14 +160,53 @@ As a result, the accelerometer’s calibration comes down to finding values of $
 	\label{ols}
 \end{equation}
 where:
-\begin{itemize}
-	\item $\bm{X}$ -- n x m known matrix,
-	\item $\bm{\varTheta}$ -- m x 1 vector whose value is estimated,
-	\item $\bm{Y}$ -- n x 1 known matrix.
+\begin{itemize}[noitemsep]
+	\item $\bm{X}$, $\bm{Y}$  -- $n \times m$ known matrix and $n \times 1$ known vector,
+	\item $\bm{\varTheta}$ -- $m \times 1$ vector whose value is estimated.
 \end{itemize}
  
 The transformation to linear form is given in the following:
 \setcounter{MaxMatrixCols}{25}
+
+
+\begin{equation}
+	\bm{X} = 
+	\begin{bmatrix}
+		\bm{a}^T_T & 1 & \bm{0}_{1 \times 3} & 0 & \bm{0}_{1 \times 3} & 0\\
+		\bm{0}_{1 \times 3} & 0 & \bm{a}^T_T & 1 & \bm{0}_{1 \times 3} & 0\\
+		\bm{0}_{1 \times 3} & 0 & \bm{0}_{1 \times 3} & 0 & \bm{a}^T_T & 1\\
+		
+		\bm{a}^T_D & 1 & \bm{0}_{1 \times 3} & 0 & \bm{0}_{1 \times 3} & 0\\
+		\bm{0}_{1 \times 3} & 0 & \bm{a}^T_D & 1 & \bm{0}_{1 \times 3} & 0\\
+		\bm{0}_{1 \times 3} & 0 & \bm{0}_{1 \times 3} & 0 & \bm{a}^T_D & 1\\
+		
+		\bm{a}^T_F & 1 & \bm{0}_{1 \times 3} & 0 & \bm{0}_{1 \times 3} & 0\\
+		\bm{0}_{1 \times 3} & 0 & \bm{a}^T_F & 1 & \bm{0}_{1 \times 3} & 0\\
+		\bm{0}_{1 \times 3} & 0 & \bm{0}_{1 \times 3} & 0 & \bm{a}^T_F & 1\\
+		
+		\bm{a}^T_B & 1 & \bm{0}_{1 \times 3} & 0 & \bm{0}_{1 \times 3} & 0\\
+		\bm{0}_{1 \times 3} & 0 & \bm{a}^T_B & 1 & \bm{0}_{1 \times 3} & 0\\
+		\bm{0}_{1 \times 3} & 0 & \bm{0}_{1 \times 3} & 0 & \bm{a}^T_B & 1\\
+		
+		\bm{a}^T_R & 1 & \bm{0}_{1 \times 3} & 0 & \bm{0}_{1 \times 3} & 0\\
+		\bm{0}_{1 \times 3} & 0 & \bm{a}^T_R & 1 & \bm{0}_{1 \times 3} & 0\\
+		\bm{0}_{1 \times 3} & 0 & \bm{0}_{1 \times 3} & 0 & \bm{a}^T_R & 1\\
+		
+		\bm{a}^T_L & 1 & \bm{0}_{1 \times 3} & 0 & \bm{0}_{1 \times 3} & 0\\
+		\bm{0}_{1 \times 3} & 0 & \bm{a}^T_L & 1 & \bm{0}_{1 \times 3} & 0\\
+		\bm{0}_{1 \times 3} & 0 & \bm{0}_{1 \times 3} & 0 & \bm{a}^T_L & 1\\
+	\end{bmatrix} 
+	\label{ols_x}
+\end{equation}
+where:
+\begin{itemize}
+	\item $\bm{a}_T$ -- measurement the box is top face up,
+	\item $\bm{a}_D$ -- measurement the box is down face up,
+	\item $\bm{a}_F$ -- measurement the box is front face up,
+	\item $\bm{a}_B$ -- measurement the box is back face up,
+	\item $\bm{a}_R$ -- measurement the box is right face up,
+	\item $\bm{a}_L$ -- measurement the box is left face up.
+\end{itemize}
 
 \begin{equation}
 	\bm{\varTheta} = \begin{bmatrix} \varPhi_{11} & \varPhi_{12} & \varPhi_{13} & \varGamma_1 & \varPhi_{21} & \varPhi_{22} & \varPhi_{23} & \varGamma_2 & \varPhi_{31} & \varPhi_{32} & \varPhi_{33} & \varGamma_3 \\
@@ -181,45 +220,6 @@ The transformation to linear form is given in the following:
 	\end{bmatrix}^T
 	\label{ols_y}
 \end{equation}
-
-\begin{equation}
-	\bm{X} = 
-	\begin{bmatrix}
-	\bm{a}^T_T & 1 & \bm{0}_{1 \times 3} & 0 & \bm{0}_{1 \times 3} & 0\\
-	\bm{0}_{1 \times 3} & 0 & \bm{a}^T_T & 1 & \bm{0}_{1 \times 3} & 0\\
-	\bm{0}_{1 \times 3} & 0 & \bm{0}_{1 \times 3} & 0 & \bm{a}^T_T & 1\\
-	
-	\bm{a}^T_D & 1 & \bm{0}_{1 \times 3} & 0 & \bm{0}_{1 \times 3} & 0\\
-	\bm{0}_{1 \times 3} & 0 & \bm{a}^T_D & 1 & \bm{0}_{1 \times 3} & 0\\
-	\bm{0}_{1 \times 3} & 0 & \bm{0}_{1 \times 3} & 0 & \bm{a}^T_D & 1\\
-	
-	\bm{a}^T_F & 1 & \bm{0}_{1 \times 3} & 0 & \bm{0}_{1 \times 3} & 0\\
-	\bm{0}_{1 \times 3} & 0 & \bm{a}^T_F & 1 & \bm{0}_{1 \times 3} & 0\\
-	\bm{0}_{1 \times 3} & 0 & \bm{0}_{1 \times 3} & 0 & \bm{a}^T_F & 1\\
-	
-	\bm{a}^T_B & 1 & \bm{0}_{1 \times 3} & 0 & \bm{0}_{1 \times 3} & 0\\
-	\bm{0}_{1 \times 3} & 0 & \bm{a}^T_B & 1 & \bm{0}_{1 \times 3} & 0\\
-	\bm{0}_{1 \times 3} & 0 & \bm{0}_{1 \times 3} & 0 & \bm{a}^T_B & 1\\
-	
-	\bm{a}^T_R & 1 & \bm{0}_{1 \times 3} & 0 & \bm{0}_{1 \times 3} & 0\\
-	\bm{0}_{1 \times 3} & 0 & \bm{a}^T_R & 1 & \bm{0}_{1 \times 3} & 0\\
-	\bm{0}_{1 \times 3} & 0 & \bm{0}_{1 \times 3} & 0 & \bm{a}^T_R & 1\\
-	
-	\bm{a}^T_L & 1 & \bm{0}_{1 \times 3} & 0 & \bm{0}_{1 \times 3} & 0\\
-	\bm{0}_{1 \times 3} & 0 & \bm{a}^T_L & 1 & \bm{0}_{1 \times 3} & 0\\
-	\bm{0}_{1 \times 3} & 0 & \bm{0}_{1 \times 3} & 0 & \bm{a}^T_L & 1\\
-	\end{bmatrix} 
-	\label{ols_x}
-\end{equation}
-where:
-\begin{itemize}
-	\item $\bm{a}_T$ -- measurement the box is top face up,
-	\item $\bm{a}_D$ -- measurement the box is down face up,
-	\item $\bm{a}_F$ -- measurement the box is front face up,
-	\item $\bm{a}_B$ -- measurement the box is back face up,
-	\item $\bm{a}_R$ -- measurement the box is right face up,
-	\item $\bm{a}_L$ -- measurement the box is left face up.
-\end{itemize}
 
 According to OLS method, estimation $\bm{\hat{\varTheta}}$ is given by:
 
