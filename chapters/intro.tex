@@ -1,4 +1,13 @@
-\chapter{Literature review}
+\chapter{Introduction}
+
+\section{Motivation}
+
+The motivation behind this thesis stems from a research project dedicated to creating hybrid, i.e., exploiting rigid-flexible models, methods for analyzing overconstrained multi-body systems. Research conducted in this project is planned to be validated in an experimental study. The test bench prepared for this purpose is being successively upgraded to meet various requirements. Specifically, the experimental setup needs to be equipped with position and orientation measuring sensors. Fulfilling this demand poses a significant challenge, particularly when attempting to measure forces in dynamic scenarios. Encoders planted in actuators cannot be used since it is planned to make the test bed externally driven by an industrial robotic manipulator). Moreover, installing motion measuring devices in the joints of the mechanism might hamper -- crucial for the project -- joint reaction forces measurements. The need to correlate position and orientation data with force measurements led to considerations of how measurements can be made in case the dedicated sensors are not included in the system.\\
+
+The selected variant involves the usage of an inertial sensor and its fusion with sensors commonly used in robotics. The interdisciplinary nature of the project, combining elements from aviation concepts and robotic systems, fueled my enthusiasm to explore and innovate in this unique intersection.
+
+\newpage
+\section{Literature review}
 
 The position and orientation estimation has been a problem known in aviation over the years. With the advent of automated control systems, the need to determine exact location and orientation has steadily increased. As a result, mechanical instruments were quickly suppressed by electronic sensors. Based on their measurements, orientation calculation algorithms were developed and implemented. The well-known and used are the Complementary filter \cite{complementary}, the Direct-Cosine-Matrix algorithm \cite{dcm} and the Madgwick Orientation Filter \cite{madgwick} \cite{Hasan2020}. All of these methods provide tolerable results depending on the set of sensors used, but without a clear mechanism to control particular sensors' involvement.
 Also, the position estimation was addressed by improving path integration methods and inertial sensor measurements integration \cite{farrell2012integrated}. Next, the position was corrected by introducing radio beacon and satellite systems. For a long time, position and orientation were estimated separately.\\
@@ -17,6 +26,11 @@ At the time of writing this review, no publication could be found on the applica
 
 Note that some of the publications only briefly mentioned here will be revisited for details in the following chapters. Moreover, about a dozen other sources will be referenced when needed.
 
+\newpage
+\section{Aims and scope}
 
+The purpose of this project is to design a universal positioning system based on inertial navigation and knowledge of the multi-body design. The system is an adaptation of the Extended Kalman Filter to be used in robotic. To achieve that, many sensors are considered and involved in calculations. The measurements will be filtered and blended to improve estimation results. The algorithm will be optimized to run in real time. The architecture of the system is planned to be very transparent and open to modification in order to increase reusability. It is worth to highlighting that the usage scope of the system is not limited to the presented case. The presented usage has a teaching value due to its limited description. However, there are many applications of complete logging systems, especially in industry and mobile robotics.\\
 
+The thesis starts with a review of state-of-the-art methods of estimation position and orientation both in aviation and robotic studies. Many solutions have already been checked and can be partially adopted in the project. A significant part of the work is an attempt to adapt the universal method of constraint correction the subject of thesis. Due to the peculiarity of the problem the method requires improvements, which the author is introducing. Based on the gathered information, a novel fusion method will be proposed and checked in the simulation and in real deployment.\\
 
+The practical outcome of the thesis is the design of a prototype that is able to estimate position and orientation with various sensors sets connected. The thesis includes estimation results and error calculation. Tuning and improving scores is also part of the project. Finally, the project ends with experiments that are designed to confirm the accuracy and precision of the developed system, and to determine whether it is suitable for use in further scientific work. 

@@ -74,10 +74,10 @@ The Kalman filter performs two main steps: prediction and correction (figure \re
 		\node (correct) [block, right=2cm of predict] {Correction};
 		
 		% Arrows
-		\draw[arrow] (predict.east) -- ++(1.5cm,0) |- (correct.west) node[midway, above] {};
-		\draw[arrow] (correct.west) -- ++(-1.5cm,0) |- (predict.east) node[midway, below] {};
+		\draw[bend left=40,-latex] ($(predict.east)+(0,0.2)$) to ($(correct.west)+(0,0.2)$);
+		\draw[bend left=40,-latex] ($(correct.west)-(0,0.2)$) to ($(predict.east)-(0,0.2)$);
 	\end{tikzpicture}
-	\caption{The Extended Kalman Filter}
+	\caption{Stages in the Extended Kalman Filter}
 	\label{kf_diagram}
 \end{figure}
 
@@ -144,7 +144,7 @@ where:
 	\item $\zeta$ and $\eta$ -- azimuth and elevation of the drawbar.
 \end{itemize}
 
-The bias and orientation of draw bar require an additional comment. The gyroscope bias in state vector enable drift tracking and its compensation. Thanks to an Kalman Filter properties, the value of actual bias will be almost automatically calculated when the filter runs. The azimuth and elevation of drawbar enables utilizing external position sources even if they are not directly connected to system. Their presence in the state vector is required for the correctness of the model. In this implementation, the position is given for the point that is connected to system via link with fixed length. To simplify, it is assumed that drawbar is connected by a spherical joint to the origin of moving coordinate system. For the vectors so selected, the equation of state was determined. To increase readability, the state equation was split into equations (\ref{state_begin} - \ref{state_end}). The Jacobi matrix of the state function is calculated in equations (\ref{state_jacobi_begin} - \ref{state_jacobi_end}).  The derivations of the equations stem from \cite{ekf_poor}.
+The bias and orientation of draw bar require an additional comment. The gyroscope bias in state vector enable drift tracking and its compensation. Thanks to an Kalman Filter properties, the value of actual bias will be almost automatically calculated when the filter runs. The azimuth and elevation in state vector enables utilizing external position sources even if the measurement relates to a point on the drawbar. The measurement function is built on the state vector and constants only, so their presentage is required for the correctness of the model. In this implementation, the position is given for the point that is connected to system via link with fixed length. To simplify, it is assumed that drawbar is connected by a spherical joint to the origin of moving coordinate system. For the vectors so selected, the equation of state was determined. To increase readability, the state equation was split into equations (\ref{state_begin} - \ref{state_end}). The Jacobi matrix of the state function is calculated in equations (\ref{state_jacobi_begin} - \ref{state_jacobi_end}).  The derivations of the equations stem from \cite{ekf_poor}.
 
 \begin{align}
 	\begin{bmatrix}
@@ -213,11 +213,10 @@ The bias and orientation of draw bar require an additional comment. The gyroscop
 	\end{bmatrix}
 	\\
 	\bm{S} \left( \bm{q}_k \right)  &= \begin{bmatrix}
-		-q_x & -q_y & -q_z \\
-		q_0 & -q_z & q_y \\
-		q_z & q_0 & -q_x \\
-		-q_y & q_x & q_0 \\
-	\end{bmatrix}
+		-q_x & q_0 & q_z & -q_y \\
+		-q_y & -q_z & q_0 & q_x \\
+		-q_z & q_y & -q_x & q_0 \\
+	\end{bmatrix}^T
 	\\
 	\bm{a}^W &= \bm{R_q} \left( \bm{q}_k \right) \begin{bmatrix}
 		a_x \\ a_y \\ a_z 

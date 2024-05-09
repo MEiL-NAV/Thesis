@@ -1,5 +1,7 @@
 \chapter{Case study}
 
+\section{Investigating the mechanical system}
+
 The case study describes a measuring system deployment on a mechanism that was the motivation for this project. The mechanism shown in figures \ref{fig:mbs} - \ref{fig:render} is an overconstrained multibody system \cite{bib:BPAS2012} that consists of a moving platform connected to the ground by 6 rigid rods. The rods have equal lengths. In the assembly variant shown in the figures, all lower and upper rods, respectively, are parallel to each other. The mechanism has one degree of freedom (plus 6 internal mobilities), except for two points where a bifurcation occurs. Due to this property, it is hard to simplify the mechanism model to a minimal set of coordinates.
 
 \begin{figure}[!h]
@@ -30,7 +32,7 @@ Before real-life experiments, fundamental aspects of the project were tested in 
 
 \begin{figure}[!h]
 	\centering
-	\includegraphics[width=0.6\textwidth]{duw/adams.png}
+	\includegraphics[width=0.55\textwidth]{duw/adams.png}
 	\caption{The mechanism modeled in ADAMS software}
 	\label{adams}
 \end{figure}
@@ -44,7 +46,7 @@ Next, to move the mechanism, a trajectory generator was prepared. One of the all
 	z_{TCP} &= z_0
 	\label{tcp_end}
 \end{align}
-
+\newpage
 With the platform that already moves, the following stage is to simulate inertial sensors: an accelerometer and a gyroscope. The sensors are simulated based on ADAMS block outputs. The gyroscope returns an angular velocity, while the accelerometer returns linear velocity with gravitation acceleration added. Figure \ref{acc_sym} presents Simulink blocks that represent an ideal accelerometer.
 
 \begin{figure}[!h]
@@ -80,7 +82,7 @@ The final step was to implement and tune the Kalman Filter with constraints corr
 \end{figure}
 \ \\
 
-That prepared simulation was run multiple times to select the optimal set of parameters. The presented results are the best achieved after the tuning process. First, the filter work was examined without the constraints correction. Figure \ref{no_con} presents the coordinates change as a function of time. The plot includes the robot end-effector position, the moving platform center position, and their estimations. The estimations (magenta, yellow, and blue colors in the plots) drift heavily over simulation time.\\
+That prepared simulation was run multiple times to select the optimal set of parameters. The presented results are the best achieved after the tuning process. First, the filter work was examined without the constraints correction. Figure \ref{no_con} presents the coordinates change as a function of time. The plot includes the robot end-effector position, the moving platform center position, and their estimations. The estimations drift heavily over simulation time.\\
 
 \begin{figure}[!h]
 	\centering

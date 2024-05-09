@@ -165,13 +165,13 @@ The inclusion of constraints in state estimation is not a popular solution. Usua
 			\node (constraints) [block, below left=0.5cm and 0.33cm of correct] {Constraints};
 			
 			% Arrows
-			\draw[arrow] (predict.east)  |- (correct.west) node[midway, above] {};
-			\draw[arrow] (correct.south)  |- (constraints.east) node[midway, left] {};
-			\draw[arrow] (constraints.west) -- ++(-1.5cm,0) -| (predict.south) node[midway, below] {};
+			\draw[bend left=20,-latex] ($(predict.east)+(0,0.3)$) to ($(correct.west)+(0,0.3)$);
+			\draw[bend left=40,-latex] (correct.south) to (constraints.east);
+			\draw[bend left=40,-latex] (constraints.west) to (predict.south);
 			
 		\end{tikzpicture}
 	\end{center}
-	\caption{An Extended Kalman Filter with constraint correction}
+	\caption{Stages in the Extended Kalman Filter with constraint correction}
 	\label{ekf_three_phases}
 \end{figure}
 
