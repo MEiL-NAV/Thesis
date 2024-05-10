@@ -243,11 +243,11 @@ However, constraints in mechanic are mostly nonlinear. This problem is addressed
 
 As a result, the constraint correction method can be used for nonlinear equations.\\ 
 
-Direct application of the method to the discussed problem proved not to work properly and led to instability. However, based on the analogy of the constraint correction method to Newton-Raphson method the improvement were introduced. The idea behind the proposed upgrade is to divide the correction into many smaller steps. To achieve that, it is proposed to use an additional coefficient $\alpha$ that scales the correction term. By design, the coefficient should be within the range $(0, 1 \rangle $. Next, as an impact of correction was reduced by scaling it is proposed to conduct the correction multiple time within one run of this phase. This is analogous to the iterations performed by the Newton raphson method. The following formula presents the improved constraint correction method with k- times repetition:
+Direct application of the method to the discussed problem proved not to work properly and led to instability. However, some improvements were introduced based on the analogy of the constraint correction method to the Newton-Raphson method. The idea behind the proposed enhancement is to divide the correction into many smaller steps. It is proposed to use an additional coefficient $\alpha$ that scales the correction term. By design, the coefficient should be within the range $(0, 1 \rangle $. Next, as the impact of correction was reduced by scaling, it is proposed to conduct the correction multiple times within one run of this phase. This is analogous to the iterations performed by the Newton-Raphson method. The following formula presents the improved constraint correction method with k-times repetition:
 
 \begin{equation}
 	\bm{\hat{x}}_{i+1} = \bm{\hat{x}}_{i} - \alpha \bm{P} \bm{D}^T \left( \bm{D} \bm{P} \bm{D}^T \right)^{-1} \left( \bm{D} \bm{\hat{x}} - \bm{d}  \right) \hspace{10pt} \text{for i = 1,2,..,k}
 	\label{constraint_final}
 \end{equation}
 
- The selection of newly introduced parameters is the part of tuning, and the correctness has been proven experimentally. 
+The selection of newly introduced parameters belongs to the tuning, and the correctness and usefulness of the proposed enhancement have been corroborated experimentally.
