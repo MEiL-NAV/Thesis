@@ -4,15 +4,15 @@
 % W PRZYPADKU BRAKU FONTU Adagio Slab NALEŻY ZGŁOSIĆ SIĘ DO BIP PW O JEGO UDOSTĘPNIENIE,
 % ZAŁADOWAĆ INNY KRÓJ CZCIONKI LUB ZAKOMENTOWAĆ/USUNĄĆ USTAWIENIA FONTU
 
-\documentclass[aspectratio=169]{beamer}
+\documentclass[aspectratio=169]{beamer}  %  , handout
 
 \input{configuration}
 
-\title{Adaptation of inertial navigation systems in robot's positioning systems}
-\subtitle{Master's diploma seminar}
-\author{Wojciech Gajda, Eng.}
-\institute{Supervisor: Marek Wojtyra, D.Sc., Ph.D., M.Eng.}
-\date{January 23rd, 2023} % można tam wpisać datę jaką się chce lub zakomentować dla daty dzisiejszej
+\title{Adaptation of inertial navigation for\\ position  and orientation measurements\\ in  robotic systems}
+%\subtitle{Praca dyplomowa magisterska}
+\author{inż. Wojciech Gajda}
+\institute{Promotor: dr hab. inż. Marek Wojtyra, prof. uczelni}
+%\date{24 czerwca 2024} % można tam wpisać datę jaką się chce lub zakomentować dla daty dzisiejszej
 
 
 
@@ -34,27 +34,94 @@
     ]
 \end{frame}
 
-\section{Introduction}
+\section{Wstęp}
 
 \begin{frame}
-	\frametitle{Motivation}
+	\frametitle{Motywacja}
 	\begin{columns}
-		\begin{column}{0.5\textwidth}
+		\begin{column}{0.38\textwidth}
 			\begin{figure}
 				\centering
 				\uncover<2->{
-					\includegraphics[height=0.75\textheight]{mbs_system.png}
-					\caption{Multi-body system with 1 DOF}
+					\vspace{5pt}
+					\includegraphics[width=\textwidth]{pixhawk.jpg}
+					\caption{"Kontroler" lotu}
 				}
 			\end{figure}
 			\vspace{50pt}
 		\end{column}
-		\begin{column}{0.5\textwidth}
+		\begin{column}{0.72\textwidth}
+				\uncover<3->{
+					\begin{itemize}
+						\item Układ oparty zazwyczaj na~mikrokontrolerze
+						\item Posiada wbudowane czujniki, głownie inercyjnie
+						\item Prowadzi obliczenia nawigacyjne na podstawie danych z czujników, wyznacza orientację i pozycję 
+						\item Stabilizuje i steruje lotem BSP
+						\item ...
+					\end{itemize}
+					\vspace{60pt}
+				}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Motywacja}
+	\begin{columns}
+		\begin{column}{0.38\textwidth}
 			\begin{figure}
 				\centering
-				\uncover<3->{
-					\includegraphics[height=0.75\textheight]{render.jpg}
-					\caption{Render of MBS}
+				\uncover<1->{
+					\includegraphics[width=\textwidth]{render.jpg}
+					\caption{Układ wieloczłonowy}
+				}
+			\end{figure}
+			\vspace{50pt}
+		\end{column}
+		\begin{column}{0.72\textwidth}
+			\uncover<2->{
+				\begin{itemize}
+					\item Stanowisko do pomiaru sił reakcji w układach wieloczłonowych z więzami nadmiarowymi
+					\item W łącznikach znajdują się liniowe czujniki siły
+					\item Ruchoma płyta ma jeden stopień swobody*
+					\item Występują dwa punkty bifurkacji
+					\item Stanowisko nie posiada czujników pozwalających jego konfigurację
+					\item Możliwe jest połączenie układu z robotem przemysłowym
+				\end{itemize}
+				\vspace{70pt}
+			}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Motywacja}
+	\begin{columns}
+		\begin{column}{0.4\textwidth}
+			\begin{figure}
+			\centering
+				\uncover<1->{
+					\includegraphics[height=0.62\textheight]{pixhawk.jpg}
+					\caption{"Kontroler" lotu}
+				}
+			\end{figure}
+			\vspace{50pt}
+		\end{column}
+				\begin{column}{0.2\textwidth}
+			\begin{figure}
+				\centering
+				\uncover<1->{
+					\includegraphics[height=0.2\textheight]{plus.png}
+				}
+			\end{figure}
+			\vspace{50pt}
+		\end{column}
+		\begin{column}{0.4\textwidth}
+			\begin{figure}
+				\centering
+				\uncover<1->{
+					\includegraphics[height=0.65\textheight]{render.jpg}
+					\caption{Układ wieloczłonowy}
 				}
 			\end{figure}
 			\vspace{50pt}
@@ -62,188 +129,306 @@
 	\end{columns}
 \end{frame}
 
+\begin{frame}
+	\frametitle{Fazy rozszerzonego filtru Kalmana z korektą więzów}
+	\vspace{10pt}
+	\begin{center}
+		\uncover<1->{
+			\begin{tikzpicture}[
+				block/.style={rectangle, draw, text width=2cm, text centered, rounded corners, minimum height=1.5cm},
+				arrow/.style={->, >=stealth, thick},
+				>=Stealth,
+				]
+				% Nodes
+				\node (predict) [block] {Predict};
+				\node (correct) [block, right=3cm of predict] {Correction};
+				\definecolor{meil_color}{rgb}{0.5,0.5,0.9}
+				\node (constraints) [block, fill=meil_color, below left=0.5cm and 0.33cm of correct] {Constraints};
+				
+				% Arrows
+				\draw[arrow] (predict.east)  |- (correct.west) node[midway, above] {};
+				\draw[arrow] (correct.south)  |- (constraints.east) node[midway, left] {};
+				\draw[arrow] (constraints.west) -- ++(-1.5cm,0) -| (predict.south) node[midway, below] {};
+				
+			\end{tikzpicture}
+		}
+	\end{center}
+\end{frame}
 
 \begin{frame}
-	\frametitle{Aim of the thesis}
+	\frametitle{Cel pracy}
 	\begin{itemize}
 		\setlength\itemsep{1em}
-		\item<2-> Adaptation of inertial navigation system in robot positioning systems.
-		\item<3-> Utilizing knowledge of design and constraints of the multi-body system.
-		\item<4-> Review of sensor measurements filtration and fusion methods.
-		\item<5-> Design of testing platform and prototype.
+		\item<1-> Zaadaptowanie nawigacji inercjalnej w systemach określania pozycji i~orientacji robotów.
+		\item<1-> Wykorzystanie wiedzy o konstrukcji i istniejących więzach.
+		\item<1-> Opracowanie prototypu czujnika i systemu określania pozycji i orientacji.
 	\end{itemize}
 \end{frame}
 
-\section{The state of knowledge}
+\section{Przebieg pracy}
 
 \begin{frame}
-	\frametitle{Sensors}
+	\frametitle{Symulacja komputerowa}	
+	\begin{columns}
+		\begin{column}{0.4\textwidth}
+			\begin{figure}
+				\centering
+				\uncover<2->{
+					\includegraphics[width=\textwidth]{duw/adams.png}
+					\caption{Model stanowiska w ADAMS}
+				}
+			\end{figure}
+			\vspace{50pt}
+		\end{column}
+		\begin{column}{0.6\textwidth}
+			\begin{figure}
+				\centering
+				\uncover<3->{
+					\vspace{15pt}
+					\includegraphics[width=\textwidth]{duw/sys.png}
+					\vspace{13pt}
+					\caption{System określania pozycji w MATLAB Simulink}
+				}
+			\end{figure}
+			\vspace{50pt}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Symulacja komputerowa -- wyniki}	
+	\begin{columns}
+		\begin{column}{0.5\textwidth}
+			\begin{figure}
+				\centering
+				\uncover<1->{
+					\includegraphics[width=\textwidth]{duw/no_con.png}
+					\caption{Symulacja -- brak korekty}
+				}
+			\end{figure}
+		\end{column}
+		\begin{column}{0.5\textwidth}
+			\begin{figure}
+				\centering
+				\uncover<1->{
+					\includegraphics[width=\textwidth]{duw/corr.png}
+					\caption{Symulacja -- z korektą}
+				}
+			\end{figure}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Rozszerzony  przegląd stanu wiedzy}	
 	\begin{itemize}
-		\item<2-> Accelerometer -- linear acceleration
-		\item<3-> Gyroscope -- angular velocity
-		\item<4-> \only<4>{Magnetometer -- magnetic field} \only<5->{\sout{Magnetometer -- magnetic field}}
-		\item<6-> \only<6>{GNSS -- position \& velocity} \only<7->{\sout{GNSS -- position \& velocity}}
-		\item<8-> \only<8>{Rangefinder} \only<9->{\sout{Rangefinder} Distance sensor}
+		\item<1-> modele matematyczne czujników, modelowanie błędu pomiarowego
+		\item<1-> metody filtracji danych i kalibracji czujników
+		\item<1-> metody fuzji danych
+		\item<1-> problem synchronizacji czasu, problem przesyłu danych pomiarowych
+		\item<1-> więzy w układach wieloczłonowych
 	\end{itemize}
 \end{frame}
 
 \begin{frame}
-	\frametitle{Sensor's error \& calibration}
-	
-	\uncover<2->{Error components:}
-	\begin{itemize}
-		\item<3-> Noise
-		\item<4-> Bias
-	\end{itemize}
-	\centering
-	\vspace{15pt}
-	\uncover<5->{Sensors have finite resolution and sampling time.}
-	\ \\
-	\vspace{15pt}
-	\uncover<6->{Bias is especially harmful, if measurements are integrated!}
+	\frametitle{Budowa prototypu zintegrowanego czujnika}
+	\begin{columns}
+		\begin{column}{0.5\textwidth}
+			\begin{figure}
+				\centering
+				\uncover<1->{
+					\vspace{15pt}
+					\includegraphics[width=0.9\textwidth]{prototype.jpg}
+					\caption{Prototyp}
+				}
+			\end{figure}
+			\vspace{50pt}
+		\end{column}
+		\begin{column}{0.72\textwidth}
+			\uncover<2->{
+				\begin{itemize}
+					\item Oparty na mikrokontrolerze EPS32
+					\item Posiada akcelerometr, żyroskop i magnetometr
+					\item Zasilany bateryjne
+					\item Przesyła surowe dane z wykorzystaniem UDP
+					\item Częstotliwość próbkowania wynosi \textasciitilde 500Hz
+				\end{itemize}
+				\vspace{80pt}
+			}
+		\end{column}
+	\end{columns}
 \end{frame}
 
-\begin{frame}
-	\frametitle{Data filtration and sensor fusion}
-	\uncover<2->{Data filtration:}
-	\begin{itemize}
-		\item<3-> Conventional filter: LPF, HPF, Notch filters, Smoothing filter.
-		\item<4-> Oversampling
-		\item<5-> Adaptive methods
-	\end{itemize}
-	\ \\
-	
-	\uncover<6->{Sensor fusion:}
-	\begin{itemize}
-		\item<7-> Position: numerical integration
-		\item<8-> Orientation: Complementary filter, DCM
-		\item<9-> Both: Kalman filter
-	\end{itemize}
-	
-	
-	
-	% LPF HPF Smoothing filters Notch filters, adaptive filters, remove of outrunners
-	
-	
-\end{frame}
 
 \begin{frame}
-	\frametitle{Extended Kalman Filter}
-	\begin{itemize}
-		\item<2-> The Extended Kalman Filter is an extension of the Kalman Filter for nonlinear systems.
-		\item<3->  It is widely used in various fields, such as aviation, robotics, navigation, and control systems.
-	\end{itemize}
-	\vspace{10pt}
-	\begin{center}
-		\uncover<4->{
-		\begin{tikzpicture}[
-			block/.style={rectangle, draw, text width=2cm, text centered, rounded corners, minimum height=1.5cm},
-			arrow/.style={->, >=stealth, thick}
-			]
-			% Nodes
-			\node (predict) [block] {Predict};
-			\node (correct) [block, right=2cm of predict] {Correction};
-			
-			% Arrows
-			\draw[arrow] (predict.east) -- ++(1.5cm,0) |- (correct.west) node[midway, above] {};
-			\draw[arrow] (correct.west) -- ++(-1.5cm,0) |- (predict.east) node[midway, below] {};
-		\end{tikzpicture}
-		}
-	\end{center}
-\end{frame}
-
-\begin{frame}
-	\frametitle{EKF with constraint correction}
-	\begin{itemize}
-		\item<2-> Constraints based on multi-body system design
-	\end{itemize}
-	\vspace{10pt}
-	\begin{center}
-		\uncover<3->{
-		\begin{tikzpicture}[
-			block/.style={rectangle, draw, text width=2cm, text centered, rounded corners, minimum height=1.5cm},
-			arrow/.style={->, >=stealth, thick},
-			>=Stealth,
-			]
-			% Nodes
-			\node (predict) [block] {Predict};
-			\node (correct) [block, right=3cm of predict] {Correction};
-			\node (constraints) [block, below left=0.5cm and 0.33cm of correct] {Constraints};
-			
-			% Arrows
-			\draw[arrow] (predict.east)  |- (correct.west) node[midway, above] {};
-			\draw[arrow] (correct.south)  |- (constraints.east) node[midway, left] {};
-			\draw[arrow] (constraints.west) -- ++(-1.5cm,0) -| (predict.south) node[midway, below] {};
-			
-		\end{tikzpicture}
-		}
-	\end{center}
-\end{frame}
-
-\begin{frame}
-	\frametitle{Simulation}
-	%Synthetic-generated data.
+	\frametitle{Architektura systemu}
 	\begin{figure}
 		\centering
-		\includegraphics<2>[height=0.7\textheight]{no_corr.png}
-		\includegraphics<3->[height=0.7\textheight]{corr.png}
-		\caption{
-			\only<2>{EKF without constraints}
-			\only<3->{EKF with constraints}
-		}
+		\includegraphics[width=1\textwidth]{arch.png}
+		%\caption{Prototyp zintegrowanego czujnika inercyjnego}
 	\end{figure}
 \end{frame}
 
 \begin{frame}
-	\frametitle{Work schedule}
+	\frametitle{Dobór  technologii}
+	\begin{columns}
+		\begin{column}{0.33\textwidth}
+			\begin{figure}
+				\centering
+				\uncover<1->{\includegraphics[height=0.2\textheight]{logos/cpp.png}}
+			\end{figure}
+			\begin{figure}
+				\centering
+				\uncover<1->{\includegraphics[height=0.2\textheight]{logos/eigen.png}}
+			\end{figure}
+		\end{column}
+		\begin{column}{0.33\textwidth}
+			\begin{figure}
+				\centering
+				\uncover<1->{\includegraphics[height=0.2\textheight]{logos/python.png}}
+			\end{figure}
+			\begin{figure}
+				\centering
+				\uncover<1->{\includegraphics[height=0.2\textheight]{logos/Qt.png}}
+			\end{figure}
+		\end{column}
+		\begin{column}{0.33\textwidth}
+			\begin{figure}
+				\centering
+				\uncover<1->{\includegraphics[height=0.2\textheight]{logos/matlab.png}}
+			\end{figure}
+			\begin{figure}
+				\centering
+				\uncover<1->{\includegraphics[height=0.2\textheight]{logos/docker.png}}
+			\end{figure}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Graficzny interfejs użytkownika I}
 	\begin{figure}
 		\centering
-		\includegraphics<2>[height=0.7\textheight]{work\_schedule.png}
+		\includegraphics[width=0.6\textwidth]{gui_dashboard.png}
+		\caption{Zakładka \textit{Info}}
 	\end{figure}
 \end{frame}
 
-\section{Summary}
+\begin{frame}
+	\frametitle{Graficzny interfejs użytkownika II}
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.7\textwidth]{gui_sensor.png}
+		\caption{Zakładka \textit{Sensors}}
+	\end{figure}
+\end{frame}
 
 \begin{frame}
-	\frametitle{Summary}	
-	\uncover<2->{Expected results of thesis:}
+	\frametitle{Graficzny interfejs użytkownika III}
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.6\textwidth]{gui_force.png}
+		\caption{Zakładka \textit{Forces}}
+	\end{figure}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Graficzny interfejs użytkownika IV}
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.6\textwidth]{gui_consol.png}
+		\caption{Zakładka \textit{Console}}
+	\end{figure}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Pomiary}
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.35\textwidth]{sensor_mount.jpg}
+		\caption{Czujnik  zamontowany  na robocie  FANUC}
+	\end{figure}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Pomiary -- określenie orientacji robota \href{run:attitude_test.mp4}{\beamergotobutton{Film}}}
+	\begin{columns}
+		\begin{column}{0.5\textwidth}
+			
+			\begin{figure}
+				\centering
+				\uncover<2->{
+					\includegraphics[height=0.77\textheight]{ori_est_roll.png}
+					\caption{Kąt przechylenia}
+				}
+			\end{figure}
+		\end{column}
+		\begin{column}{0.5\textwidth}
+			\begin{figure}
+				\centering
+				\uncover<2->{
+					\includegraphics[height=0.77\textheight]{ori_est_yaw.png}
+					\caption{Kąt odchylenia}
+				}
+			\end{figure}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Pomiary -- określenie pozycji robota \href{run:position_test.mp4}{\beamergotobutton{Film}}}
+	\begin{columns}
+		\begin{column}{0.5\textwidth}
+			\begin{figure}
+				\centering
+				\uncover<2->{
+					\includegraphics[height=0.77\textheight]{pos_est_x.png}
+					\caption{Przemieszczenie  x}
+				}
+			\end{figure}
+		\end{column}
+		\begin{column}{0.5\textwidth}
+			\begin{figure}
+				\centering
+				\uncover<2->{
+					\includegraphics[height=0.77\textheight]{pos_est_z.png}
+					\caption{Przemieszczenie  z}
+				}
+			\end{figure}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+\section{Podsumowanie}
+
+\begin{frame}
+	\frametitle{Podsumowanie}	
+	\uncover<1->{W ramach pracy udało się:}
 	\begin{itemize}
-		\item<3-> gathering theoretical knowledge of position \& orientation measurement system
-		\item<4-> design of universal device to estimate position \& orientation of robots
+		\item<1-> dokonać rozległego przeglądu stanu wiedzy,
+		\item<1-> opracować model filtru Kalmana uwzględniający więzy,
+		\item<1-> zbudować prototyp zintegrowanego czujnika,
+		\item<1-> opracować system umożliwiający określenie pozycji i orientacji robota.
 	\end{itemize}
-	\uncover<5->{
-		\begin{figure}
-			\centering
-			\includegraphics[width=0.3\textwidth]{pixhawk.jpg}
-		\end{figure}
-	}
 \end{frame}
 
 \begin{frame}{References}
-	\frametitle{References (selected)}
+	\frametitle{Bibliografia (wybrane pozycje)}
 	\begin{thebibliography}{10}
 		\beamertemplatebookbibitems
 		\bibitem{simon}[2002] Kalman filtering with state equality constraints
 		\newblock Simon, D. and Tien Li Chia
-		\bibitem{dcm}[2009] Direction Cosine Matrix IMU: Theory
-		\newblock Premerlani, William and Bizard, Paul
-		\bibitem{complementary}[2021] Cascaded Complementary Filter Architecture for Sensor Fusion in Attitude Estimation
-		\newblock Narkhede, Parag and Poddar, Shashi and Walambe, Rahee and Ghinea, George and Kotecha, Ketan
-		\bibitem{more} ... and 20 more publication in the raport.
+		\bibitem{farrell}[2012] Integrated Aircraft Navigation
+		\newblock Farrell, J.
+		\bibitem{joint}[2012] Joint reactions in rigid or flexible body mechanisms with redundant constraints
+		\newblock Wojtyra, Marek and Frączek, Janusz
+		\bibitem{more} ... i 33 inne publikacje zawarte w pracy.
 	\end{thebibliography}
 \end{frame}
 
 \begin{frame}
-	\frametitle{Questions?}
-	\begin{figure}
-		\centering
-		\includegraphics[width=0.7\textwidth]{questions.png}
-	\end{figure}
-\end{frame}
-
-\begin{frame}
 	  \begin{center}
-	\Huge Thank you!
+	\Huge Dziękuje za uwagę!
 	\end{center}
 \end{frame}
 
