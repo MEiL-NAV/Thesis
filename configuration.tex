@@ -6,8 +6,18 @@
 \usepackage{amsmath}
 \usepackage{bm}
 \usepackage{ulem}
+\usepackage{multicol}
 \usepackage{tikz}
-\usetikzlibrary{positioning, arrows.meta}
+\usetikzlibrary{
+	positioning, 
+	arrows.meta,
+	automata,
+	decorations.text,
+	topaths,
+	decorations.pathmorphing,
+	quotes
+}
+\tikzset{every picture/.append style={remember picture,inner xsep=0,inner ysep=0.25ex},}
 \usepackage{caption}
 \captionsetup[figure]{labelformat=empty}
 

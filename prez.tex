@@ -8,9 +8,9 @@
 
 \input{configuration}
 
-\title{Adaptation of inertial navigation for\\ position  and orientation measurements\\ in  robotic systems}
+\title{Opracowanie i implementacja autonomicznych metod określania pozycji bezwzględnej bojowych bezzałogowych statków powietrznych}
 %\subtitle{Praca dyplomowa magisterska}
-\author{inż. Wojciech Gajda}
+\author{mgr inż. Wojciech Gajda}
 \institute{Promotor: dr hab. inż. Marek Wojtyra, prof. uczelni}
 %\date{24 czerwca 2024} % można tam wpisać datę jaką się chce lub zakomentować dla daty dzisiejszej
 
@@ -34,39 +34,110 @@
     ]
 \end{frame}
 
-\section{Wstęp}
+\section{Wykształcenie}
 
 \begin{frame}
-	\frametitle{Motywacja}
-	\begin{columns}
-		\begin{column}{0.38\textwidth}
-			\begin{figure}
-				\centering
-				\uncover<2->{
-					\vspace{5pt}
-					\includegraphics[width=\textwidth]{pixhawk.jpg}
-					\caption{"Kontroler" lotu}
-				}
-			\end{figure}
-			\vspace{50pt}
-		\end{column}
-		\begin{column}{0.72\textwidth}
-				\uncover<3->{
-					\begin{itemize}
-						\item Układ oparty zazwyczaj na~mikrokontrolerze
-						\item Posiada wbudowane czujniki, głownie inercyjnie
-						\item Prowadzi obliczenia nawigacyjne na podstawie danych z czujników, wyznacza orientację i pozycję 
-						\item Stabilizuje i steruje lotem BSP
-						\item ...
-					\end{itemize}
-					\vspace{60pt}
-				}
-		\end{column}
-	\end{columns}
+	\frametitle{Wykształcenie}
+	\begin{tikzpicture}[scale=0.5,every node/.style={outer sep=5pt}]
+			%Notation: {year, the title of the event}
+			%NOTE! Everyting is zero-based
+			\def\ourInfo{{
+					{"X~2019","Robotyka i Automatyka, MEiL, PW"},
+					{"X~2020","Informatyka i Systemy Informacyjne, MiNI, PW"},
+					{"II~2023","Inżynier, Robotyka i Automatyka (z wyróżnieniem)"},
+					{"II~2024","Inżynier, Informatyka i Systemy Informacyjne"},
+					{"VI~2024","Magister inżynier, Robotyka i Automatyka (z wyróżnieniem)"},
+			}}
+			\pgfmathsetmacro{\length}{4}% Zero based.
+			
+			% Loop through the array containing all events.
+			\foreach \i in {0, ..., \length}{
+				\pgfmathsetmacro{\year}{\ourInfo[\i][0]}% Get the left cell (year)
+				\pgfmathsetmacro{\eventName}{\ourInfo[\i][1]}% Get the right cell (event name)
+				\draw[thick,lightgray] (0,-2*\i-2)--(0,-2*\i);% Draw vertical line
+				\ifnum \i=1% Should be in red text
+				\draw(0,-2*\i-1) node[black, right, align = left]{\eventName};% Display the event name
+				\draw(0,-2*\i-1) node[black, left] {\year};
+				\else % Should be in black text
+				\draw(0,-2*\i-1) node[right, black]{\eventName};% Display the event name
+				\draw(0,-2*\i-1) node[left] {\year};% Display the year
+				\fi
+			}
+			% Draw the bullet with the dash
+			\foreach \i in {0, ..., \length}{
+				\filldraw[draw = white, fill = blue,thick] (0,-2*\i-1) circle (5pt);
+				\draw[thick,blue] (-12pt,-2*\i-1)--(0,-2*\i-1);
+			}
+	\end{tikzpicture}
 \end{frame}
 
 \begin{frame}
-	\frametitle{Motywacja}
+	\frametitle{Wykształcenie}
+	\centering
+	\includegraphics[width=.65\textwidth]{robotics.png}
+\end{frame}
+
+\section{Doświadczenie zawodowe}
+
+\begin{frame}
+	\frametitle{Doświadczenie zawodowe}
+	\begin{tikzpicture}[scale=0.7,every node/.style={outer sep=5pt}]
+		%Notation: {year, the title of the event}
+		%NOTE! Everyting is zero-based
+		\def\ourInfo{{
+				{"2021","Blue Energy System sp. z o.o. -- doradztwo techniczne \\ Budowa farmy fotowoltaicznej z produkcją i~magazynowaniem wodoru"},
+				{"2022","Multiway System sp. z o.o. -- programista Java \\ Opracowanie systemu dystrybucji biletów komunikacyjnych"},
+				{"2023","WB Electronics S.A. -- programista C++ \\ Rozwój oprogramowania autopilota bezzałogowego statku powietrznego"},
+		}}
+		\pgfmathsetmacro{\length}{2}% Zero based.
+		
+		% Loop through the array containing all events.
+		\foreach \i in {0, ..., \length}{
+			\pgfmathsetmacro{\year}{\ourInfo[\i][0]}% Get the left cell (year)
+			\pgfmathsetmacro{\eventName}{\ourInfo[\i][1]}% Get the right cell (event name)
+			\draw[thick,lightgray] (0,-2*\i-2)--(0,-2*\i);% Draw vertical line
+			\ifnum \i=1% Should be in red text
+			\draw(0,-2*\i-1) node[black, right, align = left]{\eventName};% Display the event name
+			\draw(0,-2*\i-1) node[black, left] {\year};
+			\else % Should be in black text
+			\draw(0,-2*\i-1) node[right, align = left, black]{\eventName};% Display the event name
+			\draw(0,-2*\i-1) node[left] {\year};% Display the year
+			\fi
+		}
+		% Draw the bullet with the dash
+		\foreach \i in {0, ..., \length}{
+			\filldraw[draw = white, fill = blue,thick] (0,-2*\i-1) circle (4pt);
+			\draw[thick,blue] (-9pt,-2*\i-1)--(0,-2*\i-1);
+		}
+	\end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Rozwój oprogramowania autopilota BSP}
+	\begin{itemize}
+		\item Odczytywanie danych z czujników
+		\item Filtracja danych wejściowych
+		\item Fuzja danych: estymacja pozycji, prędkości i innych parametrów lotu
+		\item Sterowanie lotem
+		\item Konstruowanie czujników i modułów
+		\item Obsługa peryferiów
+	\end{itemize}
+\end{frame}
+
+\section{Działalność naukowa}
+
+\begin{frame}
+	\frametitle{Działalność naukowa}
+	
+	\begin{itemize}
+		\setlength\itemsep{2em}
+		\item Projekt HAL-062, Koło Naukowe Robotyków, MEiL, PW\\ opracowanie autonomicznego łazika marsjańskiego
+		\item Projekt badawczy NCN OPUS 23, Zakład Teorii Maszyn i Robotów, MEiL, PW\\ opracowanie hybrydowych metod określania sił reakcji w układach wieloczłonowych z więzami redundantnymi i weryfikacja poprzez opracowanie stanowiska badawczo-pomiarowego do pomiaru sił reakcji
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{NCN OPUS 23: Stanowisko badawczo-pomiarowe}
 	\begin{columns}
 		\begin{column}{0.38\textwidth}
 			\begin{figure}
@@ -79,7 +150,7 @@
 			\vspace{50pt}
 		\end{column}
 		\begin{column}{0.72\textwidth}
-			\uncover<2->{
+			\uncover<1->{
 				\begin{itemize}
 					\item Stanowisko do pomiaru sił reakcji w układach wieloczłonowych z więzami nadmiarowymi
 					\item W łącznikach znajdują się liniowe czujniki siły
@@ -93,147 +164,21 @@
 		\end{column}
 	\end{columns}
 \end{frame}
-
+	
 \begin{frame}
-	\frametitle{Motywacja}
+	\frametitle{NCN OPUS 23: Estymacja stanu układu wieloczłonowego}
 	\begin{columns}
-		\begin{column}{0.4\textwidth}
-			\begin{figure}
-			\centering
-				\uncover<1->{
-					\includegraphics[height=0.62\textheight]{pixhawk.jpg}
-					\caption{"Kontroler" lotu}
-				}
-			\end{figure}
-			\vspace{50pt}
+		\begin{column}{0.55\textwidth}
+			\uncover<1->{
+				\begin{itemize}
+					\item Zaadaptowanie nawigacji inercjalnej w systemach określania pozycji i~orientacji robotów
+					\item Wykorzystanie wiedzy o konstrukcji i istniejących więzach
+					\item Opracowanie prototypu czujnika i systemu określania pozycji i orientacji
+				\end{itemize}
+				\vspace{70pt}
+			}
 		\end{column}
-				\begin{column}{0.2\textwidth}
-			\begin{figure}
-				\centering
-				\uncover<1->{
-					\includegraphics[height=0.2\textheight]{plus.png}
-				}
-			\end{figure}
-			\vspace{50pt}
-		\end{column}
-		\begin{column}{0.4\textwidth}
-			\begin{figure}
-				\centering
-				\uncover<1->{
-					\includegraphics[height=0.65\textheight]{render.jpg}
-					\caption{Układ wieloczłonowy}
-				}
-			\end{figure}
-			\vspace{50pt}
-		\end{column}
-	\end{columns}
-\end{frame}
-
-\begin{frame}
-	\frametitle{Fazy rozszerzonego filtru Kalmana z korektą więzów}
-	\vspace{10pt}
-	\begin{center}
-		\uncover<1->{
-			\begin{tikzpicture}[
-				block/.style={rectangle, draw, text width=2cm, text centered, rounded corners, minimum height=1.5cm},
-				arrow/.style={->, >=stealth, thick},
-				>=Stealth,
-				]
-				% Nodes
-				\node (predict) [block] {Predict};
-				\node (correct) [block, right=3cm of predict] {Correction};
-				\definecolor{meil_color}{rgb}{0.5,0.5,0.9}
-				\node (constraints) [block, fill=meil_color, below left=0.5cm and 0.33cm of correct] {Constraints};
-				
-				% Arrows
-				\draw[arrow] (predict.east)  |- (correct.west) node[midway, above] {};
-				\draw[arrow] (correct.south)  |- (constraints.east) node[midway, left] {};
-				\draw[arrow] (constraints.west) -- ++(-1.5cm,0) -| (predict.south) node[midway, below] {};
-				
-			\end{tikzpicture}
-		}
-	\end{center}
-\end{frame}
-
-\begin{frame}
-	\frametitle{Cel pracy}
-	\begin{itemize}
-		\setlength\itemsep{1em}
-		\item<1-> Zaadaptowanie nawigacji inercjalnej w systemach określania pozycji i~orientacji robotów.
-		\item<1-> Wykorzystanie wiedzy o konstrukcji i istniejących więzach.
-		\item<1-> Opracowanie prototypu czujnika i systemu określania pozycji i orientacji.
-	\end{itemize}
-\end{frame}
-
-\section{Przebieg pracy}
-
-\begin{frame}
-	\frametitle{Symulacja komputerowa}	
-	\begin{columns}
-		\begin{column}{0.4\textwidth}
-			\begin{figure}
-				\centering
-				\uncover<2->{
-					\includegraphics[width=\textwidth]{duw/adams.png}
-					\caption{Model stanowiska w ADAMS}
-				}
-			\end{figure}
-			\vspace{50pt}
-		\end{column}
-		\begin{column}{0.6\textwidth}
-			\begin{figure}
-				\centering
-				\uncover<3->{
-					\vspace{15pt}
-					\includegraphics[width=\textwidth]{duw/sys.png}
-					\vspace{13pt}
-					\caption{System określania pozycji w MATLAB Simulink}
-				}
-			\end{figure}
-			\vspace{50pt}
-		\end{column}
-	\end{columns}
-\end{frame}
-
-\begin{frame}
-	\frametitle{Symulacja komputerowa -- wyniki}	
-	\begin{columns}
-		\begin{column}{0.5\textwidth}
-			\begin{figure}
-				\centering
-				\uncover<1->{
-					\includegraphics[width=\textwidth]{duw/no_con.png}
-					\caption{Symulacja -- brak korekty}
-				}
-			\end{figure}
-		\end{column}
-		\begin{column}{0.5\textwidth}
-			\begin{figure}
-				\centering
-				\uncover<1->{
-					\includegraphics[width=\textwidth]{duw/corr.png}
-					\caption{Symulacja -- z korektą}
-				}
-			\end{figure}
-		\end{column}
-	\end{columns}
-\end{frame}
-
-\begin{frame}
-	\frametitle{Rozszerzony  przegląd stanu wiedzy}	
-	\begin{itemize}
-		\item<1-> modele matematyczne czujników, modelowanie błędu pomiarowego
-		\item<1-> metody filtracji danych i kalibracji czujników
-		\item<1-> metody fuzji danych
-		\item<1-> problem synchronizacji czasu, problem przesyłu danych pomiarowych
-		\item<1-> więzy w układach wieloczłonowych
-	\end{itemize}
-\end{frame}
-
-\begin{frame}
-	\frametitle{Budowa prototypu zintegrowanego czujnika}
-	\begin{columns}
-		\begin{column}{0.5\textwidth}
+		\begin{column}{0.45\textwidth}
 			\begin{figure}
 				\centering
 				\uncover<1->{
@@ -241,188 +186,97 @@
 					\includegraphics[width=0.9\textwidth]{prototype.jpg}
 					\caption{Prototyp}
 				}
-			\end{figure}
-			\vspace{50pt}
-		\end{column}
-		\begin{column}{0.72\textwidth}
-			\uncover<2->{
-				\begin{itemize}
-					\item Oparty na mikrokontrolerze ESP32
-					\item Posiada akcelerometr, żyroskop i magnetometr
-					\item Zasilany bateryjne
-					\item Przesyła surowe dane z wykorzystaniem UDP
-					\item Częstotliwość próbkowania wynosi \textasciitilde 500Hz
-				\end{itemize}
-				\vspace{80pt}
-			}
-		\end{column}
-	\end{columns}
-\end{frame}
-
-
-\begin{frame}
-	\frametitle{Architektura systemu}
-	\begin{figure}
-		\centering
-		\includegraphics[width=1\textwidth]{arch.png}
-		%\caption{Prototyp zintegrowanego czujnika inercyjnego}
-	\end{figure}
-\end{frame}
-
-\begin{frame}
-	\frametitle{Dobór  technologii}
-	\begin{columns}
-		\begin{column}{0.33\textwidth}
-			\begin{figure}
-				\centering
-				\uncover<1->{\includegraphics[height=0.2\textheight]{logos/cpp.png}}
-			\end{figure}
-			\begin{figure}
-				\centering
-				\uncover<1->{\includegraphics[height=0.2\textheight]{logos/eigen.png}}
-			\end{figure}
-		\end{column}
-		\begin{column}{0.33\textwidth}
-			\begin{figure}
-				\centering
-				\uncover<1->{\includegraphics[height=0.2\textheight]{logos/python.png}}
-			\end{figure}
-			\begin{figure}
-				\centering
-				\uncover<1->{\includegraphics[height=0.2\textheight]{logos/Qt.png}}
-			\end{figure}
-		\end{column}
-		\begin{column}{0.33\textwidth}
-			\begin{figure}
-				\centering
-				\uncover<1->{\includegraphics[height=0.2\textheight]{logos/matlab.png}}
-			\end{figure}
-			\begin{figure}
-				\centering
-				\uncover<1->{\includegraphics[height=0.2\textheight]{logos/docker.png}}
+				\vspace{50pt}
 			\end{figure}
 		\end{column}
 	\end{columns}
 \end{frame}
+	
+
+
+\section{Doktorat}
 
 \begin{frame}
-	\frametitle{Graficzny interfejs użytkownika I}
-	\begin{figure}
-		\centering
-		\includegraphics[width=0.6\textwidth]{gui_dashboard.png}
-		\caption{Zakładka \textit{Info}}
-	\end{figure}
+	\frametitle{Doktorat}
+	\centering
+	Cel projektu to opracowanie i wdrożenie metod ustalania pozycji bezzałogowego statku powietrznego bazujących na różnych źródłach danych, adaptujących się do warunków lotu, odpornych na zakłócenia. \\
+	\vspace{20pt}
+	Opracowane rozwiązanie ma stanowić alternatywę dla powszechnie wykorzystywanych systemów GNSS.
 \end{frame}
 
 \begin{frame}
-	\frametitle{Graficzny interfejs użytkownika II}
-	\begin{figure}
-		\centering
-		\includegraphics[width=0.7\textwidth]{gui_sensor.png}
-		\caption{Zakładka \textit{Sensors}}
-	\end{figure}
+	\frametitle{Platforma testowa -- WARMATE 3}
+	\centering
+	\vspace{10pt}
+	\includegraphics[width=.6\textwidth]{warmate.jpg}
 \end{frame}
 
 \begin{frame}
-	\frametitle{Graficzny interfejs użytkownika III}
-	\begin{figure}
-		\centering
-		\includegraphics[width=0.6\textwidth]{gui_force.png}
-		\caption{Zakładka \textit{Forces}}
-	\end{figure}
-\end{frame}
-
-\begin{frame}
-	\frametitle{Graficzny interfejs użytkownika IV}
-	\begin{figure}
-		\centering
-		\includegraphics[width=0.6\textwidth]{gui_consol.png}
-		\caption{Zakładka \textit{Console}}
-	\end{figure}
-\end{frame}
-
-\begin{frame}
-	\frametitle{Pomiary}
-	\begin{figure}
-		\centering
-		\includegraphics[width=0.35\textwidth]{sensor_mount.jpg}
-		\caption{Czujnik  zamontowany  na robocie  FANUC}
-	\end{figure}
-\end{frame}
-
-\begin{frame}
-	\frametitle{Pomiary -- określenie orientacji robota \href{run:movies/attitude_test.mp4}{\beamergotobutton{Film}}}
-	\begin{columns}
-		\begin{column}{0.5\textwidth}
-			
-			\begin{figure}
-				\centering
-				\uncover<2->{
-					\includegraphics[height=0.77\textheight]{ori_est_roll.png}
-					\caption{Kąt przechylenia}
-				}
-			\end{figure}
-		\end{column}
-		\begin{column}{0.5\textwidth}
-			\begin{figure}
-				\centering
-				\uncover<2->{
-					\includegraphics[height=0.77\textheight]{ori_est_yaw.png}
-					\caption{Kąt odchylenia}
-				}
-			\end{figure}
-		\end{column}
-	\end{columns}
-\end{frame}
-
-\begin{frame}
-	\frametitle{Pomiary -- określenie pozycji robota \href{run:movies/position_test.mp4}{\beamergotobutton{Film}}}
-	\begin{columns}
-		\begin{column}{0.5\textwidth}
-			\begin{figure}
-				\centering
-				\uncover<2->{
-					\includegraphics[height=0.77\textheight]{pos_est_x.png}
-					\caption{Przemieszczenie  x}
-				}
-			\end{figure}
-		\end{column}
-		\begin{column}{0.5\textwidth}
-			\begin{figure}
-				\centering
-				\uncover<2->{
-					\includegraphics[height=0.77\textheight]{pos_est_z.png}
-					\caption{Przemieszczenie  z}
-				}
-			\end{figure}
-		\end{column}
-	\end{columns}
-\end{frame}
-
-\section{Podsumowanie}
-
-\begin{frame}
-	\frametitle{Podsumowanie}	
-	\uncover<1->{W ramach pracy udało się:}
+	\frametitle{Wymagania stawiane proponowanym rozwiązaniom}
 	\begin{itemize}
-		\item<1-> dokonać rozległego przeglądu stanu wiedzy,
-		\item<1-> opracować model filtru Kalmana uwzględniający więzy,
-		\item<1-> zbudować prototyp zintegrowanego czujnika,
-		\item<1-> opracować system umożliwiający określenie pozycji i orientacji robota.
+		\item Ograniczone wymiary i złożoność obliczeniowa
+		\item Odporność na zakłócenia, niezależność
+		\item Praca w różnych warunkach atmosferycznych
+		\item Dokładność nawigacji porównywalna z systemem GNSS
+		\item Minimalizacja negatywnego wpływu na sygnaturę cieplną i radiową platformy
 	\end{itemize}
 \end{frame}
 
+\begin{frame}
+	\frametitle{Zakres pracy}
+		\begin{itemize}
+		\item Przegląd dostępnej literatury naukowej i technicznej. Określenie luk w dostępnym stanie wiedzy.
+		\item Badania w środowisku symulacyjnym oraz na platformie prototypowej
+		\item Ocena skuteczności i dokładności wybranych metod
+		\item Opracowanie algorytmów integracji danych uzyskanych z równoległego zastosowania wielu metod
+		\item Publikacja wyników badań
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Metodyka}
+	\centering
+	\vspace{-15pt}
+	\begin{tikzpicture}[shorten >=1pt,node distance=2.5cm,on grid,auto]
+		\node[state,initial] (q_0)
+		{\scriptsize\begin{tabular}{@{}c@{}}Symulacja\\komputerowa\end{tabular}};
+		\node[state] (q_1) [below right = 2.5cm and 1.5cm of q_0]
+		{\scriptsize\begin{tabular}{@{}c@{}}Software in\\the loop\end{tabular}};
+		\node[state] (q_2) [above right = 2.5cm and 1.5cm of q_1]
+		{\scriptsize\begin{tabular}{@{}c@{}}Hardware in\\the loop\\ Testy naziemne\end{tabular}};
+		\node[state] (q_3) [below right = 2.5cm and 1.5cm of q_2]
+		{\scriptsize\begin{tabular}{@{}c@{}}Testy w locie\end{tabular}};
+		\node[state,accepting] (q_4) [above right = 2.5cm and 1.5cm of q_3]
+		{\scriptsize\begin{tabular}{@{}c@{}}Wdrożenie\end{tabular}};
+		
+		\path[->]
+		(q_0) edge  node [swap] {} (q_1)
+					 edge  [loop above] node {opracowanie} ()
+		(q_1) edge  [loop below] node {implementacja} ()
+					edge  node [swap] {} (q_2)
+		(q_2) edge  node [swap] {} (q_3)
+					edge  node [swap] {} (q_1)
+		(q_3) edge  node [swap] {} (q_4)
+					edge  node [swap] {} (q_1);				
+	\end{tikzpicture}
+	
+\end{frame}
+
 \begin{frame}{References}
-	\frametitle{Bibliografia (wybrane pozycje)}
+	\frametitle{Bibliografia}
+	\scriptsize
 	\begin{thebibliography}{10}
 		\beamertemplatebookbibitems
-		\bibitem{simon}[2002] Kalman filtering with state equality constraints
-		\newblock Simon, D. and Tien Li Chia
-		\bibitem{farrell}[2012] Integrated Aircraft Navigation
-		\newblock Farrell, J.
-		\bibitem{joint}[2012] Joint reactions in rigid or flexible body mechanisms with redundant constraints
-		\newblock Wojtyra, Marek and Frączek, Janusz
-		\bibitem{more} ... i 33 inne publikacje zawarte w pracy.
+		\bibitem{a}[2016] Survey on UAV navigation in GPS denied environments
+		\newblock Balamurugan, G and Valarmathi, J and Naidu, V P S
+		\bibitem{b}[2017] A survey on vision-based UAV navigation
+		\newblock Yuncheng Lu, Zhucun Xue, Gui-Song Xia and Liangpei Zhang
+		\bibitem{c}[2022] Imagery Synthesis for Drone Celestial Navigation Simulation
+		\newblock Teague, Samuel, and Javaan Chahl
+		\bibitem{d}[2018] Outdoor Localization and Distance Estimation Based on Dynamic RSSI Measurements in LoRa Networks: Application to Cattle Rustling Prevention
+		\newblock Dieng, Ousmane and Pham, Congduc and Thiare, Ousmane
+		\bibitem{d}[2022] A Review of quadrotor UAV: Control and SLAM methodologies ranging from conventional to innovative approaches
+		\newblock Güray Sonugür
 	\end{thebibliography}
 \end{frame}
 
