@@ -20,7 +20,7 @@ jobs:
         uses: xu-cheng/latex-action@v3
         with:
           # The root LaTeX file to be compiled
-          root_file: main.tex
+          root_file: article.tex
           # latexmk_use_lualatex: true
           # extra_fonts: |
           #   ./fonts/verdana.ttf
@@ -31,4 +31,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: PDF
-          path: main.pdf
+          path: article.pdf
