@@ -1,0 +1,68 @@
+\section{Przykłady TEX}
+
+\begin{table} % Single column table
+	\caption{Example single column table.}
+	\centering
+	\begin{tabular}{l l r}
+		\toprule
+		\multicolumn{2}{c}{Location} \\
+		\cmidrule(r){1-2}
+		East Distance & West Distance & Count \\
+		\midrule
+		100km & 200km & 422 \\
+		350km & 1000km & 1833 \\
+		600km & 1200km & 890 \\
+		\bottomrule
+	\end{tabular}
+	\label{tab:distcounts}
+\end{table}
+
+\begin{table*} % Full width table (notice the starred environment)
+	\caption{Example two column table with fixed-width columns.}
+	\centering % Horizontally center the table
+	\begin{tabular}{L{0.2\linewidth} L{0.2\linewidth} R{0.15\linewidth}} % Manually specify column alignments with L{}, R{} or C{} and widths as a fixed amount, usually as a proportion of \linewidth
+		\toprule
+		\multicolumn{2}{c}{Location} \\
+		\cmidrule(r){1-2}
+		East Distance & West Distance & Count \\
+		\midrule
+		100km & 200km & 422 \\
+		350km & 1000km & 1833 \\
+		600km & 1200km & 890 \\
+		\bottomrule
+	\end{tabular}
+\end{table*}
+
+\begin{figure} % Single column figure
+	\includegraphics[width=\linewidth]{render.jpg}
+	\caption{Anther of thale cress (Arabidopsis thaliana), fluorescence micrograph. Source: Heiti Paves, \href{https://commons.wikimedia.org/wiki/File:Tolmukapea.jpg}{https://commons.wiki-\\media.org/wiki/File:Tolmukapea.jpg}.}
+	\label{fig:tcanther}
+\end{figure}
+
+\begin{figure*} % Two column figure (notice the starred environment)
+	\includegraphics[width=\linewidth]{render.jpg}
+	\caption{Bovine pulmonary artery endothelial cells in culture. Blue: nuclei; red: mitochondria; green: microfilaments. Computer generated image from a 3D model based on a confocal laser scanning microscopy using fluorescent marker dyes. Source: Heiti Paves, \href{https://commons.wikimedia.org/wiki/File:Fibroblastid.jpg}{https://commons.wikimedia.org/wiki/File:Fibroblastid.jpg}.}
+	\label{fig:bpartery}
+\end{figure*}
+
+\begin{itemize}
+	\item Arcu eros accumsan lorem, at posuere mi diam sit amet tortor
+	\item Fusce fermentum, mi sit amet euismod rutrum
+	\item Sem lorem molestie diam, iaculis aliquet sapien tortor non nisi
+	\item Pellentesque bibendum pretium aliquet
+\end{itemize}
+
+Mauris interdum porttitor fringilla. Proin tincidunt sodales leo at ornare. Donec tempus magna non mauris gravida luctus. Cras vitae arcu vitae mauris eleifend scelerisque. Nam sem sapien, vulputate nec felis eu, blandit convallis risus. Pellentesque sollicitudin venenatis tincidunt. In et ipsum libero. Nullam tempor ligula a massa convallis pellentesque.
+
+This is a numbered list:
+
+\begin{enumerate}
+	\item Donec dolor arcu, rutrum id molestie in, viverra sed diam
+	\item Curabitur feugiat
+	\item Turpis sed auctor facilisis
+\end{enumerate}
+
+\begin{equation}
+	\cos^3 \theta =\frac{1}{4}\cos\theta+\frac{3}{4}\cos 3\theta
+	\label{eq:example}
+\end{equation}
