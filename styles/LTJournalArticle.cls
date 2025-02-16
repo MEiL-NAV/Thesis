@@ -98,7 +98,7 @@
 \iftoggle{unnumberedsections}{ % Conditional logic for the unnumbered sections class options
 	\setcounter{secnumdepth}{0} % Don't number sections at any level
 }{
-	\setcounter{secnumdepth}{2} % Number sections down to subsections
+	\setcounter{secnumdepth}{1} % Number sections down to subsections
 }
 
 \titleformat

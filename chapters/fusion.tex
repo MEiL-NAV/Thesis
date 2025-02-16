@@ -1,22 +1,217 @@
 \section{Mechanism-structure-aware sensor fusion}
 
-\todo[inline]{3 zdania o fuzji danych - uzyskanie pelnej informacji na podst. szczątkowych danych}
+Sensor fusion is a method of blending multiple sensors’ readings to obtain a desired estimation. The methods involve merging information from a variety of sensors, cross-checking measurements, as well as tracking and removing floating errors. They utilize partial and redundant information to estimate complete estimation. The mechanism structure can be treated as such information, in order to enrich fusion about knowledge of limitation and allowed directions of movement. In other words, it makes the sensor fusion \textit{aware} of mechanism structure.
+
 
 \subsection{The Extended Kalman Filter}
 
-\todo[inline]{3 zdania o filtrze EKF - równanie głowne, oznaczenia}
+The Kalman filter is a mathematical estimation method for efficiently tracking the dynamic state of a system and filtering out measurement data. The original form presented in 1960 \cite{kalman} were limited to linear system only. However the extended form, derived by using local linearization, can be used wherever it is possible to
+arrange the appropriate equations of state, presented in following equations:
+
+\begin{equation}
+	\bm{x}_k =  \bm{f} \left( \bm{x}_{k-1},  \bm{u}_k \right) + \bm{w}_k
+	\label{ekf1}
+\end{equation}
+
+\begin{equation}
+	\bm{z}_k = \bm{h} \left(\bm{x}_k \right) + \bm{v}_k
+	\label{ekf2}
+\end{equation}
+
+
+where:
+\begin{itemize}
+	\item $\bm{x}_k$ -- state vector at the k-th time step,
+	\item $\bm{u}_k$  -- control input vector, 
+	\item $\bm{z}_k$  -- measurement vector at the time of k, 
+	\item $\bm{w}_k$ -- process noise vector, 
+	\item $\bm{v}_k$ -- measurement noise vector.
+	\item $\bm{f} \left( \bm{x}_{k-1},  \bm{u}_k \right)$ -- state function, 
+	\item $\bm{h} \left(\bm{x}_k \right)$ -- measurement function.
+\end{itemize}
+
+The Kalman filter performs two main steps: prediction and correction (figure \ref{kf_diagram}). In the prediction step, the new state of the system and its covariance is predicted. In the correction step, based on the new measurements, an adjustment is made to the prediction, taking into account measurement errors and improving the estimation of the system state.
+
+\begin{figure}[!h]
+	\centering
+	\begin{tikzpicture}[
+		block/.style={rectangle, draw, text width=2cm, text centered, rounded corners, minimum height=1.2cm},
+		arrow/.style={->, >=stealth, thick}
+		]
+		% Nodes
+		\node (predict) [block] {Prediction};
+		\node (correct) [block, right=2cm of predict] {Correction};
+		
+		% Arrows
+		\draw[bend left=40,-latex] ($(predict.east)+(0,0.2)$) to ($(correct.west)+(0,0.2)$);
+		\draw[bend left=40,-latex] ($(correct.west)-(0,0.2)$) to ($(predict.east)-(0,0.2)$);
+	\end{tikzpicture}
+	\caption{Stages in the Extended Kalman Filter}
+	\label{kf_diagram}
+\end{figure}
+
+Prediction phase:
+\begin{align}
+	\bm{\hat{x}}_k^- & = \bm{f}(\bm{\hat{x}}_{k-1}, \bm{u}_k) \quad \text{(predicted state)}, \\
+	\bm{P}_k^- & = \bm{A}_k \bm{P}_{k-1} \bm{A}_k^T + \bm{Q}_k \quad \text{(predicted covariance)},
+\end{align}
+
+where: $\bm{A}_k = \frac{\partial \bm{f}}{\partial \bm{x}}\Bigr|_{\bm{\hat{x}}_{k-1}, \bm{u}_k}$, and $\bm{Q}_k$ is process noise covariance matrix.\\
+
+Correction phase:
+\begin{align}
+	&\bm{K}_k = \bm{P}_k^- \bm{H}_k^T (\bm{H}_k \bm{P}_k^- \bm{H}_k^T + \bm{R}_k)^{-1} \quad \text{(Kalman's gain)}, \\
+	&\bm{\hat{x}}_k = \bm{\hat{x}}_k^- + \bm{K}_k(\bm{\bm{z}}_k - \bm{h}(\bm{\hat{x}}_k^-)) \quad \text{(corrected state)}, \\
+	&\bm{P}_k = (\bm{I} - \bm{K}_k \bm{H}_k) \bm{P}_k^- \quad \text{(corrected covariance)},
+\end{align}
+
+where: $\bm{H}_k = \frac{\partial \bm{h}}{\partial \bm{x}}\Bigr|_{\bm{\hat{x}}_k^-}$, and $\bm{R}_k$ is measurement noise covariance matrix.
+
+The are multiple approach of utilizing the Extended Kalman Filter to estimate position and orientation based on inertial sensor reading. They differ mainly in state vector---use the quaternion or euler angles to describe orientation, additionally tracks velocities and acceleration or extend the state vector of current bias of sensors. Also the additional sensors used in estimation may vary. 
+%TODO: refs
 
 \subsection{Constraints in multi-body systems}
 
-\todo[inline]{Ograniczenia występujące w robotyce - wynikające z własciwosci konstrucyjnych itd}
+Constraints are the limitations imposed on the system state. They can result from system’s structure, known trajectory or be directly linked with limitation of mathematical instrument used in the system description. In multi-body systems, a wide group of constraints is made of geometric constraints, i.e., the constraints that stem directly from the mechanism’s structure. They determine the directions in which the mechanism can move so as not to breach the limits imposed by the existence of kinematic pairs. The form of constraints may vary for the same mechanism, depending on the configuration it was mounted. The constraints are commonly non-linear and involve multiple elements from state vector. Generalizing, the constraints can be formulated as $\bm{c}(\bm{x}) = \bm{0}$. Provided that the constraints are continuously differentiable, the $\frac{\partial \bm{c}(\bm{x})}{\partial \bm{x}}$ is possible to derive. In a practical, the constraints are strictly linked with the structure of analyzed mechanism. As an example,  the selected constraint will be introduce: the quaternion norm constraint and fixation of yaw angle. \\
 
-\subsection{State constraints}
+When the quaternion is used to describe orientation, it is expected that its norm will be continuously equal to 1. However, due to the inaccuracy of computer arithmetic, its norm may fluctuate, causing estimation error.   The solution is to treat the quaternion norm  as a constraint imposed on the system. Equation (\ref{quat_constraint_fun}) defines the constraint function, and equation (\ref{quat_constraint_fun_der}) defines its derivative. Naturally, the constraint function and its derivative are quaternion-dependent only, and they are scalar functions.
 
-\todo[inline]{Orginalna metoda Dana Simona na 3 faze filtra EKF (fazę constraint correction) tj jak zadbać o to zeby stan spełniał dodatkowe równania}
+\begin{equation}
+	c \left( \bm{q} \right) = \bm{q}^T \bm{q} - 1
+	\label{quat_constraint_fun}
+\end{equation}
 
-\todo[inline]{Porównanie do metody N-R}
+\begin{equation}
+	\frac{\partial c}{\partial \bm{q}}  \left( \bm{q} \right) = 2\bm{q}^T
+	\label{quat_constraint_fun_der}
+\end{equation}
 
-\subsection{Improvement %TODO}
+Another example is a hypothetical fixation of some parameter that can be indirect calculated from the system state. Assume that the designed mechanism, due to its structure is unable to rotate around vertical axis. In aviation nomenclature the yaw angle of object remains equal to 0 (in NED coordinate system, the object is aimed to north). For the state of the system contains orientation given by a quaternion, the yaw angle can be calculated from the following formula:
 
-\todo[inline]{Skoro podobne do N-R to dodajmy modyfikację w postacji alfa i k - poprawkę skalujemy x alfa (damped Newton's method) i zwiększamy liczbę iteracji na jeden obrót filtra}
+\begin{equation}
+	\psi = {\mbox{atan2}}\left(2(q_{0}q_{z}+q_{x}q_{y}),1-2(q_{y}^{2}+q_{z}^{2})\right)
+\end{equation}
+
+However, the value of \textit{atan2} function is equal to zero if and only if the first argument is equal to zero. With that being said, the simple form of yaw constraint is given by equation (\ref{yaw_constraint_fun}). Equation (\ref{yaw_constraint_fun_der}) defines its derivative. The disadvantage of this approach is that the yaw angle equal to $\pi$ also fulfills the constraint.
+
+\begin{equation}
+	c \left( \bm{q} \right) = q_{0}q_{z}+q_{x}q_{y}
+	\label{yaw_constraint_fun}
+\end{equation}
+
+\begin{equation}
+	\frac{\partial c}{\partial \bm{q}}  \left( \bm{q} \right) =
+	\begin{bmatrix}
+		q_{z} &  q_{y} &  q_{x} &  q_{0}
+	\end{bmatrix}
+	\label{yaw_constraint_fun_der}
+\end{equation}
+
+
+\subsection{Inclusion of constraints in the estimation}
+
+Assume that a novel system for locating metro wagons is planned to be developed. The first idea that comes to mind is to use a satellite navigation system, as is usually the case in location-based tasks. However, this solution suffers from a significant flaw: these systems perform much worse underground. The question is whether the quality of the position estimate can be easily improved, and the short answer is yes. A simple assumption that can be made is that metro wagons can only be on the rails. Using the well-known track, it is possible to stick the calculated location to the nearest rails, thus improving its accuracy.
+This illustrative example implicitly demonstrates the principle of constraint's correction.\\
+
+The inclusion of constraints in state estimation is not a popular solution. Usually, transform to other state variables that fulfill constraints is suggested. However, it provokes the redesign of the state estimator every time when constraints change. The unique approach is discussed by Dan Simon in articles \cite{simon}, \cite{simon2010kalman} and \cite{simon2006kalman}. It is proposed to add the third phase to the conventional Extended Kalman Filter, as it is shown in figure \ref{ekf_three_phases}. \\
+
+\begin{figure}[!h]
+	\begin{center}
+		\begin{tikzpicture}[
+			block/.style={rectangle, draw, text width=2cm, text centered, rounded corners, minimum height=1.5cm},
+			arrow/.style={->, >=stealth, thick},
+			>=Stealth,
+			]
+			% Nodes
+			\node (predict) [block] {Prediction};
+			\node (correct) [block, right=3cm of predict] {Correction};
+			\node (constraints) [block, below left=0.5cm and 0.33cm of correct] {Constraints};
+			
+			% Arrows
+			\draw[bend left=20,-latex] ($(predict.east)+(0,0.3)$) to ($(correct.west)+(0,0.3)$);
+			\draw[bend left=40,-latex] (correct.south) to (constraints.east);
+			\draw[bend left=40,-latex] (constraints.west) to (predict.south);
+			
+		\end{tikzpicture}
+	\end{center}
+	\caption{Stages in the Extended Kalman Filter with constraint correction}
+	\label{ekf_three_phases}
+\end{figure}
+
+In the constraints correction phase, only the state of the filter changes, and the covariance matrix remains unchanged. For linear constraints $\left( \bm{D} \bm{x} = \bm{d}  \right)$, the following equation presents constraints correction phase:
+
+\begin{equation}
+	\bm{\tilde{x}} = \bm{\hat{x}} - \bm{W}^{-1} \bm{D}^T \left( \bm{D} \bm{W}^{-1} \bm{D}^T \right)^{-1} \left( \bm{D} \bm{\hat{x}} - \bm{d}  \right)
+	\label{constraint_corr}
+\end{equation}
+
+where:
+\begin{itemize}[noitemsep]
+	\item $\bm{D}$, $\bm{d}$ -- matrix and vector defining linear constraints,
+	\item $\bm{W}$ -- square weight matrix,
+	\item $\bm{\hat{x}}$ -- filter state before correction,
+	\item $\bm{\tilde{x}}$ -- filter state after correction.
+\end{itemize}
+
+In provided articles, it was proposed to use the inverse of covariance matrix as the weight matrix  $\bm{W} = \bm{P}^{-1}$. In the case of linear constraints, it leads to the maximum probability estimate of the state subject to state constraints. The method so far applies to system with linear constrains only. This limitation is possible to canceled by utilizing the local linearization. The following equation define substitutions resulting from linearization:
+
+\begin{equation}
+	\bm{D} = \frac{\partial \bm{c}}{\partial \bm{x}}(\bm{\hat{x}})
+	\label{linearization1}
+\end{equation}
+
+\begin{equation}
+	\bm{d} =  - \bm{c} (\bm{\hat{x}}) +  \frac{\partial \bm{c}}{\partial \bm{x}}(\bm{\hat{x}}) \bm{\hat{x}}
+	\label{linearization2}
+\end{equation}
+
+As a result, the constraint correction method can be used for nonlinear equations.\\ 
+
+\subsection{Proposed improvement of constraint correction algorithm}
+In the conducted expperimental studies, it was found, that direct application of the method to the further discussed mechanism proved not to work properly and led to instability. This posed the need to modify the method used.\\
+
+It was noticed that method presented in previous section is similar in concept to performing one iteration of Newton-Raphson root-finding algorithm. Assume that $\bm{D}$ is a square matrix with full rank. In order to find the solution of constraint equations, an iterative method is used to solve equation (\ref{Dxd}). The Newton-Rapshon method requires the Jacobi matrix, which in this case is given in equation (\ref{D})
+
+\begin{equation}
+	\bm{f} \left( \bm{x} \right) = \bm{D} \bm{x} - \bm{d} 
+	\label{Dxd}
+\end{equation}
+
+\begin{equation}
+	\frac{\partial \bm{f} \left( \bm{x} \right)}{\partial \bm{x}} = \bm{D}
+	\label{D}
+\end{equation}
+
+According to the Newton-Raphson method, every iteration is given by:
+\begin{equation}
+	\bm{\tilde{x}} = \bm{\hat{x}} - \left( \frac{\partial \bm{f} \left( \bm{x} \right)}{\partial \bm{x}} \right) ^{-1} \bm{f} \left( \bm{x} \right) = \bm{\hat{x}} - \bm{D}^{-1} \left( \bm{D} \bm{\hat{x}} - \bm{d}  \right)
+	\label{NR}
+\end{equation}
+
+In general $\bm{D}$ matrix is not square, as there is fewer constraints than the degree of freedom of the mechanisms and $\bm{D}$ can not be inverse trivial. To address this problem right pseudo-inverse can be used (equation (\ref{pseudoinverse})).
+\begin{equation}
+	\bm{D}^{\#} = \bm{D}^T \left( \bm{D} \bm{D}^T \right) ^ {-1}
+	\label{pseudoinverse}
+\end{equation}
+
+Furthermore, if the equation is underdetermined, the pseudo-inverse forms a space of proper inverses, scaled by a weight matrix $\bm{W}$:
+
+\begin{equation}
+	\bm{D}^{\#} = \bm{W}^{-1} \bm{D}^T \left( \bm{D} \bm{W}^{-1} \bm{D}^T \right) ^ {-1}
+	\label{wieight_pseudo}
+\end{equation}
+
+Inserting equation (\ref{wieight_pseudo}) to (\ref{NR}) leads to the constraint correction equation (\ref{constraint_corr}).\\
+
+Improvements were introduced based on the analogy of the constraint correction method to the Newton-Raphson method. The idea behind the proposed enhancement is to divide the correction into many smaller steps. It is proposed to use an additional coefficient $\alpha$ that scales the correction term, similarly to damped Newton-Raphson method. By design, the coefficient should be within the range $(0, 1 \rangle $. Next, as the impact of correction was reduced by scaling, it is proposed to conduct the correction multiple times within one run of this phase. This is analogous to the iterations performed by the Newton-Raphson method. The following formula presents the improved constraint correction method with k-times repetition:
+
+\begin{equation}
+	\bm{\hat{x}}_{i+1} = \bm{\hat{x}}_{i} - \alpha \bm{P} \bm{D}^T \left( \bm{D} \bm{P} \bm{D}^T \right)^{-1} \left( \bm{D} \bm{\hat{x}} - \bm{d}  \right) \hspace{10pt} \text{for i = 1,2,..,k}
+	\label{constraint_final}
+\end{equation}
+
+The selection of newly introduced parameters belongs to the tuning, and the correctness and usefulness of the proposed enhancement have been corroborated experimentally.
+
+It is worth mentioning that the presented method of calculating the pseudoinverse of D is only valid under the assumption of a full rank of the D matrix. The reduction of the rank of the matrix occurs when the constraints become linearly dependent. In this situation, another method of calculating pseudo-inversion should be used, e.g, SVD decomposition. \cite{golub2013matrix}\\
+
 

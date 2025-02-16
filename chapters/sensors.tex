@@ -1,27 +1,131 @@
 \section{Inertial sensors modeling \& calibration}
 
-\todo[inline]{Czujniki inercyjne to czujniki opierające swoje działanie o zjawiska fizyczne takie jak sila odsrodkowa lub działanie otaczającego pola przyśpieszeń grawitacyjnych. Do najbardziej ogólnych zaliczamy 3-osiowy akcelerometr i 3-osiowy żyroskop Ze względu na zasadę działania czujniki te są niemal niemożliwe do zakłócenia i mogą pracować w niemal każdych warunkach. Problem pozostaje dokładność ich pracy i wady uwidaczniające się w rzeczywistym sprzęcie. }
+Inertial sensors measure motion using fundamental physics principles, operating independently of external infrastructure. This makes them highly resilient to deliberate interference and functional in nearly all conditions.\\
 
-\todo[inline]{Dalej w tym rozdziale: }
+The key sensors are the accelerometer, which measures three-axis linear acceleration, and the gyroscope, which tracks angular velocity. Some systems include a magnetometer, but Earth’s magnetic field is weak and easily disturbed by nearby magnetically responsive materials, whereas disrupting an accelerometer by disruption of the gravitational field is not practically achievable.\\
 
-\todo[inline]{pokazac ze pole mag ziemi jest słabe i łatwo je zakłócić, a siła grawitacji stosunkowo duża i cieżko ją zakłócić (supermasywny obiekt na powierzchni ziemi)}
+An accelerometer measures all accelerations that affect the sensor. It means that if the sensor is mounted in a non-inertial reference frame, beside the linear acceleration of frame, it will also measure centripetal, angular and Coriolis acceleration. Masses on Earth experience constant gravitational acceleration, and that feature is especially useful in orientation's estimation. An accelerometer measurement is the resultant of those accelerations. Equation (\ref{acc_model1}) represents measured acceleration as a sum of components. When that accelerometer's origin is located close to frame center, $\bm{r^W} \approx \bm{0}$ what leads to proposed simplified model given in equation (\ref{acc_model1b}).
+\\
+\begin{equation}
+	\bm{a}_{res}^B = \bm{a}^B + \bm{R}^W_B \left( \bm{\omega}^W \times \left( \bm{\omega}^W \times \bm{r}^W \right) + \bm{\epsilon}^W \times \bm{r}^W + 2\left( \bm{\omega}^W \times \bm{v}^W \right) - \bm{g}  \right)  
+	\label{acc_model1}
+\end{equation}
 
-\todo[inline]{Modele czujników}
+\begin{equation}
+	\bm{a}_{res}^B = \bm{a}^B - \bm{R}^W_B \left( \bm{g}  \right)  
+	\label{acc_model1b}
+\end{equation}
 
-\todo[inline]{Modelowanie błędu}
+where:
+\begin{itemize}
+	\item $\bm{a}_{res}^B$ -- resultant acceleration given in a moving frame (linked with a body),
+	\item $\bm{a}^B$ -- acceleration of the moving frame given in this frame,
+	\item $\bm{R}^W_B$ -- rotation matrix from world frame to the moving frame,
+	\item $\bm{\omega}^W$ -- the moving frame's angular velocity given in the world frame,
+	\item $\bm{\epsilon}^W$ -- the moving frame's angular acceleration given in the world frame,
+	\item $\bm{r}^W$ -- sensor position in moving frame given in the world frame,
+	\item $\bm{v}^W$ -- the moving frame's linear velocity given in the world frame,
+	\item $\bm{g}$ -- gravitation acceleration in the world frame $\left( \bm{g} = \begin{bmatrix}
+		0 &  0 &  g
+	\end{bmatrix}^T \right)$.
+\end{itemize}
 
-\subsection{Calibration}
+The second part of the model provides an inclusion of error. Accelerometers readings are subject to scale error, bias, assembly inaccuracies, and noise.
+The scale error means that the readings are linearly dependent on acceleration, but the slope factor is not equal 1 precisely. The bias means that the linear function is not homogeneous and the constant coefficient is non-zero. The assembly inaccuracy is due to the fact that the sensor axes are not collinear with the reference frame. Thus, the assembly inaccuracy can be described as a rotation that does not affect the measure's norm. Finally, the noise is a random component added to measure. In the case of an accelerometer, the random noise's bandwidth is moved into high frequency side. Equation (\ref{acc_model2}) describe the correlation between acceleration and output from the sensor.\\
 
-\todo[inline]{Kalibracja wykorzystuje fakt ze przed rozpoczęciem pracy system może sie przez chwile nie ruszać}
 
-\todo[inline]{Kalibracja przyspieszeniomierza, 6 pomiarów + OLS, skalowanie pomiarów, proposed}
+\begin{equation}
+	\bm{\hat{a}}_{res}^B = \bm{R}_M \bm{S} \left( \bm{a}_{res}^B + \bm{b}_0 \right) + \bm{n}
+	\label{acc_model2}
+\end{equation}
 
-\todo[inline]{Kalibracja żyroskopu - początkowy bias, proposed}
+where:
+\begin{itemize}
+	\item $\bm{\hat{a}}_{res}^B$ -- accelerometer output,
+	\item $\bm{R}_M$ -- rotation matrix due to assembly inaccuracy,
+	\item $\bm{S}$ -- diagonal scale matrix,
+	\item $\bm{b}_0$ -- sensor constant bias,
+	\item $\bm{n}$ -- random noise.	
+\end{itemize}
 
-\subsection{Preflitering}
+A gyroscope is a sensor designed to measure angular velocities. An angular velocity characterizes the whole moving body. Thus, the gyroscope readings are independent of the sensor position within the moving reference frame, and depends only on its orientation. The principle of gyroscope operation were discussed in \cite{passaro2017gyroscope}.\\
 
-\todo[inline]{LPF dla przyspieszeniomerza}
+Despite its advantages, a gyroscope's measurements are susceptible to various errors. Two significant sources of error are bias and drift. Bias refers to a constant offset in the measured values, which is inherent to the sensor and remains relatively stable over time. Drift, on the other hand, is the gradual change in sensor offset over time, leading to a continuously growing deviation from the true value. In addition to bias and drift, gyroscopes are also affected by high-frequency noise and limited sensitivity for low angular velocities, which can obscure the true signal. The following equation presents a proposed mathematical model of a gyroscope.
 
-\todo[inline]{Notch filter dla żyroskopu}
+\begin{equation}
+	\bm{\hat{\omega}}^B = \bm{\omega}^B + \bm{b}(t) + \bm{b}_0 + \bm{h}
+	\label{gyro_model}
+\end{equation}
+
+where:
+\begin{itemize}
+	\item $\bm{\hat{\omega}}^B$ -- gyroscope's output,
+	\item $\bm{\omega}^B$ -- moving frame angular velocity given in moving reference frame,
+	\item $\bm{b}(t)$ -- drift -- the part of sensor offset that change over time,
+	\item $\bm{b}_0$ -- the constant part of sensor offset,
+	\item $\bm{h}$ -- high-frequency random noise.
+\end{itemize}
+
+It is worth mentioning why the assembly inaccuracies are not included in the sensor model. Obviously, a gyroscope can be mounted improperly, but the effects of this flaw can be included in bias. What will transpire later, the gyroscope is not used in absolute orientation estimation, and its error is compensated.\\
+
+Equipped with a well-defined mathematical model, it is possible to propose methods for calibrating and filtering the measurements realized by the sensors. The calibrations are the part of preparing sensor to work, while the filtration includes calculation conducted during sensor usage.
+
+
+\subsection{Proposed calibration methods}
+
+An accelerometer calibration aims to remove a bias and compensate for the effects of an assembly inaccuracy and a scale error. Before proposing a calibration method, the model given in equation (\ref{acc_model2}) can be transformed into the following equation. The noise is ignored, while the product $\bm{R}_M$ $\bm{S}$ is treated as an inverse of a new coefficient matrix $\bm{\varPhi}$. The proof that the product of matrices $\bm{R}_M$ and $\bm{S}$ is the inverse of some $3 \times 3$ matrix $\bm{\varPhi}$ is that the rotation matrix is orthogonal, and the scale matrix is diagonal. Both these matrices are non-singular, so their product can also be inverted.
+
+\begin{equation}
+	\bm{\hat{a}}_{res}^B \approx \bm{\varPhi}^{-1} \left( \bm{a}_{res}^B + \bm{b}_0 \right)
+	\label{acc_calib}
+\end{equation}
+
+That being said, calibration model is proposed as:
+
+\begin{equation}
+	\bm{\tilde{a}}_{res}^B = \bm{\varPhi} \bm{\hat{a}}_{res}^B - \bm{b}_0 = \bm{\varPhi} \bm{\hat{a}}_{res}^B + \bm{\varGamma}
+	\label{acc_calib2}
+\end{equation}
+
+where:
+\begin{itemize}
+	\item $\bm{\tilde{a}}_{res}^B$ -- calibrated accelerometer's output,
+	\item $\bm{\varPhi}$ -- $3 \times 3$ calibration's coefficient matrix,
+	\item $\bm{\varGamma}$ -- $3 \times 1$ calibration's coefficient vector.
+\end{itemize}
+
+As a result, the proposed accelerometer’s calibration comes down to finding values of $3 \cdot 3 + 3 = 12$ coefficients. To achieve this, readings are collected when the sensor is in positions for which the expected values are known. An accelerometer, even if not moving, measures gravitational acceleration. Assume that the sensor is closed in the box and that the edges are parallel to its coordinates system. When the box rests on each of its faces on a flat table, the accelerometer is expected to measure $\begin{bmatrix}\pm g & 0 & 0\end{bmatrix}^T$, $\begin{bmatrix}0 & \pm g & 0\end{bmatrix}^T$ or $\begin{bmatrix} 0 & 0 \pm g\end{bmatrix}^T$. Therefore, collecting measures from every face results in $6 \cdot 3 = 18$ equations that can be used to determine the values of calibration coefficients. As the system of equations is overdetermined, the approximation method need to be applied. In this work, it was decided to utilize the Ordinary Least Squares method (OLS).\\
+
+A gyroscope calibration is limited to a determination of initial bias $\bm{b}_0$. Compensation of the variable part $\bm{b}(t)$ requires additional information and can be performed in sensor fusion. The bias turns out to different in every sensor start-up, thus the calibration must be on every powering on, assuming that the measured system remains at rest. After the sensor starts, the gyroscope readings are collected for a specified period, and a statistic is created. Next, the mean and standard deviation are calculated. If the standard deviation is small enough, it is assumed that the sensor is not broken and it was not moved during the calibration. In the opposite case, the calibration is repeated or rejected depending on needs. The mean is a calculated bias that will be subtracted from the reading.
+
+\subsection{Sensor measurement preflitering}
+
+The main part of filtering is performed in sensor fusion, when data from multiple sensor are utilized. Nevertheless, part of this task can be transferred to prefiltering the raw data. Such processing should be characterized by high performance and low computational complexity. The most notable example of prefiltration is oversampling, which can be performed already on the hardware layer of the sensor. However, it is worth to extend prefiltration to algorithms based on knowledge of sensor characteristics - noise bandwidth, insensitivity zone, etc. As a result, it is possible to design appropriate low-pass and band-pass filters for these sensors. \\
+
+Moving on, the noise is removed by passing reading through filters. Low-pass filters are used to remove high-frequency noise. They are characterized by a cutoff frequency and an order. The cutoff frequency is the limit beyond which the higher-frequency signal is dampened. The filter’s order defines the slope factor of this dampening. The first-order low-pass filter is given by the equations that follow. If readings are collected with a constant sampling rate, $\alpha$ coefficient is calculated only once.
+
+\begin{equation}
+	\alpha = e^{ - \omega_{cf} \varDelta t}
+	\label{lpf_alpha}
+\end{equation}
+
+\begin{equation}
+	\bm{\tilde{\tilde{a}}}_{res}^B(t) = \alpha  \bm{\tilde{a}}_{res}^B(t) + \left( 1 - \alpha \right) \bm{\tilde{\tilde{a}}}_{res}^B(t - \varDelta t)
+	\label{lpf}
+\end{equation}
+
+where:
+\begin{itemize}
+	\item $\bm{\tilde{\tilde{a}}}_{res}^B$ -- calibrated \& filtered linear acceleration,
+	\item $\omega_{cf}$ -- cut-off frequency,
+	\item $\varDelta t$ -- sampling interval.
+\end{itemize}
+
+Proper frequency selection requires involving multiple factors. If noise bandwidth was not specified by the sensor producer, the frequency can be selected by analyzing data recorded by sensor in known conditions. \\
+
+In case of gyroscopes, it is rewarding to use bandpass filters instead of low-pass filters. The advantage of this approach is that the bandpass filter removes high-frequency noise as well as bias. However, the measured signal often overlaps the bias bandwidth, and using such a filter leads to extended insensitivity to low velocities. This solution should only be implemented if an active drift correction is impossible or only high velocities are important for research.\\
+
+In conclusion, this section introduced sensor models and, based on them, proposed methods for calibration and pre-filtering of measurements. It is crucial to note that only conventional and phenomenological approaches were presented. In contrast, contemporary research increasingly explores the application of artificial intelligence in data filtration, often achieving superior results compared to traditional methods---albeit at the cost of higher computational complexity and a reduced degree of interpretability.
+%TODO refs
 
 

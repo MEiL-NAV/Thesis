@@ -1,7 +1,6 @@
 \documentclass[
 	a4paper,
 	10pt,
-	unnumberedsections,
 	twoside,
 ]{styles/LTJournalArticle}
 
@@ -9,7 +8,7 @@
 
 \addbibresource{bibliography.bib}
 
-\runninghead{Inertial navigation in robotic systems}
+\runninghead{Inertial navigation in mechanisms}
 
 \footertext{\textit{Example journal} (2025)}
 
@@ -19,7 +18,7 @@
 %	TITLE SECTION
 %----------------------------------------------------------------------------------------
 
-\title{Adaptation of inertial navigation for position and orientation measurements in robotic systems} 
+\title{Adaptation of inertial navigation for position and orientation measurements in stationary mechanisms} 
 
 \author{%
 	Wojciech Gajda\textsuperscript{1} and Marek Wojtyra\textsuperscript{1} \thanks{Corresponding author: \href{mailto:wojciech.gajda.dokt@pw.edu.pl}{wojciech.gajda.dokt@pw.edu.pl}}
@@ -36,17 +35,17 @@
 
 \tableofcontents
 	
-\include{chapters/introduction}
+\input{chapters/introduction}
 
-\include{chapters/sensors}
+\input{chapters/sensors}
 
-\include{chapters/fusion}
+\input{chapters/fusion}
 
-\include{chapters/case_study}
+\input{chapters/case_study}
 
-\include{chapters/experiments}
+\input{chapters/experiments}
 
-\include{chapters/conclusion}
+\input{chapters/conclusion}
 
 \input{chapters/acknowledgement}
 
@@ -57,7 +56,6 @@
 %----------------------------------------------------------------------------------------
 
 \printbibliography
-\nocite{*}
 
 %----------------------------------------------------------------------------------------
 

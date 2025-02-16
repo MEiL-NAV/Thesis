@@ -1,21 +1,96 @@
 \section{Experimental studies}
 
-\todo[inline]{Badania mają na celu praktyczną walidacje skuteczności proponowanego rozwiązania.}
-
-\todo[inline]{Jako źródło odniesienia badania zostaną przeprowadzone z wykorzystaniem 6DOF manipulatora szeregowego (Fanuc M10a) Robot będzie realizował trajektorie symulująca srodek masy ruchomej platformy z poprzedniego rozdzialu, powtarzalnosc bo robot}
+The experiments were aimed at validation of the functionality of proposed method. It includes manufacturing the prototype of wireless device, able to collect sensor measurements, and the tests involving the 6-DOF industrial serial manipulator. In test the sensors mounted in robotic gripper will experience the orientation and position changes in accordance with applied constraints.
 
 \subsection{Prototype}
 
-\todo[inline]{Przyspieszeniomierz + Gyro + wifi + bateria,  miniaturowe rozmiary, duża prędkośc próbkowania, kilka zastosowanych sztuczek inżyniersko/programistycznych}
+The prototype is the sensor node, which performs low-level sensor data collecting and transferring data to the computer. The selected hardware should provide adequate performance and support network communication. For this purpose, microcontrollers work well. Wemos D1 mini Pro development board was selected. The ESP8266EX chip used on it provides high performance and native support for network functions, including Wi-Fi. The board is connected to two shields: a power supply shield and a custom shield with IMU. The power supply shield enables chip powering from a Li-ion battery. The custom shield has installed Pololu MinIMU-9, which contains the LSM303 accelerometer and L3GD20 gyroscope. That created device is compact and, together with the battery, fits into a 50x40x35mm 3D-printed enclosure (figure \ref{prototype}).
 
+\begin{figure}[!h]
+	\begin{center}
+		\includegraphics[width = 0.8\textwidth]{prototype.jpg}
+	\end{center}
+	\caption{Sensor node}
+	\label{prototype}
+\end{figure}
 
-\subsection{Results}
+The prototype is characterized by the following features:
+\begin{itemize}
+	\item accelerometer measuring ranges: $\pm$2g,
+	\item accelerometer resolution: 12-bit,
+	\item gyroscope measuring ranges: $\pm$250 degrees per seconds,
+	\item gyroscope resolution: 16-bit,
+	\item battery life: 6h+,
+	\item sample rate: 500Hz,
+	\item communication type: UDP, Wi-Fi
+\end{itemize}
 
-\subsubsection{Orientation estimation}
+\subsection{Experiments \& results}
 
-\subsubsection{Position estimation}
+The node was rigidly linked to the robot gripper. Figure \ref{sensor_mount} presents the sensor mounted to the robot. The sponges were used to mitigate vibrations. 
 
-\subsubsection{Position - orientation association}
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.4\textwidth]{sensor_mount.jpg}
+	\caption{Sensor mounted in the robot's gripper}
+	\label{sensor_mount}
+\end{figure}
 
-\todo[inline]{Jak ustalona orientacja ciągnie układ do zdefiniowanego miejsca w przestrzenii}
+First, the orientation tracking was examined. The robot executed a predetermined motion in which the position remained constant while only the orientation changed among five learned configurations. The orientation calculated by the robot control system was compared with the orientation estimated by the inertial sensors. As there is no sensor measuring the rotation through vertical axis, the yaw angle is expected to drift. However, it can be fixed by using an appropriate constraint (equation (\ref{yaw_constraint_fun})). The experiment was repeated without and with constraints correction and with various speeds.\\
 
+ Figures \ref{ori_est_roll} - \ref{ori_est_yaw} present the orientation estimation from the experiment. The estimated orientation angles are compared with the orientation calculated by the robot positioning system. The quaternion from state was transformed to more readable Euler angles (roll-pitch-yaw).\\
+ 
+\begin{figure}[h]
+	\centering
+	\begin{subfigure}[b]{0.45\textwidth}
+	 	\centering
+	 	\includegraphics[width=\textwidth]{ori_est_roll.png}
+	 	\caption{roll}
+	 	\label{ori_est_roll}
+ \end{subfigure}
+ \begin{subfigure}[b]{0.45\textwidth}
+ 	\centering
+ 	\includegraphics[width=\textwidth]{ori_est_yaw.png}
+ 	\caption{yaw}
+ 	\label{ori_est_yaw}
+ \end{subfigure}
+ \caption{Orientation estimation}
+\end{figure}
+
+Next, the system was examined under the default operating conditions to estimate the position. The node realizes a circular motion with different frequencies and directions, in accordance with the mechanism constraints. As the robot control system was able to calculate the position of node, its reading was also included in test, but with sample rate limited to 2Hz. The robot control system as a source of measurements is further called the position provider. The estimation was conducted in multiple variants, which included:
+\begin{itemize}
+	\item case A -- position provider + gyroscope (the accelerometer was used only to correct orientation),
+	\item case B -- position provider + gyroscope + accelerometer + constraint correction,
+	\item case C -- position provider + constraint correction,
+	\item case D -- position provider + gyroscope + accelerometer,
+	\item case E -- position provider + gyroscope + accelerometer + constraint correction
+	\item case F -- position provider + gyroscope + accelerometer + simplified constraint correction
+\end{itemize}
+
+Figures \ref{pos_est_x} - \ref{pos_est_z} present the position and orientation estimations obtained for the proposed configuration. It is expected that x and y coordinates estimate circular motion while the z and orientation angles remain zeros. Surprisingly, the best results are not achieved when all data sources are included. This phenomenon is linked with position-orientation association that is present in this specific mechanism. As was said, the mechanism can be mounted in different configuration. When the estimation algorithm calculates that the orientation change---due to sensor or numerical error---the constraints correction algorithms seeks a solution with given orientation, what cause a switch to other mounting configuration. With simplified constraints equations the phenomenon does not occur.
+
+\begin{figure}[!h]
+	\centering
+ \begin{subfigure}[b]{0.45\textwidth}
+	\centering
+	\includegraphics[width=\textwidth]{pos_est_x.png}
+	\caption{x}
+	\label{pos_est_x}
+ \end{subfigure}
+ \begin{subfigure}[b]{0.45\textwidth}
+	\centering
+	\includegraphics[width=\textwidth]{pos_est_z.png}
+	\caption{z}
+	\label{pos_est_z}
+ \end{subfigure}
+  \caption{Position estimation}
+ \end{figure}
+ 
+ The profit from the application of constraint correction is eminently visible when corrections with various $\alpha$ are compared. Figure \ref{corr_strength} presents an estimation of position in circular motion for different parameters (see equation \ref{constraint_final})). The sample rate of the external position provider is constant, so there are increasingly fewer updates for every rotation. If correction is inactive, the estimation tends to drift in the peaks. 
+ 
+ \begin{figure}[!h]
+ 	\centering
+ 	\includegraphics[width=0.6\textwidth]{corr_influence.png}
+ 	\caption{The influence of constraints correction}
+ 	\label{corr_strength}
+ \end{figure}

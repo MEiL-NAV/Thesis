@@ -1,12 +1,67 @@
 \section{Case study}
 
-\todo[inline]{Aby lepiej uzmysłowić sobie sformuowany problem, przedstawiony zostanie system będący przykladowym miejscem implementacji }
+The case study presents the specific multi-body system, that is a representative example of the application of the developed measuring system.
+The proposed method is used to track the position and orientation of the main moving element.
 
-\subsection{Multi-body system}
 
-\todo[inline]{3 zdania o krześle - MBS posiadający wszystkie negtywne/unikalne cechy}
+\subsection{Multi-body system description}
+
+The mechanism shown in figures \ref{fig:mbs} - \ref{fig:render} is an over-constrained multi-body system \cite{bib:BPAS2012} that consists of a moving platform connected to the ground by 6 rigid rods. The rods have equal lengths. In the assembly variant shown in the figures, all lower and upper rods, respectively, are parallel to each other. The mechanism has one degree of freedom (plus 6 internal mobilities). Due to this property, it is hard to simplify the mechanism model to a minimal set of coordinates, especially if mounted in different configuration. There are also no other sensor (like encoders) installed in mechanism that would be able to determinate the position and orientation.
+
+\begin{figure}[!h]
+	\centering
+	\begin{minipage}{.5\textwidth}
+		\centering
+		\includegraphics[width=.7\linewidth]{mbs_system.png}
+		\captionof{figure}{Multi-body system with 1 DOF}
+		\label{fig:mbs}
+	\end{minipage}%
+	\begin{minipage}{.5\textwidth}
+		\centering
+		\includegraphics[width=.9\linewidth]{render.jpg}
+		\captionof{figure}{Render of the MBS}
+		\label{fig:render}
+	\end{minipage}
+\end{figure}
 
 \subsection{Computer simulation}
 
-\todo[inline]{ADAMS + MATLAB}
+Before real-life experiments, fundamental aspects of the project were tested in computer simulation. The simulation involves preparing a kinematic model in ADAMS and connecting it with a simplified estimation system in MATLAB Simulink. The kinematic simulation outputs are the position and orientation of the moving platform, its linear acceleration, and angular velocity expressed in the local coordinate system. These variables will be used to simulate the sensors' readings. An angular velocity is used to simulate a gyroscope, while a linear acceleration is used to simulate an accelerometer. In ADAMS, the system has been set a circular motion in the horizontal plane, specific for configuration presented on figures \ref{fig:mbs} - \ref{fig:render}.\\
+
+The Kalman Filter with constraints correction was implemented and tuned. At this stage, the MATLAB implementation is a simplified version of the filter with simplified constraints, given in equation (\ref{simplified_eq} -- \ref{simplified_eq2}). Figure \ref{ekf_sim} presents a realization of the filter in Simulink.
+
+\begin{align}
+	x^2 + y^2 - r^2 &= 0
+	\label{simplified_eq}\\
+	z &= 0
+	\label{simplified_eq2}
+\end{align}
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=0.9\textwidth]{duw/ekf.png}
+	\caption{The Kalman Filter with constraints correction}
+	\label{ekf_sim}
+\end{figure}
+\ \\
+
+That prepared simulation was run multiple times to select the optimal set of parameters. The presented results are the best achieved after the tuning process. First, the filter work was examined without the constraints correction. Figure \ref{no_con} presents the position of platform's center as a function of time. The plot includes 3 coordinates of ADAMS \textit{true} position, the trajectory that mechanism is supposed to reflect and the position estimated by filter. The estimations drift heavily over simulation time, especially in vertical axis.\\
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=\textwidth]{duw/no_con.png}
+	\caption{The result of simulation (without correction)}
+	\label{no_con}
+\end{figure}
+
+Figure \ref{corr} presents the run of an analogous simulation, however,  with constraints correction turned on. The estimation matches the position for most of the simulation time. During the second revolution, the system lost the tracked value, but the match was quickly restored. The simulation shows a substantial and positive impact of applying correction of constraints.
+
+\newpage
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=\textwidth]{duw/corr.png}
+	\caption{The result of simulation (with correction)}
+	\label{corr}
+\end{figure}
 
