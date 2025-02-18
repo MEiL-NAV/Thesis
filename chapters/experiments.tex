@@ -2,16 +2,26 @@
 
 The experiments were aimed at validation of the functionality of proposed method. It includes manufacturing the prototype of wireless device, able to collect sensor measurements, and the tests involving the 6-DOF industrial serial manipulator. In test the sensors mounted in robotic gripper will experience the orientation and position changes in accordance with applied constraints.
 
-\subsection{Prototype}
+\subsection{Prototype development}
 
 The prototype is the sensor node, which performs low-level sensor data collecting and transferring data to the computer. The selected hardware should provide adequate performance and support network communication. For this purpose, microcontrollers work well. Wemos D1 mini Pro development board was selected. The ESP8266EX chip used on it provides high performance and native support for network functions, including Wi-Fi. The board is connected to two shields: a power supply shield and a custom shield with IMU. The power supply shield enables chip powering from a Li-ion battery. The custom shield has installed Pololu MinIMU-9, which contains the LSM303 accelerometer and L3GD20 gyroscope. That created device is compact and, together with the battery, fits into a 50x40x35mm 3D-printed enclosure (figure \ref{prototype}). The practical development of the sensor node required additional mechanism introduction in order to resolve fast serializing problem, time synchronization problem and energy consumption optimization.\\
 
 \begin{figure}[!h]
+	\centering
+\begin{minipage}{.61\textwidth}
 	\begin{center}
-		\includegraphics[width = 0.8\textwidth]{prototype.jpg}
+		\includegraphics[height=7cm]{prototype.jpg}
 	\end{center}
-	\caption{Sensor node}
+	\captionof{figure}{Sensor node}
 	\label{prototype}
+\end{minipage}
+\begin{minipage}{.37\textwidth}
+	\begin{center}
+	\includegraphics[height=7cm]{sensor_mount.jpg}
+    \end{center}
+	\captionof{figure}{Sensor mounted in the robot's gripper}
+	\label{sensor_mount}
+\end{minipage}
 \end{figure}
 
 The prototype is characterized by the following features:
@@ -29,12 +39,7 @@ The prototype is characterized by the following features:
 
 The node was rigidly linked to the robot gripper. Figure \ref{sensor_mount} presents the sensor mounted to the robot. The sponges were used to mitigate vibrations. 
 
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=0.4\textwidth]{sensor_mount.jpg}
-	\caption{Sensor mounted in the robot's gripper}
-	\label{sensor_mount}
-\end{figure}
+
 
 First, the orientation tracking was examined. The robot executed a predetermined motion in which the position remained constant while only the orientation changed among five learned configurations. The orientation calculated by the robot control system was compared with the orientation estimated by the inertial sensors. As there is no sensor measuring the rotation through vertical axis, the yaw angle is expected to drift. However, it can be fixed by using an appropriate constraint (equation (\ref{yaw_constraint_fun})). The experiment was repeated without and with constraints correction and with various speeds.\\
 
@@ -57,7 +62,7 @@ First, the orientation tracking was examined. The robot executed a predetermined
  \caption{Orientation estimation}
 \end{figure}
 
-Next, the system was examined under the default operating conditions to estimate the position. The node realizes a circular motion with different frequencies and directions, in accordance with the mechanism constraints. As the robot control system was able to calculate the position of node, its reading was also included in test, but with sample rate limited to 2Hz. The robot control system as a source of measurements is further called the position provider. The estimation was conducted in multiple variants, which included:
+Next, the system was examined under the default operating conditions to estimate the position. The node realized a circular motion with different frequencies and directions, in accordance with the mechanism constraints. It was discovered that determination of position, based on inertial sensors readings only leads to instant instability. Even though the constraint correction was engaged, the result had degenerated before traveling  3 complete cycles. It was decided that absolute position providing is necessary, but the information thus obtained will by sampled with relatively low rate. While the system works with maximal frequency of 500Hz, the measurement of absolute position provided by robot control system were limited to 2Hz. The robot control system as a source of measurements is further called the position provider. The estimation was conducted in multiple variants, which included:
 \begin{itemize}
 	\item case A -- position provider + gyroscope (the accelerometer was used only to correct orientation),
 	\item case B -- position provider + gyroscope + accelerometer + constraint correction,
@@ -86,11 +91,11 @@ Figures \ref{pos_est_x} - \ref{pos_est_z} present the position and orientation e
   \caption{Position estimation}
  \end{figure}
  
- The profit from the application of constraint correction is eminently visible when corrections with various $\alpha$ are compared. Figure \ref{corr_strength} presents an estimation of position in circular motion for different parameters (see equation \ref{constraint_final})). The sample rate of the external position provider is constant, so there are increasingly fewer updates for every rotation. If correction is inactive, the estimation tends to drift in the peaks. 
+ The profit from the application of constraint correction is eminently visible when corrections with various $\alpha$ are compared. Figure \ref{corr_strength} presents an estimation of position in circular motion for different parameters (see equation \ref{constraint_final}). The sample rate of the external position provider is constant, so there are increasingly fewer updates for every rotation. If correction is inactive, the estimation tends to drift in the peaks. 
  
  \begin{figure}[!h]
  	\centering
- 	\includegraphics[width=0.6\textwidth]{corr_influence.png}
+ 	\includegraphics[width=0.8\textwidth]{corr_influence.png}
  	\caption{The influence of constraints correction}
  	\label{corr_strength}
  \end{figure}

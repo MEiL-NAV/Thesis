@@ -1,2 +1,13 @@
+\newpage
 \section{Conclusion}
 \label{sec:conclusions}
+
+The model of sensors and their errors are a key factor in developing improved filtering and calibration methods. In the article, a method based on minimization was proposed to refine these processes. A mechanism-structure-aware approach was presented for sensor fusion. An original enhancement to the constraint correction method was proposed to improve state estimation by incorporating system constraints directly into the fusioning process. \\
+
+The proposed improvement involved modifying the conventional constraint correction approach by integrating a damped, iterative adjustment inspired by the Newton-Raphson method. This enhancement aimed to stabilize the estimation process, particularly in cases where direct application of conventional constraint correction led to instability. By introducing an adaptive scaling factor and multiple correction iterations, the proposed method improved the robustness of the constraint application within the Extended Kalman Filter framework.\\
+
+Experimental results demonstrated that orientation estimation significantly improved by leveraging knowledge of the system’s structure. However, position estimation was found to be unreliable when relying solely on inertial sensors, as drift accumulated rapidly without an external position reference. Despite this limitation, the proposed approach excelled in interpolating position estimates between updates from a position provider. This capability is particularly valuable in scenarios where absolute position updates are infrequent.\\
+
+Overall, the study highlighted the potential of mechanism-structure-aware filtering methods to enhance orientation estimation, while also underlining the persistent challenges of achieving accurate long-term position estimation without absolute position measurements. Future research could
+
+
